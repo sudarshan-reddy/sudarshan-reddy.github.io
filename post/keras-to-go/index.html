@@ -1,0 +1,546 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+
+  <meta charset="utf-8" />
+
+  
+  <title>Training a simple gender classifier with Python and Predicting with Go</title>
+
+  
+  
+  <link href="//cdn.jsdelivr.net" rel="dns-prefetch">
+  <link href="//cdnjs.cloudflare.com" rel="dns-prefetch">
+  <link href="//at.alicdn.com" rel="dns-prefetch">
+  <link href="//fonts.googleapis.com" rel="dns-prefetch">
+  <link href="//fonts.gstatic.com" rel="dns-prefetch">
+  <link href="///disqus.com" rel="dns-prefetch">
+  <link href="//c.disquscdn.com" rel="dns-prefetch">
+  
+  <link href="//www.google-analytics.com" rel="dns-prefetch">
+  
+
+  
+
+  
+  
+  <meta name="description" content="Ever since Tensorflow released Bindings for Go, I&amp;rsquo;ve been itching to give it a go. The ease of deployability with Go and microservice friendliness and even simple http performance improvements make it really handly to build a working prediction application with Go.
+The immediate and apparent downside for anyone who&amp;rsquo;s tried to train a model is how unintuitive scoping is with Tensorflow for Go.Python&amp;rsquo;s a lot easier to train models with for a newcomer because of a lot of things:">
+
+  
+  
+    <meta name="twitter:card" content="summary">
+    <meta name="twitter:site" content="@sudproquo">
+    <meta name="twitter:title" content="Training a simple gender classifier with Python and Predicting with Go">
+    <meta name="twitter:description" content="Ever since Tensorflow released Bindings for Go, I&amp;rsquo;ve been itching to give it a go. The ease of deployability with Go and microservice friendliness and even simple http performance improvements make it really handly to build a working prediction application with Go.
+The immediate and apparent downside for anyone who&amp;rsquo;s tried to train a model is how unintuitive scoping is with Tensorflow for Go.Python&amp;rsquo;s a lot easier to train models with for a newcomer because of a lot of things:">
+    <meta name="twitter:image" content="/images/avatar.jpg">
+  
+
+  
+  <meta property="og:type" content="article">
+  <meta property="og:title" content="Training a simple gender classifier with Python and Predicting with Go">
+  <meta property="og:description" content="Ever since Tensorflow released Bindings for Go, I&amp;rsquo;ve been itching to give it a go. The ease of deployability with Go and microservice friendliness and even simple http performance improvements make it really handly to build a working prediction application with Go.
+The immediate and apparent downside for anyone who&amp;rsquo;s tried to train a model is how unintuitive scoping is with Tensorflow for Go.Python&amp;rsquo;s a lot easier to train models with for a newcomer because of a lot of things:">
+  <meta property="og:url" content="/post/keras-to-go/">
+  <meta property="og:image" content="/images/avatar.jpg">
+
+
+
+
+<meta name="generator" content="Hugo 0.53">
+
+
+<link rel="canonical" href="/post/keras-to-go/">
+
+<meta name="renderer" content="webkit">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="format-detection" content="telephone=no,email=no,adress=no">
+<meta http-equiv="Cache-Control" content="no-transform">
+
+
+<meta name="robots" content="index,follow">
+<meta name="referrer" content="origin-when-cross-origin">
+
+
+
+
+
+
+
+<meta name="theme-color" content="#02b875">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black">
+<meta name="apple-mobile-web-app-title" content="Hugo Blog">
+<meta name="msapplication-tooltip" content="Hugo Blog">
+<meta name='msapplication-navbutton-color' content="#02b875">
+<meta name="msapplication-TileColor" content="#02b875">
+<meta name="msapplication-TileImage" content="/icons/icon-144x144.png">
+<link rel="icon" href="/favicon.ico">
+<link rel="icon" type="image/png" sizes="16x16" href="/icons/icon-16x16.png">
+<link rel="icon" type="image/png" sizes="32x32" href="/icons/icon-32x32.png">
+<link rel="icon" sizes="192x192" href="/icons/icon-192x192.png">
+<link rel="apple-touch-icon" href="/icons/icon-152x152.png">
+<link rel="manifest" href="/manifest.json">
+
+
+<link rel="preload" href="/styles/main.min.css" as="style">
+
+<link rel="preload" href="https://fonts.googleapis.com/css?family=Lobster" as="style">
+<link rel="preload" href="/images/avatar.jpg" as="image">
+<link rel="preload" href="/images/grey-prism.svg" as="image">
+
+
+<style>
+  body {
+    background: rgb(244, 243, 241) url('/images/grey-prism.svg') repeat fixed;
+  }
+</style>
+<link rel="stylesheet" href="/styles/main.min.css">
+
+<link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Lobster">
+
+
+
+<script src="https://cdn.jsdelivr.net/npm/medium-zoom@1.0.2/dist/medium-zoom.min.js"></script>
+
+
+
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/video.js@7.3.0/dist/video-js.min.css">
+
+
+
+  
+  
+<!--[if lte IE 8]>
+  <script src="https://cdn.jsdelivr.net/npm/html5shiv@3.7.3/dist/html5shiv.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/respond.js@1.4.2/dest/respond.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/videojs-ie8@1.1.2/dist/videojs-ie8.min.js"></script>
+<![endif]-->
+
+<!--[if lte IE 9]>
+  <script src="https://cdn.jsdelivr.net/npm/eligrey-classlist-js-polyfill@1.2.20180112/classList.min.js"></script>
+<![endif]-->
+
+
+</head>
+  <body>
+    
+    <div class="suspension">
+      <a role="button" aria-label="Go to top" title="Go to top" class="to-top is-hide"><span class="icon icon-up" aria-hidden="true"></span></a>
+      
+        
+        <a role="button" aria-label="Go to comments" title="Go to comments" class="to-comment" href="#disqus_thread"><span class="icon icon-comment" aria-hidden="true"></span></a>
+        
+      
+    </div>
+    
+    
+  <header class="site-header">
+  <img class="avatar" src="/images/avatar.jpg" alt="Avatar">
+  
+  <h2 class="title">Hugo Blog</h2>
+  
+  <p class="subtitle"></p>
+  <button class="menu-toggle" type="button" aria-label="Main Menu" aria-expanded="false" tab-index="0">
+    <span class="icon icon-menu" aria-hidden="true"></span>
+  </button>
+
+  <nav class="site-menu collapsed">
+    <h2 class="offscreen">Main Menu</h2>
+    <ul class="menu-list">
+      
+      
+      
+      
+        <li class="menu-item
+          
+          
+           is-active">
+          <a href="/">Home</a>
+        </li>
+      
+        <li class="menu-item
+          
+          
+          ">
+          <a href="https://github.com/sudarshan-reddy">Works</a>
+        </li>
+      
+        <li class="menu-item
+          
+          
+          ">
+          <a href="/tags/">Tags</a>
+        </li>
+      
+    </ul>
+  </nav>
+  <nav class="social-menu collapsed">
+    <h2 class="offscreen">Social Networks</h2>
+    <ul class="social-list"><li class="social-item">
+          <a href="mailto:sudar.theone@gmail.com" title="Email" aria-label="Email">
+            <span class="icon icon-email" aria-hidden="true"></span>
+          </a>
+        </li><li class="social-item">
+          <a href="//github.com/sudarshan-reddy" title="GitHub" aria-label="GitHub">
+            <span class="icon icon-github" aria-hidden="true"></span>
+          </a>
+        </li><li class="social-item">
+          <a href="//twitter.com/sudproquo" title="Twitter" aria-label="Twitter">
+            <span class="icon icon-twitter" aria-hidden="true"></span>
+          </a>
+        </li><li class="social-item">
+          <a href="//www.linkedin.com/in/sudarshan-reddy31" title="Linkedin" aria-label="Linkedin">
+            <span class="icon icon-linkedin" aria-hidden="true"></span>
+          </a>
+        </li></ul>
+  </nav>
+</header>
+
+  <section class="main post-detail">
+    <header class="post-header">
+      <h1 class="post-title">Training a simple gender classifier with Python and Predicting with Go</h1>
+      <p class="post-meta">@Sudarshan · Aug 8, 2018 · 5 min read</p>
+    </header>
+    <article class="post-content">
+
+<p>Ever since Tensorflow released Bindings for Go, I&rsquo;ve been itching to give it a go.
+The ease of deployability with Go and microservice friendliness and even simple
+http performance improvements make it really handly to build a working
+prediction application with Go.</p>
+
+<p>The immediate and apparent downside for anyone who&rsquo;s tried to train a model is
+how unintuitive scoping is with Tensorflow for Go.Python&rsquo;s a lot easier to train
+models with for a newcomer because of a lot of things:</p>
+
+<pre><code>    + The excellent Keras Library and API.
+    + Most tutorials and lessons are done with Python.
+    + Numpy is wonderfully intuitive.
+    + Fantastic image processing support.
+    + Generators are fun.
+</code></pre>
+
+<p>However, once the model is trained, making inference/applying feedforward does
+not need too much Tensorflow scoping wizardry.</p>
+
+<p>Go is an obvious choice for deployment/inference because:</p>
+
+<pre><code>    + Fantastic for writing microservices.
+    + Nice for people who prefer composition over inheritance for app building.
+    + Benchmarks show Go is much faster than Python. While this does not matter 
+      when training because GPU compute doesn't require too much parallelism/concurrency.
+    + Go with Chi seems to trump Python with Flask and even Python with Twisted 
+      by a considerable margin
+    + Easy concurrency primitives add versatility to leverage the model.
+</code></pre>
+
+<p>If you want to skip the ramble and get your hands dirty,
+you can use <a href="https://github.com/sudarshan-reddy/telemus">telemus</a> as a Quick Start.</p>
+
+<h2 id="training-a-gender-classifier-in-python">Training a gender classifier in Python</h2>
+
+<p>For my proof of concept, I decided to a do a simple real world classifier
+that would take in a picture and classify if it was male or female. To this end,
+we will be fine-tuning a ResNet50 model replacing the final layer with a
+Softmax Classifier.</p>
+
+<h3 id="data">Data</h3>
+
+<p>For the data, I will be using the wonderful CelebA dataset that labels 200,000
+odd celebrities with over 40 attributes (Male being one of them).</p>
+
+<p>Now, I plan to source mine more data of my own for the future and therefore
+split the images into folders by class. If you intend to do this,
+the rudimentary script below helps.</p>
+
+<pre><code>    import csv
+    import shutil
+    import os
+    
+    src_path = '/path/to/celebA/data'
+    dst_path = '/path/to/train/directory'
+    
+    def prepare_celebA():
+        reader = csv.DictReader(open('list_attr_celeba.txt'), delimiter=' ')
+        for row in reader:
+            img_name = row['image']
+            src = os.path.join(src_path, img_name)
+            if row['Male'] == '1':
+                dst = os.path.join(dst_path, 'male', img_name)
+                shutil.copyfile(src, dst)
+            if row['Male'] == '-1':
+                dst = os.path.join(dst_path, 'female', img_name)
+                shutil.copyfile(src, dst)
+    
+    if __name__ == '__main__' :
+        prepare_celebA()
+</code></pre>
+
+<p>The script above can be repurposed slightly for validation data as well.</p>
+
+<h3 id="pre-requisites-to-be-able-to-deploy-in-go">Pre-requisites to be able to deploy in Go</h3>
+
+<p>While I like Keras and use Keras to run my models, the Go application requires
+a number of things to be met.</p>
+
+<pre><code>    + The model to be transferred has to be a tensorflow graph.
+    + The tensorflow graph has to be saved with a tag.
+    + The input layer and inference layer have to be named.
+</code></pre>
+
+<h3 id="training">Training</h3>
+
+<p>With the pre-requisites above in mind, we start a tensorflow session and add
+it to a Keras backend first thing in our code.</p>
+
+<pre><code>    import tensorflow as tf
+    from keras import backend as K
+
+    sess = tf.Session()
+    K.set_session(sess)
+</code></pre>
+
+<p>I use two generators to read my prepared celeb data. The load_celeb_a code is listed below.</p>
+
+<p>The images I use are 224 * 224 and I only have an Nvidia GTX 1080 so I tend
+to keep the train_batch_size to only as much as my GPU can handle.</p>
+
+<pre><code>    from keras.preprocessing.image import ImageDataGenerator
+    
+    train_directory = &quot;&quot;
+    valid_directory =&quot;&quot;
+    train_batch_size = &quot;50&quot;
+    valid_batch_size = &quot;50&quot;
+    
+    def load_celeb_data(img_rows=224, img_cols=224):
+        train_batches = ImageDataGenerator(
+        rotation_range=40,
+        width_shift_range=0.2,
+        height_shift_range=0.2,
+        shear_range=0.2,
+        zoom_range=0.2,
+        horizontal_flip=True,
+        fill_mode='nearest'
+        ).flow_from_directory(train_directory,target_size=(img_rows,img_cols),
+                              shuffle=True,
+                              batch_size=train_batch_size, classes=('male',
+                                                                    'female'))
+        valid_batches = ImageDataGenerator().flow_from_directory(valid_directory,target_size=(img_rows,img_cols),
+                              shuffle=True,
+                              batch_size=valid_batch_size,classes=('male','female'))
+    
+        return train_batches, valid_batches
+</code></pre>
+
+<p>Finally, finetune the model.</p>
+
+<pre><code> model = keras.applications.resnet50.ResNet50()
+    classes = train_gen.class_indices
+    
+    model.layers.pop()
+
+    for layer in model.layers:
+        layer.trainable = False
+    for layer in model.layers[:30]:
+        layer.trainable = True
+    last = model.layers[-1].output
+
+    x = Dense(len(classes), activation=&quot;softmax&quot;, name=&quot;inferenceLayer&quot;)(last)
+
+    finetuned_model = Model(model.input, x)
+
+    finetuned_model.compile(optimizer=Adam(lr=1e-04), loss='categorical_crossentropy', metrics=['accuracy'])
+</code></pre>
+
+<p>The most relevant change here for us is this line right here.</p>
+
+<pre><code>    x = Dense(len(classes), activation=&quot;softmax&quot;, name=&quot;inferenceLayer&quot;)(last)
+</code></pre>
+
+<p>I&rsquo;ve gone ahead and named the inference layer (No points for originality there).</p>
+
+<p>We use the ResNet50 model where the input layer is already named. Its called input_1.</p>
+
+<p>Once the model is fit, make sure to save the graph with some tag.</p>
+
+<pre><code>    builder = tf.saved_model.builder.SavedModelBuilder(&quot;forGo&quot;)
+    builder.add_meta_graph_and_variables(sess, [&quot;tags&quot;])
+    builder.save()
+</code></pre>
+
+<p>This is going to get the model saved to a folder named <code>forGo</code>.</p>
+
+<p>You can find the full code <a href="https://github.com/sudarshan-reddy/resnetClassifier">here</a>.</p>
+
+<h3 id="prediction">Prediction</h3>
+
+<p>Time to move to the prediction part. We will build a simple command line app
+that takes an argument of an image and predicts its output. Copy the forGo
+directory to a common location. I like to put it within the Go project directory
+because its not too large.</p>
+
+<p>The Go program is laughably simple once we&rsquo;ve got the others set up.</p>
+
+<p>All we have to do is to read the image and convert it to a <code>*Tensor</code> data type.</p>
+
+<p>Here&rsquo;s the gist.</p>
+
+<pre><code>    imageFile, err := os.Open(imgName)
+	if err != nil {
+		log.Fatal(err)
+	}
+	var imgBuffer bytes.Buffer
+	io.Copy(&amp;imgBuffer, imageFile)
+	img, err := readImage(&amp;imgBuffer, &quot;jpg&quot;)
+	if err != nil {
+		log.Fatal(&quot;error reading image: &quot;, err)
+	}
+
+	result, err := model.Session.Run(
+		map[tf.Output]*tf.Tensor{
+			model.Graph.Operation(&quot;input_1&quot;).Output(0): img,
+		},
+		[]tf.Output{
+			model.Graph.Operation(&quot;inferenceLayer/Softmax&quot;).Output(0),
+		},
+		nil,
+	)
+
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	if preds, ok := result[0].Value().([][]float32); ok {
+		fmt.Println(preds)
+		if preds[0][0] &gt; preds[0][1] {
+			fmt.Println(&quot;male&quot;)
+		} else {
+			fmt.Println(&quot;female&quot;)
+		}
+	}
+</code></pre>
+
+<p>You can find the full code <a href="https://github.com/sudarshan-reddy/resnetPredictor">here</a></p>
+</article>
+    <footer class="post-footer">
+      
+      <ul class="post-tags">
+        
+          <li><a href="/tags/go"><span class="tag">Go</span></a></li>
+        
+          <li><a href="/tags/ai"><span class="tag">AI</span></a></li>
+        
+          <li><a href="/tags/python"><span class="tag">Python</span></a></li>
+        
+          <li><a href="/tags/keras"><span class="tag">Keras</span></a></li>
+        
+          <li><a href="/tags/tensorflow"><span class="tag">Tensorflow</span></a></li>
+        
+          <li><a href="/tags/deep-learning"><span class="tag">Deep Learning</span></a></li>
+        
+      </ul>
+      
+      <p class="post-copyright">
+        © sudarshan-reddy@github.io
+      </p>
+    </footer>
+    
+      <div id="disqus_thread"></div>
+<script type="application/javascript">
+    var disqus_config = function () {
+    
+    
+    
+    };
+    (function() {
+        if (["localhost", "127.0.0.1"].indexOf(window.location.hostname) != -1) {
+            document.getElementById('disqus_thread').innerHTML = 'Disqus comments not available by default when the website is previewed locally.';
+            return;
+        }
+        var d = document, s = d.createElement('script'); s.async = true;
+        s.src = '//' + "disqus_shortname" + '.disqus.com/embed.js';
+        s.setAttribute('data-timestamp', +new Date());
+        (d.head || d.body).appendChild(s);
+    })();
+</script>
+<noscript>Please enable JavaScript to view the <a href="https://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+<a href="https://disqus.com" class="dsq-brlink">comments powered by <span class="logo-disqus">Disqus</span></a>
+      
+    
+  </section>
+  
+<footer class="site-footer">
+  <p>© 2017-2019 Hugo Blog</p>
+  <p>Powered by <a href="https://gohugo.io/" target="_blank" rel="noopener">Hugo</a> with theme <a href="https://github.com/laozhu/hugo-nuo" target="_blank" rel="noopener">Nuo</a>.</p>
+  
+</footer>
+
+
+<script src="https://cdn.jsdelivr.net/npm/smooth-scroll@15.0.0/dist/smooth-scroll.min.js"></script>
+
+
+
+<script async src="https://cdn.jsdelivr.net/npm/video.js@7.3.0/dist/video.min.js"></script>
+
+
+
+
+<script async src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+<script type="text/x-mathjax-config">
+  MathJax.Hub.Config({
+    tex2jax: {
+      inlineMath: [['$','$'], ['\\(','\\)']],
+      displayMath: [['$$','$$'], ['\\[','\\]']],
+      processEscapes: true,
+      processEnvironments: true,
+      skipTags: ['script', 'noscript', 'style', 'textarea', 'pre'],
+      TeX: { equationNumbers: { autoNumber: "AMS" },
+      extensions: ["AMSmath.js", "AMSsymbols.js"] }
+    },
+  });
+</script>
+<script type="text/x-mathjax-config">
+  // Fix <code> tags after MathJax finishes running. This is a
+  // hack to overcome a shortcoming of Markdown. Discussion at
+  // https://github.com/mojombo/jekyll/issues/199
+  MathJax.Hub.Queue(() => {
+    MathJax.Hub.getAllJax().map(v => v.SourceElement().parentNode.className += ' has-jax');
+  });
+</script>
+
+
+
+<script src="/scripts/index.min.js"></script>
+
+<script>
+  if ('serviceWorker' in navigator) {
+    navigator.serviceWorker.register('\/service-worker.js').then(function() {
+      console.log('[ServiceWorker] Registered');
+    });
+  }
+</script>
+
+
+
+
+<script type="application/javascript">
+var doNotTrack = false;
+if (!doNotTrack) {
+	window.ga=window.ga||function(){(ga.q=ga.q||[]).push(arguments)};ga.l=+new Date;
+	ga('create', 'UA-XXXXXXXX-X', 'auto');
+	
+	ga('send', 'pageview');
+}
+</script>
+<script async src='https://www.google-analytics.com/analytics.js'></script>
+
+
+
+
+
+
+
+  </body>
+</html>

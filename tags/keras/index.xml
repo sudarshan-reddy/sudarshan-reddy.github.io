@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>Keras on Hugo Blog</title>
+    <link>/tags/keras/</link>
+    <description>Recent content in Keras on Hugo Blog</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>en</language>
+    <copyright>© sudarshan-reddy@github.io</copyright>
+    <lastBuildDate>Wed, 08 Aug 2018 00:00:00 +0000</lastBuildDate>
+    
+	<atom:link href="/tags/keras/index.xml" rel="self" type="application/rss+xml" />
+    
+    
+    <item>
+      <title>Training a simple gender classifier with Python and Predicting with Go</title>
+      <link>/post/keras-to-go/</link>
+      <pubDate>Wed, 08 Aug 2018 00:00:00 +0000</pubDate>
+      
+      <guid>/post/keras-to-go/</guid>
+      <description>Ever since Tensorflow released Bindings for Go, I&amp;rsquo;ve been itching to give it a go. The ease of deployability with Go and microservice friendliness and even simple http performance improvements make it really handly to build a working prediction application with Go.
+The immediate and apparent downside for anyone who&amp;rsquo;s tried to train a model is how unintuitive scoping is with Tensorflow for Go.Python&amp;rsquo;s a lot easier to train models with for a newcomer because of a lot of things:</description>
+    </item>
+    
+  </channel>
+</rss>
