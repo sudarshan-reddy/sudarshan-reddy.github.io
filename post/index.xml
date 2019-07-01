@@ -18,9 +18,9 @@
       <pubDate>Mon, 07 Jan 2019 00:00:00 +0000</pubDate>
       
       <guid>/post/static-typing-is-beautiful/</guid>
-      <description>I&amp;rsquo;ve been working with a Go(for work) and Rust(for fun) lately. I got pulled into the two languages for different reasons (easy concurrency and memory safety respectively)
-and ended up staying for a totally different reason altogether. Their type systems.
-Composition instead of inheritance. It feels elegant, right and very readable. I&amp;rsquo;m going to talk about something that happened today when I was super thankful for composition and typing itself.</description>
+      <description>I&amp;rsquo;ve been working with a Go(for work) and Rust(for fun) lately. I got pulled into the two languages for different reasons (easy concurrency and memory safety respectively) and ended up staying for a totally different reason altogether. Their type systems.
+Composition instead of inheritance feels elegant, right and very readable. I&amp;rsquo;m going to talk about something that happened today when I was very thankful for composition and typing itself.
+A colleague and I ran into a problem that quickly devolved into an argument and as it is with professional software engineers, wanton namecalling.</description>
     </item>
     
     <item>

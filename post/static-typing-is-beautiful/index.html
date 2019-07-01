@@ -24,27 +24,27 @@
 
   
   
-  <meta name="description" content="I&amp;rsquo;ve been working with a Go(for work) and Rust(for fun) lately. I got pulled into the two languages for different reasons (easy concurrency and memory safety respectively)
-and ended up staying for a totally different reason altogether. Their type systems.
-Composition instead of inheritance. It feels elegant, right and very readable. I&amp;rsquo;m going to talk about something that happened today when I was super thankful for composition and typing itself.">
+  <meta name="description" content="I&amp;rsquo;ve been working with a Go(for work) and Rust(for fun) lately. I got pulled into the two languages for different reasons (easy concurrency and memory safety respectively) and ended up staying for a totally different reason altogether. Their type systems.
+Composition instead of inheritance feels elegant, right and very readable. I&amp;rsquo;m going to talk about something that happened today when I was very thankful for composition and typing itself.
+A colleague and I ran into a problem that quickly devolved into an argument and as it is with professional software engineers, wanton namecalling.">
 
   
   
     <meta name="twitter:card" content="summary">
     <meta name="twitter:site" content="@sudproquo">
     <meta name="twitter:title" content="Why types are elegant">
-    <meta name="twitter:description" content="I&amp;rsquo;ve been working with a Go(for work) and Rust(for fun) lately. I got pulled into the two languages for different reasons (easy concurrency and memory safety respectively)
-and ended up staying for a totally different reason altogether. Their type systems.
-Composition instead of inheritance. It feels elegant, right and very readable. I&amp;rsquo;m going to talk about something that happened today when I was super thankful for composition and typing itself.">
+    <meta name="twitter:description" content="I&amp;rsquo;ve been working with a Go(for work) and Rust(for fun) lately. I got pulled into the two languages for different reasons (easy concurrency and memory safety respectively) and ended up staying for a totally different reason altogether. Their type systems.
+Composition instead of inheritance feels elegant, right and very readable. I&amp;rsquo;m going to talk about something that happened today when I was very thankful for composition and typing itself.
+A colleague and I ran into a problem that quickly devolved into an argument and as it is with professional software engineers, wanton namecalling.">
     <meta name="twitter:image" content="/images/avatar.jpg">
   
 
   
   <meta property="og:type" content="article">
   <meta property="og:title" content="Why types are elegant">
-  <meta property="og:description" content="I&amp;rsquo;ve been working with a Go(for work) and Rust(for fun) lately. I got pulled into the two languages for different reasons (easy concurrency and memory safety respectively)
-and ended up staying for a totally different reason altogether. Their type systems.
-Composition instead of inheritance. It feels elegant, right and very readable. I&amp;rsquo;m going to talk about something that happened today when I was super thankful for composition and typing itself.">
+  <meta property="og:description" content="I&amp;rsquo;ve been working with a Go(for work) and Rust(for fun) lately. I got pulled into the two languages for different reasons (easy concurrency and memory safety respectively) and ended up staying for a totally different reason altogether. Their type systems.
+Composition instead of inheritance feels elegant, right and very readable. I&amp;rsquo;m going to talk about something that happened today when I was very thankful for composition and typing itself.
+A colleague and I ran into a problem that quickly devolved into an argument and as it is with professional software engineers, wanton namecalling.">
   <meta property="og:url" content="/post/static-typing-is-beautiful/">
   <meta property="og:image" content="/images/avatar.jpg">
 
@@ -208,15 +208,15 @@ Composition instead of inheritance. It feels elegant, right and very readable. I
       <p class="post-meta">@Sudarshan · Jan 7, 2019 · 4 min read</p>
     </header>
     <article class="post-content"><p>I&rsquo;ve been working with a Go(for work) and Rust(for fun) lately. I got pulled into
-the two languages for different reasons (easy concurrency and memory safety respectively)<br />
-and ended up staying for a totally different reason altogether. Their type systems.</p>
+the two languages for different reasons (easy concurrency and memory safety respectively) and
+ended up staying for a totally different reason altogether. Their type systems.</p>
 
-<p>Composition instead of inheritance. It feels elegant, right and very readable.
-I&rsquo;m going to talk about something that happened today when I was super thankful
+<p>Composition instead of inheritance feels elegant, right and very readable.
+I&rsquo;m going to talk about something that happened today when I was very thankful
 for composition and typing itself.</p>
 
 <p>A colleague and I ran into a problem that quickly devolved into an argument and
-as it is with professional software engineers, namecalling. For work, I&rsquo;d written
+as it is with professional software engineers, wanton namecalling. For work, I&rsquo;d written
 a common request making library. It wasn&rsquo;t anything special. It would branch off
 of a <code>http.Client</code> and make requests and responses and parse them to specific
 interfaced outputs that we used for our internal <code>client sdks</code>.</p>
@@ -227,18 +227,18 @@ method like so.</p>
 <div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go">    <span style="color:#66d9ef">type</span> <span style="color:#a6e22e">Logger</span> <span style="color:#66d9ef">interface</span> {
     	<span style="color:#a6e22e">Printf</span>(<span style="color:#a6e22e">format</span> <span style="color:#66d9ef">string</span>, <span style="color:#a6e22e">args</span> <span style="color:#f92672">...</span><span style="color:#66d9ef">interface</span>{})
     }</code></pre></div>
-<p>Now the logger was hardly used. The errors were all propagated back from
+<p>The logger was hardly used. The errors were all propagated back from
 the library and didn&rsquo;t need to be logged at all. The logger was primary used to
 run <a href="https://golang.org/src/net/http/httputil/dump.go?s=5638:5700#L181">httputil.DumpRequest</a>
 in a debug like functionality.</p>
 
-<p>Now if you read the source code for DumpRequest, you&rsquo;ll notice that it is an
+<p>If you read the source code for DumpRequest, you&rsquo;ll notice that it is an
 allocation heavy operation that consumes the request body and reassigns it.
 All in all, it isn&rsquo;t something you want to be logging in production level
 request making code.</p>
 
-<p>Our solution was simple. We&rsquo;d make passing the logger interface option. If the
-logger interface wasn&rsquo;t nil, we&rsquo;d call Print.</p>
+<p>Our solution was simple. We&rsquo;d make passing the logger interface optional. If the
+logger interface wasn&rsquo;t <code>nil</code>, we&rsquo;d call Print.</p>
 <div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#66d9ef">func</span> (<span style="color:#a6e22e">cl</span> <span style="color:#f92672">*</span><span style="color:#a6e22e">CustomClient</span>) <span style="color:#a6e22e">Send</span>(){
     <span style="color:#f92672">...</span>
     <span style="color:#a6e22e">httpReq</span>, <span style="color:#a6e22e">err</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">http</span>.<span style="color:#a6e22e">NewRequest</span>(<span style="color:#a6e22e">http</span>.<span style="color:#a6e22e">MethodGet</span>, <span style="color:#e6db74">&#34;https://something.com&#34;</span>, <span style="color:#a6e22e">populateBody</span>())
@@ -252,7 +252,7 @@ logger interface wasn&rsquo;t nil, we&rsquo;d call Print.</p>
 
 }</code></pre></div>
 <p>This solved our problem. We could use the expensive logging in a debug setting
-but essentially disable it in production by simply passing the logger as a nil.</p>
+but essentially disable it in production by simply passing the logger as <code>nil</code>.</p>
 
 <p>However&hellip;</p>
 
@@ -260,8 +260,7 @@ but essentially disable it in production by simply passing the logger as a nil.<
 limiter. This rate limiter would come with the added feature of logging a
 warning every time it began throttling requests.</p>
 
-<p>The interface above would essentially change to something that looked like
-this.</p>
+<p>The interface above could change to something that looked like this.</p>
 <div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#66d9ef">type</span> <span style="color:#a6e22e">LevelLogger</span> <span style="color:#66d9ef">interface</span> {
 	<span style="color:#a6e22e">Info</span>(<span style="color:#a6e22e">args</span> <span style="color:#f92672">...</span><span style="color:#66d9ef">interface</span>{})
 	<span style="color:#a6e22e">Warn</span>(<span style="color:#a6e22e">args</span> <span style="color:#f92672">...</span><span style="color:#66d9ef">interface</span>{})
@@ -271,12 +270,12 @@ this.</p>
 	<span style="color:#a6e22e">Debugf</span>(<span style="color:#a6e22e">format</span> <span style="color:#66d9ef">string</span>, <span style="color:#a6e22e">args</span> <span style="color:#f92672">...</span><span style="color:#66d9ef">interface</span>{})
 }</code></pre></div>
 <p>We could have the client implement multiple levels and even set the loglevel.
-(this example logger follows github.com/sirupsen/logrus&rsquo;s intuitive structure for
+(this example logger follows github.com/sirupsen/logrus &rsquo;s intuitive structure for
 illustration purposes)</p>
 
 <p>This however puts us in a bit of a bother because our earlier implementation
 doesn&rsquo;t account for this. True, the client could stop calling the debug log itself
-by a simple implementation that looked like this.</p>
+by a simple implementation that could look like this.</p>
 <div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#66d9ef">type</span> <span style="color:#a6e22e">structuredLogger</span> <span style="color:#66d9ef">struct</span>{
     <span style="color:#a6e22e">level</span> <span style="color:#66d9ef">int</span>
 }
@@ -301,22 +300,18 @@ by a simple implementation that looked like this.</p>
     }
 
 }</code></pre></div>
-<p>The obvious issue we ran here was while the debug log wouldn&rsquo;t get printed,
-the DumpRequest function would still be called.</p>
-
-<p>We debated a bit and screamed at each other angrily in German and Tamil.</p>
+<p>The obvious issue we ran into here was while the debug log wouldn&rsquo;t get printed,
+the DumpRequest function would still be called. We debated a bit and screamed at
+each other angrily in German and Tamil.</p>
 
 <p>And finally it dawned to me, as all things do, when I was in the bathroom.
-I washed my hands(I promise) and got typing.</p>
-
-<p>I&rsquo;d been working a lot with Rust traits recently and while this was definitely
-a Go thing as well, the proximity with type system practise definitely helped.</p>
+I washed my hands(I promise) and got typing. I&rsquo;d been working a lot with Rust traits
+recently and while this was definitely a Go thing as well, the incessant typing of systems
+practise definitely helped.</p>
 
 <p>The solution was still to use the logger, but make the dumped Request a type
 that would compute only if called inside <code>log.Debugf</code> taking advantage of Go&rsquo;s
 <code>fmt.Stringer</code>.</p>
-
-<p>My solution looked something like this</p>
 <div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#66d9ef">type</span> <span style="color:#a6e22e">requestDump</span> <span style="color:#66d9ef">struct</span> {
     <span style="color:#a6e22e">req</span>  <span style="color:#f92672">*</span><span style="color:#a6e22e">http</span>.<span style="color:#a6e22e">Request</span>
     <span style="color:#a6e22e">body</span> <span style="color:#66d9ef">bool</span>
@@ -330,7 +325,7 @@ that would compute only if called inside <code>log.Debugf</code> taking advantag
 }
 
 
-<span style="color:#f92672">...</span>.
+<span style="color:#f92672">...</span>
 
 <span style="color:#66d9ef">func</span> (<span style="color:#a6e22e">r</span> <span style="color:#f92672">*</span><span style="color:#a6e22e">Request</span>) <span style="color:#a6e22e">Send</span>() <span style="color:#66d9ef">error</span>{
         <span style="color:#66d9ef">if</span> <span style="color:#a6e22e">r</span>.<span style="color:#a6e22e">Logger</span> <span style="color:#f92672">!=</span> <span style="color:#66d9ef">nil</span> {
