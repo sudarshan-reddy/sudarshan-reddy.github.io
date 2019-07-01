@@ -7,13 +7,40 @@
     <generator>Hugo -- gohugo.io</generator>
     <language>en</language>
     <copyright>© sudarshan-reddy@github.io</copyright>
-    <lastBuildDate>Wed, 08 Aug 2018 00:00:00 +0000</lastBuildDate>
+    <lastBuildDate>Mon, 07 Jan 2019 00:00:00 +0000</lastBuildDate>
     
 	<atom:link href="/tags/index.xml" rel="self" type="application/rss+xml" />
     
     
     <item>
-      <title>Ai</title>
+      <title>clean code</title>
+      <link>/tags/clean-code/</link>
+      <pubDate>Mon, 07 Jan 2019 00:00:00 +0000</pubDate>
+      
+      <guid>/tags/clean-code/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>go</title>
+      <link>/tags/go/</link>
+      <pubDate>Mon, 07 Jan 2019 00:00:00 +0000</pubDate>
+      
+      <guid>/tags/go/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>static typing</title>
+      <link>/tags/static-typing/</link>
+      <pubDate>Mon, 07 Jan 2019 00:00:00 +0000</pubDate>
+      
+      <guid>/tags/static-typing/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>AI</title>
       <link>/tags/ai/</link>
       <pubDate>Wed, 08 Aug 2018 00:00:00 +0000</pubDate>
       
@@ -22,7 +49,7 @@
     </item>
     
     <item>
-      <title>Deep Learning</title>
+      <title>deep learning</title>
       <link>/tags/deep-learning/</link>
       <pubDate>Wed, 08 Aug 2018 00:00:00 +0000</pubDate>
       
@@ -31,16 +58,7 @@
     </item>
     
     <item>
-      <title>Go</title>
-      <link>/tags/go/</link>
-      <pubDate>Wed, 08 Aug 2018 00:00:00 +0000</pubDate>
-      
-      <guid>/tags/go/</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>Keras</title>
+      <title>keras</title>
       <link>/tags/keras/</link>
       <pubDate>Wed, 08 Aug 2018 00:00:00 +0000</pubDate>
       
@@ -49,7 +67,7 @@
     </item>
     
     <item>
-      <title>Python</title>
+      <title>python</title>
       <link>/tags/python/</link>
       <pubDate>Wed, 08 Aug 2018 00:00:00 +0000</pubDate>
       
@@ -58,7 +76,7 @@
     </item>
     
     <item>
-      <title>Tensorflow</title>
+      <title>tensorflow</title>
       <link>/tags/tensorflow/</link>
       <pubDate>Wed, 08 Aug 2018 00:00:00 +0000</pubDate>
       
@@ -67,7 +85,7 @@
     </item>
     
     <item>
-      <title>Unix</title>
+      <title>unix</title>
       <link>/tags/unix/</link>
       <pubDate>Mon, 04 Dec 2017 00:00:00 +0000</pubDate>
       
@@ -76,7 +94,7 @@
     </item>
     
     <item>
-      <title>Zsh</title>
+      <title>zsh</title>
       <link>/tags/zsh/</link>
       <pubDate>Mon, 04 Dec 2017 00:00:00 +0000</pubDate>
       

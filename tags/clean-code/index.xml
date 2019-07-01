@@ -1,15 +1,15 @@
 <?xml version="1.0" encoding="utf-8" standalone="yes" ?>
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
-    <title>go on Geek and Latin</title>
-    <link>/tags/go/</link>
-    <description>Recent content in go on Geek and Latin</description>
+    <title>clean code on Geek and Latin</title>
+    <link>/tags/clean-code/</link>
+    <description>Recent content in clean code on Geek and Latin</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en</language>
     <copyright>© sudarshan-reddy@github.io</copyright>
     <lastBuildDate>Mon, 07 Jan 2019 00:00:00 +0000</lastBuildDate>
     
-	<atom:link href="/tags/go/index.xml" rel="self" type="application/rss+xml" />
+	<atom:link href="/tags/clean-code/index.xml" rel="self" type="application/rss+xml" />
     
     
     <item>
@@ -21,16 +21,6 @@
       <description>I&amp;rsquo;ve been working with a Go(for work) and Rust(for fun) lately. I got pulled into the two languages for different reasons (easy concurrency and memory safety respectively)
 and ended up staying for a totally different reason altogether. Their type systems.
 Composition instead of inheritance. It feels elegant, right and very readable. I&amp;rsquo;m going to talk about something that happened today when I was super thankful for composition and typing itself.</description>
-    </item>
-    
-    <item>
-      <title>Training a simple gender classifier with Python and Predicting with Go</title>
-      <link>/post/keras-to-go/</link>
-      <pubDate>Wed, 08 Aug 2018 00:00:00 +0000</pubDate>
-      
-      <guid>/post/keras-to-go/</guid>
-      <description>Ever since Tensorflow released Bindings for Go, I&amp;rsquo;ve been itching to give it a go. The ease of deployability with Go and microservice friendliness and even simple http performance improvements make it really handly to build a working prediction application with Go.
-The immediate and apparent downside for anyone who&amp;rsquo;s tried to train a model is how unintuitive scoping is with Tensorflow for Go.Python&amp;rsquo;s a lot easier to train models with for a newcomer because of a lot of things:</description>
     </item>
     
   </channel>

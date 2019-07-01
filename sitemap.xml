@@ -3,13 +3,44 @@
   xmlns:xhtml="http://www.w3.org/1999/xhtml">
   
   <url>
-    <loc>/post/keras-to-go/</loc>
-    <lastmod>2018-08-08T00:00:00+00:00</lastmod>
+    <loc>/</loc>
+    <lastmod>2019-01-07T00:00:00+00:00</lastmod>
+    <priority>0</priority>
   </url>
   
   <url>
-    <loc>/post/env-variables/</loc>
-    <lastmod>2017-12-04T00:00:00+00:00</lastmod>
+    <loc>/post/</loc>
+    <lastmod>2019-01-07T00:00:00+00:00</lastmod>
+    <priority>0</priority>
+  </url>
+  
+  <url>
+    <loc>/tags/</loc>
+    <lastmod>2019-01-07T00:00:00+00:00</lastmod>
+    <priority>0</priority>
+  </url>
+  
+  <url>
+    <loc>/post/static-typing-is-beautiful/</loc>
+    <lastmod>2019-01-07T00:00:00+00:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>/tags/clean-code/</loc>
+    <lastmod>2019-01-07T00:00:00+00:00</lastmod>
+    <priority>0</priority>
+  </url>
+  
+  <url>
+    <loc>/tags/go/</loc>
+    <lastmod>2019-01-07T00:00:00+00:00</lastmod>
+    <priority>0</priority>
+  </url>
+  
+  <url>
+    <loc>/tags/static-typing/</loc>
+    <lastmod>2019-01-07T00:00:00+00:00</lastmod>
+    <priority>0</priority>
   </url>
   
   <url>
@@ -19,24 +50,12 @@
   </url>
   
   <url>
-    <loc>/categories/</loc>
-    <priority>0</priority>
+    <loc>/post/keras-to-go/</loc>
+    <lastmod>2018-08-08T00:00:00+00:00</lastmod>
   </url>
   
   <url>
     <loc>/tags/deep-learning/</loc>
-    <lastmod>2018-08-08T00:00:00+00:00</lastmod>
-    <priority>0</priority>
-  </url>
-  
-  <url>
-    <loc>/</loc>
-    <lastmod>2018-08-08T00:00:00+00:00</lastmod>
-    <priority>0</priority>
-  </url>
-  
-  <url>
-    <loc>/tags/go/</loc>
     <lastmod>2018-08-08T00:00:00+00:00</lastmod>
     <priority>0</priority>
   </url>
@@ -48,19 +67,7 @@
   </url>
   
   <url>
-    <loc>/post/</loc>
-    <lastmod>2018-08-08T00:00:00+00:00</lastmod>
-    <priority>0</priority>
-  </url>
-  
-  <url>
     <loc>/tags/python/</loc>
-    <lastmod>2018-08-08T00:00:00+00:00</lastmod>
-    <priority>0</priority>
-  </url>
-  
-  <url>
-    <loc>/tags/</loc>
     <lastmod>2018-08-08T00:00:00+00:00</lastmod>
     <priority>0</priority>
   </url>
@@ -72,6 +79,11 @@
   </url>
   
   <url>
+    <loc>/post/env-variables/</loc>
+    <lastmod>2017-12-04T00:00:00+00:00</lastmod>
+  </url>
+  
+  <url>
     <loc>/tags/unix/</loc>
     <lastmod>2017-12-04T00:00:00+00:00</lastmod>
     <priority>0</priority>
@@ -80,6 +92,11 @@
   <url>
     <loc>/tags/zsh/</loc>
     <lastmod>2017-12-04T00:00:00+00:00</lastmod>
+    <priority>0</priority>
+  </url>
+  
+  <url>
+    <loc>/categories/</loc>
     <priority>0</priority>
   </url>
   

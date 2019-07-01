@@ -7,10 +7,21 @@
     <generator>Hugo -- gohugo.io</generator>
     <language>en</language>
     <copyright>© sudarshan-reddy@github.io</copyright>
-    <lastBuildDate>Wed, 08 Aug 2018 00:00:00 +0000</lastBuildDate>
+    <lastBuildDate>Mon, 07 Jan 2019 00:00:00 +0000</lastBuildDate>
     
 	<atom:link href="/post/index.xml" rel="self" type="application/rss+xml" />
     
+    
+    <item>
+      <title>Why types are elegant</title>
+      <link>/post/static-typing-is-beautiful/</link>
+      <pubDate>Mon, 07 Jan 2019 00:00:00 +0000</pubDate>
+      
+      <guid>/post/static-typing-is-beautiful/</guid>
+      <description>I&amp;rsquo;ve been working with a Go(for work) and Rust(for fun) lately. I got pulled into the two languages for different reasons (easy concurrency and memory safety respectively)
+and ended up staying for a totally different reason altogether. Their type systems.
+Composition instead of inheritance. It feels elegant, right and very readable. I&amp;rsquo;m going to talk about something that happened today when I was super thankful for composition and typing itself.</description>
+    </item>
     
     <item>
       <title>Training a simple gender classifier with Python and Predicting with Go</title>
