@@ -4,19 +4,60 @@
   
   <url>
     <loc>/</loc>
-    <lastmod>2019-01-07T00:00:00+00:00</lastmod>
+    <lastmod>2020-02-10T00:00:00+00:00</lastmod>
     <priority>0</priority>
   </url>
   
   <url>
+    <loc>/post/drone-follow-face/</loc>
+    <lastmod>2020-02-10T00:00:00+00:00</lastmod>
+  </url>
+  
+  <url>
     <loc>/post/</loc>
-    <lastmod>2019-01-07T00:00:00+00:00</lastmod>
+    <lastmod>2020-02-10T00:00:00+00:00</lastmod>
     <priority>0</priority>
   </url>
   
   <url>
     <loc>/tags/</loc>
-    <lastmod>2019-01-07T00:00:00+00:00</lastmod>
+    <lastmod>2020-02-10T00:00:00+00:00</lastmod>
+    <priority>0</priority>
+  </url>
+  
+  <url>
+    <loc>/tags/caffe/</loc>
+    <lastmod>2020-02-10T00:00:00+00:00</lastmod>
+    <priority>0</priority>
+  </url>
+  
+  <url>
+    <loc>/tags/computer-vision/</loc>
+    <lastmod>2020-02-10T00:00:00+00:00</lastmod>
+    <priority>0</priority>
+  </url>
+  
+  <url>
+    <loc>/tags/drone/</loc>
+    <lastmod>2020-02-10T00:00:00+00:00</lastmod>
+    <priority>0</priority>
+  </url>
+  
+  <url>
+    <loc>/tags/go/</loc>
+    <lastmod>2020-02-10T00:00:00+00:00</lastmod>
+    <priority>0</priority>
+  </url>
+  
+  <url>
+    <loc>/tags/opencv/</loc>
+    <lastmod>2020-02-10T00:00:00+00:00</lastmod>
+    <priority>0</priority>
+  </url>
+  
+  <url>
+    <loc>/tags/udp/</loc>
+    <lastmod>2020-02-10T00:00:00+00:00</lastmod>
     <priority>0</priority>
   </url>
   
@@ -27,12 +68,6 @@
   
   <url>
     <loc>/tags/clean-code/</loc>
-    <lastmod>2019-01-07T00:00:00+00:00</lastmod>
-    <priority>0</priority>
-  </url>
-  
-  <url>
-    <loc>/tags/go/</loc>
     <lastmod>2019-01-07T00:00:00+00:00</lastmod>
     <priority>0</priority>
   </url>

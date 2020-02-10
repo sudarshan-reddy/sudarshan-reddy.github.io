@@ -7,10 +7,20 @@
     <generator>Hugo -- gohugo.io</generator>
     <language>en</language>
     <copyright>© sudarshan-reddy@github.io</copyright>
-    <lastBuildDate>Mon, 07 Jan 2019 00:00:00 +0000</lastBuildDate>
+    <lastBuildDate>Mon, 10 Feb 2020 00:00:00 +0000</lastBuildDate>
     
 	<atom:link href="/post/index.xml" rel="self" type="application/rss+xml" />
     
+    
+    <item>
+      <title>How I got a 100 Dollar toy drone to follow me around.</title>
+      <link>/post/drone-follow-face/</link>
+      <pubDate>Mon, 10 Feb 2020 00:00:00 +0000</pubDate>
+      
+      <guid>/post/drone-follow-face/</guid>
+      <description>It&amp;rsquo;s that time of the year again when I decide to add to my blog. It was my birthday last week and I decided to buy myself a small DJI drone to hack with. I wanted to get something lightweight, cheap and easily replaced. The DJI Tello so far has turned out to be delightfully sufficient for my criteria.
+The experiment I set out to do is to have the Tello latch on to a face and follow it.</description>
+    </item>
     
     <item>
       <title>Why types are elegant</title>

@@ -1,0 +1,426 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+
+  <meta charset="utf-8" />
+
+  
+  <title>How I got a 100 Dollar toy drone to follow me around.</title>
+
+  
+  
+  <link href="//cdn.jsdelivr.net" rel="dns-prefetch">
+  <link href="//cdnjs.cloudflare.com" rel="dns-prefetch">
+  <link href="//at.alicdn.com" rel="dns-prefetch">
+  <link href="//fonts.googleapis.com" rel="dns-prefetch">
+  <link href="//fonts.gstatic.com" rel="dns-prefetch">
+  <link href="///disqus.com" rel="dns-prefetch">
+  <link href="//c.disquscdn.com" rel="dns-prefetch">
+  
+  <link href="//www.google-analytics.com" rel="dns-prefetch">
+  
+
+  
+
+  
+  
+  <meta name="description" content="It&amp;rsquo;s that time of the year again when I decide to add to my blog. It was my birthday last week and I decided to buy myself a small DJI drone to hack with. I wanted to get something lightweight, cheap and easily replaced. The DJI Tello so far has turned out to be delightfully sufficient for my criteria.
+The experiment I set out to do is to have the Tello latch on to a face and follow it.">
+
+  
+  
+    <meta name="twitter:card" content="summary">
+    <meta name="twitter:site" content="@sudproquo">
+    <meta name="twitter:title" content="How I got a 100 Dollar toy drone to follow me around.">
+    <meta name="twitter:description" content="It&amp;rsquo;s that time of the year again when I decide to add to my blog. It was my birthday last week and I decided to buy myself a small DJI drone to hack with. I wanted to get something lightweight, cheap and easily replaced. The DJI Tello so far has turned out to be delightfully sufficient for my criteria.
+The experiment I set out to do is to have the Tello latch on to a face and follow it.">
+    <meta name="twitter:image" content="/images/avatar.jpg">
+  
+
+  
+  <meta property="og:type" content="article">
+  <meta property="og:title" content="How I got a 100 Dollar toy drone to follow me around.">
+  <meta property="og:description" content="It&amp;rsquo;s that time of the year again when I decide to add to my blog. It was my birthday last week and I decided to buy myself a small DJI drone to hack with. I wanted to get something lightweight, cheap and easily replaced. The DJI Tello so far has turned out to be delightfully sufficient for my criteria.
+The experiment I set out to do is to have the Tello latch on to a face and follow it.">
+  <meta property="og:url" content="/post/drone-follow-face/">
+  <meta property="og:image" content="/images/avatar.jpg">
+
+
+
+
+<meta name="generator" content="Hugo 0.55.6">
+
+
+<link rel="canonical" href="/post/drone-follow-face/">
+
+<meta name="renderer" content="webkit">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="format-detection" content="telephone=no,email=no,adress=no">
+<meta http-equiv="Cache-Control" content="no-transform">
+
+
+<meta name="robots" content="index,follow">
+<meta name="referrer" content="origin-when-cross-origin">
+
+
+
+
+
+
+
+<meta name="theme-color" content="#02b875">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black">
+<meta name="apple-mobile-web-app-title" content="Geek and Latin">
+<meta name="msapplication-tooltip" content="Geek and Latin">
+<meta name='msapplication-navbutton-color' content="#02b875">
+<meta name="msapplication-TileColor" content="#02b875">
+<meta name="msapplication-TileImage" content="/icons/icon-144x144.png">
+<link rel="icon" href="/favicon.ico">
+<link rel="icon" type="image/png" sizes="16x16" href="/icons/icon-16x16.png">
+<link rel="icon" type="image/png" sizes="32x32" href="/icons/icon-32x32.png">
+<link rel="icon" sizes="192x192" href="/icons/icon-192x192.png">
+<link rel="apple-touch-icon" href="/icons/icon-152x152.png">
+<link rel="manifest" href="/manifest.json">
+
+
+<link rel="preload" href="/styles/main.min.css" as="style">
+
+<link rel="preload" href="https://fonts.googleapis.com/css?family=Lobster" as="style">
+<link rel="preload" href="/images/avatar.jpg" as="image">
+<link rel="preload" href="/images/grey-prism.svg" as="image">
+
+
+<style>
+  body {
+    background: rgb(244, 243, 241) url('/images/grey-prism.svg') repeat fixed;
+  }
+</style>
+<link rel="stylesheet" href="/styles/main.min.css">
+
+<link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Lobster">
+
+
+
+<script src="https://cdn.jsdelivr.net/npm/medium-zoom@1.0.2/dist/medium-zoom.min.js"></script>
+
+
+
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/video.js@7.3.0/dist/video-js.min.css">
+
+
+
+  
+  
+<!--[if lte IE 8]>
+  <script src="https://cdn.jsdelivr.net/npm/html5shiv@3.7.3/dist/html5shiv.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/respond.js@1.4.2/dest/respond.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/videojs-ie8@1.1.2/dist/videojs-ie8.min.js"></script>
+<![endif]-->
+
+<!--[if lte IE 9]>
+  <script src="https://cdn.jsdelivr.net/npm/eligrey-classlist-js-polyfill@1.2.20180112/classList.min.js"></script>
+<![endif]-->
+
+
+</head>
+  <body>
+    
+    <div class="suspension">
+      <a role="button" aria-label="Go to top" title="Go to top" class="to-top is-hide"><span class="icon icon-up" aria-hidden="true"></span></a>
+      
+        
+        <a role="button" aria-label="Go to comments" title="Go to comments" class="to-comment" href="#disqus_thread"><span class="icon icon-comment" aria-hidden="true"></span></a>
+        
+      
+    </div>
+    
+    
+  <header class="site-header">
+  <img class="avatar" src="/images/avatar.jpg" alt="Avatar">
+  
+  <h2 class="title">Geek and Latin</h2>
+  
+  <p class="subtitle"></p>
+  <button class="menu-toggle" type="button" aria-label="Main Menu" aria-expanded="false" tab-index="0">
+    <span class="icon icon-menu" aria-hidden="true"></span>
+  </button>
+
+  <nav class="site-menu collapsed">
+    <h2 class="offscreen">Main Menu</h2>
+    <ul class="menu-list">
+      
+      
+      
+      
+        <li class="menu-item
+          
+          
+           is-active">
+          <a href="/">Home</a>
+        </li>
+      
+        <li class="menu-item
+          
+          
+          ">
+          <a href="https://github.com/sudarshan-reddy">Works</a>
+        </li>
+      
+        <li class="menu-item
+          
+          
+          ">
+          <a href="/tags/">Tags</a>
+        </li>
+      
+    </ul>
+  </nav>
+  <nav class="social-menu collapsed">
+    <h2 class="offscreen">Social Networks</h2>
+    <ul class="social-list"><li class="social-item">
+          <a href="mailto:sudar.theone@gmail.com" title="Email" aria-label="Email">
+            <span class="icon icon-email" aria-hidden="true"></span>
+          </a>
+        </li><li class="social-item">
+          <a href="//github.com/sudarshan-reddy" title="GitHub" aria-label="GitHub">
+            <span class="icon icon-github" aria-hidden="true"></span>
+          </a>
+        </li><li class="social-item">
+          <a href="//twitter.com/sudproquo" title="Twitter" aria-label="Twitter">
+            <span class="icon icon-twitter" aria-hidden="true"></span>
+          </a>
+        </li><li class="social-item">
+          <a href="//www.linkedin.com/in/sudarshan-reddy31" title="Linkedin" aria-label="Linkedin">
+            <span class="icon icon-linkedin" aria-hidden="true"></span>
+          </a>
+        </li></ul>
+  </nav>
+</header>
+
+  <section class="main post-detail">
+    <header class="post-header">
+      <h1 class="post-title">How I got a 100 Dollar toy drone to follow me around.</h1>
+      <p class="post-meta">@Sudarshan · Feb 10, 2020 · 3 min read</p>
+    </header>
+    <article class="post-content">
+
+<p>It&rsquo;s that time of the year again when I decide to add to my blog. It was my
+birthday last week and I decided to buy myself a small DJI drone to hack with.
+I wanted to get something lightweight, cheap and easily replaced. The DJI Tello
+so far has turned out to be delightfully sufficient for my criteria.</p>
+
+<p>The experiment I set out to do is to have the Tello latch on to a face and
+follow it. To do this, I needed to be able to:</p>
+
+<pre><code>- Control the drone's movements.
+- Be able to get drone flight data/visual. 
+- Have the drone recognize a face. 
+- Tell the drone to follow the face.
+</code></pre>
+
+<h2 id="controlling-the-drone">Controlling the drone:</h2>
+
+<p>So, with no information about the drone, I naively assumed, I&rsquo;d have to push
+some code/instructions into the drone like an arduino or a Lego mindstorms unit.
+However, the android app that came with the tello required the phone to connect
+to the drone on wifi.</p>
+
+<p>This got me thinking, there had to be a server of sorts with a protocol that
+the android app was using to communicate to the drone. All I had to do was be
+that protocol and I didn&rsquo;t have to burn any software into the drone.</p>
+
+<p>I found this excellent <img src="https://tellopilots.com/wiki/protocol/" alt="article" /> that a
+lot of other hackers had ~died~ worked super hard to put together. So, all I
+needed was to write a client that could send these UDP packets.</p>
+
+<p>To my most pleasant surprise, I found that gobot had already done the excellent
+work of implementing this protocol as an SDK <img src="https://github.com/hybridgroup/gobot/tree/master/platforms/dji/tello" alt="here" />.
+Their documentation listed examples of starting and controlling the drone and
+the much cooler one of displaying the drone output on mplayer.</p>
+
+<p>The code below (taken from gobot) would have your tello take off and land.</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#f92672">package</span> <span style="color:#a6e22e">main</span>
+
+<span style="color:#f92672">import</span> (
+	<span style="color:#e6db74">&#34;fmt&#34;</span>
+	<span style="color:#e6db74">&#34;time&#34;</span>
+
+	<span style="color:#e6db74">&#34;gobot.io/x/gobot&#34;</span>
+	<span style="color:#e6db74">&#34;gobot.io/x/gobot/platforms/dji/tello&#34;</span>
+)
+
+<span style="color:#66d9ef">func</span> <span style="color:#a6e22e">main</span>() {
+	<span style="color:#a6e22e">drone</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">tello</span>.<span style="color:#a6e22e">NewDriver</span>(<span style="color:#e6db74">&#34;8888&#34;</span>)
+
+	<span style="color:#a6e22e">work</span> <span style="color:#f92672">:=</span> <span style="color:#66d9ef">func</span>() {
+		<span style="color:#a6e22e">drone</span>.<span style="color:#a6e22e">TakeOff</span>()
+
+		<span style="color:#a6e22e">gobot</span>.<span style="color:#a6e22e">After</span>(<span style="color:#ae81ff">5</span><span style="color:#f92672">*</span><span style="color:#a6e22e">time</span>.<span style="color:#a6e22e">Second</span>, <span style="color:#66d9ef">func</span>() {
+			<span style="color:#a6e22e">drone</span>.<span style="color:#a6e22e">Land</span>()
+		})
+	}
+
+	<span style="color:#a6e22e">robot</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">gobot</span>.<span style="color:#a6e22e">NewRobot</span>(<span style="color:#e6db74">&#34;tello&#34;</span>,
+		[]<span style="color:#a6e22e">gobot</span>.<span style="color:#a6e22e">Connection</span>{},
+		[]<span style="color:#a6e22e">gobot</span>.<span style="color:#a6e22e">Device</span>{<span style="color:#a6e22e">drone</span>},
+		<span style="color:#a6e22e">work</span>,
+	)
+
+	<span style="color:#a6e22e">robot</span>.<span style="color:#a6e22e">Start</span>()
+}</code></pre></div>
+<h2 id="getting-the-flight-visual">Getting the flight visual:</h2>
+
+<p>My second problem was also easily solved. Gobot sufficiently lets you
+<img src="https://gobot.io/documentation/examples/tello_video/" alt="stream" />
+the drone camera UDP output to mplayer (or as we will in the future, ffmpeg pipes).</p>
+
+<h2 id="have-the-drone-recognize-a-face">Have the drone recognize a face:</h2>
+
+<p>I did a little bit of caffe work to train a CNN to recognize faces. The GoCV
+bindings to opencv comes with an <img src="https://github.com/hybridgroup/gocv/blob/master/data/haarcascade_frontalface_default.xml" alt="xml cascade file" /> that does this sufficiently
+well but I liked my model better.</p>
+
+<h2 id="tell-the-drone-to-follow-the-face">Tell the drone to follow the face:</h2>
+
+<p>This was the most fun part. My logic was simple. I created bounds for the drone
+camera. My idea was to have the drone turn in the direction of the human face
+bounding box every time it left it&rsquo;s line of sight.</p>
+
+<h2 id="demo">Demo:</h2>
+
+<p>Of course&hellip; Demos are always a lot fun. If you watch closely, you&rsquo;ll notice
+that my boundary values are so small that the drone sometimes &ldquo;loses&rdquo; my face. This
+is an improvement I will be working on.</p>
+
+<p>&mdash;SOUND WARNING&mdash;</p>
+
+<video controls muted width="480" height="320">
+  <source src="https://sudarshan-reddy.github.io/images/Dronevideo.mp4" type="video/mp4">
+</video>
+
+<h2 id="source-code">Source code:</h2>
+
+<p>All the code is available at <a href="https://github.com/sudarshan-reddy/dogbot">https://github.com/sudarshan-reddy/dogbot</a></p>
+</article>
+    <footer class="post-footer">
+      
+      <ul class="post-tags">
+        
+          <li><a href="/tags/go"><span class="tag">Go</span></a></li>
+        
+          <li><a href="/tags/opencv"><span class="tag">Opencv</span></a></li>
+        
+          <li><a href="/tags/caffe"><span class="tag">Caffe</span></a></li>
+        
+          <li><a href="/tags/computer-vision"><span class="tag">Computer Vision</span></a></li>
+        
+          <li><a href="/tags/drone"><span class="tag">Drone</span></a></li>
+        
+          <li><a href="/tags/udp"><span class="tag">Udp</span></a></li>
+        
+      </ul>
+      
+      <p class="post-copyright">
+        © sudarshan-reddy@github.io
+      </p>
+    </footer>
+    
+      <div id="disqus_thread"></div>
+<script type="application/javascript">
+    var disqus_config = function () {
+    
+    
+    
+    };
+    (function() {
+        if (["localhost", "127.0.0.1"].indexOf(window.location.hostname) != -1) {
+            document.getElementById('disqus_thread').innerHTML = 'Disqus comments not available by default when the website is previewed locally.';
+            return;
+        }
+        var d = document, s = d.createElement('script'); s.async = true;
+        s.src = '//' + "sudarshan-reddy-github-io" + '.disqus.com/embed.js';
+        s.setAttribute('data-timestamp', +new Date());
+        (d.head || d.body).appendChild(s);
+    })();
+</script>
+<noscript>Please enable JavaScript to view the <a href="https://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+<a href="https://disqus.com" class="dsq-brlink">comments powered by <span class="logo-disqus">Disqus</span></a>
+      
+    
+  </section>
+  
+<footer class="site-footer">
+  <p>© 2017-2020 Geek and Latin</p>
+  <p>Powered by <a href="https://gohugo.io/" target="_blank" rel="noopener">Hugo</a> with theme <a href="https://github.com/laozhu/hugo-nuo" target="_blank" rel="noopener">Nuo</a>.</p>
+  
+</footer>
+
+
+<script src="https://cdn.jsdelivr.net/npm/smooth-scroll@15.0.0/dist/smooth-scroll.min.js"></script>
+
+
+
+<script async src="https://cdn.jsdelivr.net/npm/video.js@7.3.0/dist/video.min.js"></script>
+
+
+
+
+<script async src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+<script type="text/x-mathjax-config">
+  MathJax.Hub.Config({
+    tex2jax: {
+      inlineMath: [['$','$'], ['\\(','\\)']],
+      displayMath: [['$$','$$'], ['\\[','\\]']],
+      processEscapes: true,
+      processEnvironments: true,
+      skipTags: ['script', 'noscript', 'style', 'textarea', 'pre'],
+      TeX: { equationNumbers: { autoNumber: "AMS" },
+      extensions: ["AMSmath.js", "AMSsymbols.js"] }
+    },
+  });
+</script>
+<script type="text/x-mathjax-config">
+  // Fix <code> tags after MathJax finishes running. This is a
+  // hack to overcome a shortcoming of Markdown. Discussion at
+  // https://github.com/mojombo/jekyll/issues/199
+  MathJax.Hub.Queue(() => {
+    MathJax.Hub.getAllJax().map(v => v.SourceElement().parentNode.className += ' has-jax');
+  });
+</script>
+
+
+
+<script src="/scripts/index.min.js"></script>
+
+<script>
+  if ('serviceWorker' in navigator) {
+    navigator.serviceWorker.register('\/service-worker.js').then(function() {
+      console.log('[ServiceWorker] Registered');
+    });
+  }
+</script>
+
+
+
+
+<script type="application/javascript">
+var doNotTrack = false;
+if (!doNotTrack) {
+	window.ga=window.ga||function(){(ga.q=ga.q||[]).push(arguments)};ga.l=+new Date;
+	ga('create', 'UA-120606360-1', 'auto');
+	
+	ga('send', 'pageview');
+}
+</script>
+<script async src='https://www.google-analytics.com/analytics.js'></script>
+
+
+
+
+
+
+
+  </body>
+</html>
