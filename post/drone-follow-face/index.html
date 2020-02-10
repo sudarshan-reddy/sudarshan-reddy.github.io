@@ -202,7 +202,7 @@ The experiment I set out to do is to have the Tello latch on to a face and follo
   <section class="main post-detail">
     <header class="post-header">
       <h1 class="post-title">How I got a 100 Dollar toy drone to follow me around.</h1>
-      <p class="post-meta">@Sudarshan · Feb 10, 2020 · 3 min read</p>
+      <p class="post-meta">@Sudarshan · Feb 10, 2020 · 4 min read</p>
     </header>
     <article class="post-content">
 
@@ -276,21 +276,83 @@ the much cooler one of displaying the drone output on mplayer.</p>
 <a href="https://gobot.io/documentation/examples/tello_video/">stream</a>
 the drone camera UDP output to mplayer (or as we will in the future, ffmpeg pipes).</p>
 
+<p>For my experiment, I used the ffmpeg encoder to a stdoutpipe.</p>
+
+<pre><code>	ffmpeg := exec.Command(&quot;ffmpeg&quot;, &quot;-hwaccel&quot;, &quot;auto&quot;, &quot;-hwaccel_device&quot;, &quot;opencl&quot;, &quot;-i&quot;, &quot;pipe:0&quot;,
+		&quot;-pix_fmt&quot;, &quot;bgr24&quot;, &quot;-s&quot;, strconv.Itoa(frameX)+&quot;x&quot;+strconv.Itoa(frameY), &quot;-f&quot;, &quot;rawvideo&quot;, &quot;pipe:1&quot;)
+	ffmpegIn, err := ffmpeg.StdinPipe()
+	if err != nil {
+		return nil, err
+	}
+	ffmpegOut, err := ffmpeg.StdoutPipe()
+	if err != nil {
+		return nil, err
+	}
+</code></pre>
+
+<p>I then read this repeatedly</p>
+
+<pre><code>for {
+		outData := make([]byte, frameSize)
+		if _, err := io.ReadFull(f.ffmpegOut, outData); err != nil {
+			return err
+	}
+...
+</code></pre>
+
 <h2 id="have-the-drone-recognize-a-face">Have the drone recognize a face:</h2>
 
 <p>I did a little bit of caffe work to train a CNN to recognize faces. The GoCV
 bindings to opencv comes with an <a href="https://github.com/hybridgroup/gocv/blob/master/data/haarcascade_frontalface_default.xml">xml cascade file</a> that does this sufficiently
-well but I liked my model better.</p>
+well but I liked my model better. Plugging it into GoCV is as simple as</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go">	<span style="color:#a6e22e">net</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">gocv</span>.<span style="color:#a6e22e">ReadNetFromCaffe</span>(<span style="color:#a6e22e">f</span>.<span style="color:#a6e22e">protoPath</span>, <span style="color:#a6e22e">f</span>.<span style="color:#a6e22e">modelPath</span>)</code></pre></div>
+<p>The neural network can then run inferences here:</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go">		<span style="color:#a6e22e">detBlob</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">net</span>.<span style="color:#a6e22e">Forward</span>(<span style="color:#e6db74">&#34;detection_out&#34;</span>)
 
+<span style="color:#f92672">...</span>
+        <span style="color:#a6e22e">confidence</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">detections</span>.<span style="color:#a6e22e">GetFloatAt</span>(<span style="color:#a6e22e">r</span>, <span style="color:#ae81ff">2</span>)
+		<span style="color:#66d9ef">if</span> <span style="color:#a6e22e">confidence</span> &lt; <span style="color:#ae81ff">0.5</span> {
+			<span style="color:#66d9ef">continue</span>
+		}</code></pre></div>
 <h2 id="tell-the-drone-to-follow-the-face">Tell the drone to follow the face:</h2>
 
 <p>This was the most fun part. My logic was simple. I created bounds for the drone
 camera. My idea was to have the drone turn in the direction of the human face
-bounding box every time it left it&rsquo;s line of sight.</p>
+bounding box every time it left it&rsquo;s line of sight. I also added in a distance
+vector to have the drone maintain a safe distance from the human face.</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#66d9ef">if</span> <span style="color:#a6e22e">f</span>.<span style="color:#a6e22e">detectSize</span> {
+			<span style="color:#a6e22e">f</span>.<span style="color:#a6e22e">detectSize</span> = <span style="color:#66d9ef">false</span>
+			<span style="color:#a6e22e">refDistance</span> = <span style="color:#a6e22e">dist</span>(<span style="color:#a6e22e">left</span>, <span style="color:#a6e22e">top</span>, <span style="color:#a6e22e">right</span>, <span style="color:#a6e22e">bottom</span>)
+		}
 
+		<span style="color:#a6e22e">distance</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">dist</span>(<span style="color:#a6e22e">left</span>, <span style="color:#a6e22e">top</span>, <span style="color:#a6e22e">right</span>, <span style="color:#a6e22e">bottom</span>)
+
+		<span style="color:#66d9ef">if</span> <span style="color:#a6e22e">right</span> &lt; <span style="color:#a6e22e">W</span><span style="color:#f92672">/</span><span style="color:#ae81ff">2</span> {
+			<span style="color:#a6e22e">f</span>.<span style="color:#a6e22e">drone</span>.<span style="color:#a6e22e">CounterClockwise</span>(<span style="color:#ae81ff">50</span>)
+		} <span style="color:#66d9ef">else</span> <span style="color:#66d9ef">if</span> <span style="color:#a6e22e">left</span> &gt; <span style="color:#a6e22e">W</span><span style="color:#f92672">/</span><span style="color:#ae81ff">2</span> {
+			<span style="color:#a6e22e">f</span>.<span style="color:#a6e22e">drone</span>.<span style="color:#a6e22e">Clockwise</span>(<span style="color:#ae81ff">50</span>)
+		} <span style="color:#66d9ef">else</span> {
+			<span style="color:#a6e22e">f</span>.<span style="color:#a6e22e">drone</span>.<span style="color:#a6e22e">Clockwise</span>(<span style="color:#ae81ff">0</span>)
+		}
+
+		<span style="color:#66d9ef">if</span> <span style="color:#a6e22e">top</span> &lt; <span style="color:#a6e22e">H</span><span style="color:#f92672">/</span><span style="color:#ae81ff">10</span> {
+			<span style="color:#a6e22e">f</span>.<span style="color:#a6e22e">drone</span>.<span style="color:#a6e22e">Up</span>(<span style="color:#ae81ff">25</span>)
+		} <span style="color:#66d9ef">else</span> <span style="color:#66d9ef">if</span> <span style="color:#a6e22e">bottom</span> &gt; <span style="color:#a6e22e">H</span><span style="color:#f92672">-</span><span style="color:#a6e22e">H</span><span style="color:#f92672">/</span><span style="color:#ae81ff">10</span> {
+			<span style="color:#a6e22e">f</span>.<span style="color:#a6e22e">drone</span>.<span style="color:#a6e22e">Down</span>(<span style="color:#ae81ff">25</span>)
+		} <span style="color:#66d9ef">else</span> {
+			<span style="color:#a6e22e">f</span>.<span style="color:#a6e22e">drone</span>.<span style="color:#a6e22e">Up</span>(<span style="color:#ae81ff">0</span>)
+		}
+
+		<span style="color:#66d9ef">if</span> <span style="color:#a6e22e">distance</span> &lt; <span style="color:#a6e22e">refDistance</span><span style="color:#f92672">-</span><span style="color:#a6e22e">distTolerance</span> {
+			<span style="color:#a6e22e">f</span>.<span style="color:#a6e22e">drone</span>.<span style="color:#a6e22e">Forward</span>(<span style="color:#ae81ff">20</span>)
+		} <span style="color:#66d9ef">else</span> <span style="color:#66d9ef">if</span> <span style="color:#a6e22e">distance</span> &gt; <span style="color:#a6e22e">refDistance</span><span style="color:#f92672">+</span><span style="color:#a6e22e">distTolerance</span> {
+			<span style="color:#a6e22e">f</span>.<span style="color:#a6e22e">drone</span>.<span style="color:#a6e22e">Backward</span>(<span style="color:#ae81ff">20</span>)
+		} <span style="color:#66d9ef">else</span> {
+			<span style="color:#a6e22e">f</span>.<span style="color:#a6e22e">drone</span>.<span style="color:#a6e22e">Forward</span>(<span style="color:#ae81ff">0</span>)
+		}</code></pre></div>
 <h2 id="demo">Demo:</h2>
 
-<p>Of course&hellip; Demos are always a lot fun. If you watch closely, you&rsquo;ll notice
+<p>Demos are always a lot fun. If you watch closely, you&rsquo;ll notice
 that my boundary values are so small that the drone sometimes &ldquo;loses&rdquo; my face. This
 is an improvement I will be working on.</p>
 
