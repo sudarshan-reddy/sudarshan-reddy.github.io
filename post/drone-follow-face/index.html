@@ -231,12 +231,12 @@ to the drone on wifi.</p>
 the android app was using to communicate to the drone. All I had to do was be
 that protocol and I didn&rsquo;t have to burn any software into the drone.</p>
 
-<p>I found this excellent <img src="https://tellopilots.com/wiki/protocol/" alt="article" /> that a
+<p>I found this excellent <a href="https://tellopilots.com/wiki/protocol/">article</a> that a
 lot of other hackers had ~died~ worked super hard to put together. So, all I
 needed was to write a client that could send these UDP packets.</p>
 
 <p>To my most pleasant surprise, I found that gobot had already done the excellent
-work of implementing this protocol as an SDK <img src="https://github.com/hybridgroup/gobot/tree/master/platforms/dji/tello" alt="here" />.
+work of implementing this protocol as an SDK <a href="https://github.com/hybridgroup/gobot/tree/master/platforms/dji/tello">here</a>.
 Their documentation listed examples of starting and controlling the drone and
 the much cooler one of displaying the drone output on mplayer.</p>
 
@@ -273,13 +273,13 @@ the much cooler one of displaying the drone output on mplayer.</p>
 <h2 id="getting-the-flight-visual">Getting the flight visual:</h2>
 
 <p>My second problem was also easily solved. Gobot sufficiently lets you
-<img src="https://gobot.io/documentation/examples/tello_video/" alt="stream" />
+<a href="https://gobot.io/documentation/examples/tello_video/">stream</a>
 the drone camera UDP output to mplayer (or as we will in the future, ffmpeg pipes).</p>
 
 <h2 id="have-the-drone-recognize-a-face">Have the drone recognize a face:</h2>
 
 <p>I did a little bit of caffe work to train a CNN to recognize faces. The GoCV
-bindings to opencv comes with an <img src="https://github.com/hybridgroup/gocv/blob/master/data/haarcascade_frontalface_default.xml" alt="xml cascade file" /> that does this sufficiently
+bindings to opencv comes with an <a href="https://github.com/hybridgroup/gocv/blob/master/data/haarcascade_frontalface_default.xml">xml cascade file</a> that does this sufficiently
 well but I liked my model better.</p>
 
 <h2 id="tell-the-drone-to-follow-the-face">Tell the drone to follow the face:</h2>
