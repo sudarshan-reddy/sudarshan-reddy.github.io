@@ -275,27 +275,27 @@ the developers to write the yaml with all of swagger&rsquo;s quirks.</p>
 <p>It could be a JSON/XML based configuration system: Still needed the developer to work on a different
 language compared to what the rest of the codebase was.</p>
 <div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-json" data-lang="json">{
-    <span style="color:#960050;background-color:#1e0010">methods:</span> <span style="color:#960050;background-color:#1e0010">[</span>
-        <span style="color:#960050;background-color:#1e0010">{</span>
+    <span style="color:#f92672">&#34;methods&#34;</span>: [
+        {
             <span style="color:#f92672">&#34;name&#34;</span>: <span style="color:#e6db74">&#34;GetDetails&#34;</span>,
             <span style="color:#f92672">&#34;endpoint&#34;</span>: <span style="color:#e6db74">&#34;v1/getdetails&#34;</span>,
             <span style="color:#f92672">&#34;verb&#34;</span>: <span style="color:#e6db74">&#34;Get&#34;</span>,
             <span style="color:#f92672">&#34;inputParams&#34;</span>: [],
             <span style="color:#f92672">&#34;outputParams&#34;</span>: [
-                <span style="color:#e6db74">&#34;Details&#34;</span><span style="color:#960050;background-color:#1e0010">:</span> {}
+                {<span style="color:#f92672">&#34;Details&#34;</span>: {}}
             ]
-        }<span style="color:#960050;background-color:#1e0010">,</span>
+        },
         {
             <span style="color:#f92672">&#34;name&#34;</span>: <span style="color:#e6db74">&#34;GetRandomStuff&#34;</span>,
             <span style="color:#f92672">&#34;endpoint&#34;</span>: <span style="color:#e6db74">&#34;v1/getrandomstuff&#34;</span>,
             <span style="color:#f92672">&#34;verb&#34;</span>: <span style="color:#e6db74">&#34;Get&#34;</span>,
             <span style="color:#f92672">&#34;inputParams&#34;</span>: [],
             <span style="color:#f92672">&#34;outputParams&#34;</span>: [
-                <span style="color:#e6db74">&#34;RandomStuff&#34;</span><span style="color:#960050;background-color:#1e0010">:</span> {}
+                {<span style="color:#f92672">&#34;RandomStuff&#34;</span>: {}}
             ]
         }
-    <span style="color:#960050;background-color:#1e0010">]</span>
-<span style="color:#960050;background-color:#1e0010">}</span></code></pre></div>
+    ]
+}</code></pre></div>
 <p>It could be an interface also written in Go: The user will have to add a method to an interface
 and define the structures. The downside of this is the http endpoint and verb have to be annoted.</p>
 <div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#66d9ef">type</span> <span style="color:#a6e22e">Client</span> <span style="color:#66d9ef">interface</span>{
