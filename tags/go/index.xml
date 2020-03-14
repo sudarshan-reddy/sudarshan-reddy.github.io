@@ -7,10 +7,20 @@
     <generator>Hugo -- gohugo.io</generator>
     <language>en</language>
     <copyright>© sudarshan-reddy@github.io</copyright>
-    <lastBuildDate>Mon, 10 Feb 2020 00:00:00 +0000</lastBuildDate>
+    <lastBuildDate>Sat, 14 Mar 2020 00:00:00 +0000</lastBuildDate>
     
 	<atom:link href="/tags/go/index.xml" rel="self" type="application/rss+xml" />
     
+    
+    <item>
+      <title>A little code generation in Go in 2020.</title>
+      <link>/post/code-gen/</link>
+      <pubDate>Sat, 14 Mar 2020 00:00:00 +0000</pubDate>
+      
+      <guid>/post/code-gen/</guid>
+      <description>Perl gives me headaches. But I&amp;rsquo;m fond of one of Larry Wall&amp;rsquo;s three virtues: Laziness. This is a story of how sometimes Laziness lets you do fun things.
+Distributed systems and microservices are as ubiquitous as the coronavirus in 2020. But my workplace is also big on improving developer experience. This means a lot of SDKs for the microservices. We also love monorepos, so it&amp;rsquo;s all of these SDKs in one large repo.</description>
+    </item>
     
     <item>
       <title>How I got a 100 Dollar toy drone to follow me around.</title>
