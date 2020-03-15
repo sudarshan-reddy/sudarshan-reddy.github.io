@@ -18,8 +18,8 @@
       <pubDate>Sat, 14 Mar 2020 00:00:00 +0000</pubDate>
       
       <guid>/post/code-gen/</guid>
-      <description>Perl gives me headaches. But I&amp;rsquo;m fond of one of Larry Wall&amp;rsquo;s three virtues: Laziness. This is a story of how sometimes Laziness lets you do fun things.
-Distributed systems and microservices are as ubiquitous as the coronavirus in 2020. But my workplace is also big on improving developer experience. This means a lot of SDKs for the microservices. We also love monorepos, so it&amp;rsquo;s all of these SDKs in one large repo.</description>
+      <description>Perl gives me headaches. But I&amp;rsquo;m fond of one of Larry Wall&amp;rsquo;s three virtues: Laziness. This is a story of how sometimes laziness lets you do fun things.
+Distributed systems and microservices are as ubiquitous as the coronavirus in 2020. This results in a requirement for a lot of integration. And a nice way to maintain the glue code is to use SDKs rather than have multiple services write the transport glue themselves.</description>
     </item>
     
   </channel>

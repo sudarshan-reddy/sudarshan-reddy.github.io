@@ -24,24 +24,24 @@
 
   
   
-  <meta name="description" content="Perl gives me headaches. But I&amp;rsquo;m fond of one of Larry Wall&amp;rsquo;s three virtues: Laziness. This is a story of how sometimes Laziness lets you do fun things.
-Distributed systems and microservices are as ubiquitous as the coronavirus in 2020. But my workplace is also big on improving developer experience. This means a lot of SDKs for the microservices. We also love monorepos, so it&amp;rsquo;s all of these SDKs in one large repo.">
+  <meta name="description" content="Perl gives me headaches. But I&amp;rsquo;m fond of one of Larry Wall&amp;rsquo;s three virtues: Laziness. This is a story of how sometimes laziness lets you do fun things.
+Distributed systems and microservices are as ubiquitous as the coronavirus in 2020. This results in a requirement for a lot of integration. And a nice way to maintain the glue code is to use SDKs rather than have multiple services write the transport glue themselves.">
 
   
   
     <meta name="twitter:card" content="summary">
     <meta name="twitter:site" content="@sudproquo">
     <meta name="twitter:title" content="A little code generation in Go in 2020.">
-    <meta name="twitter:description" content="Perl gives me headaches. But I&amp;rsquo;m fond of one of Larry Wall&amp;rsquo;s three virtues: Laziness. This is a story of how sometimes Laziness lets you do fun things.
-Distributed systems and microservices are as ubiquitous as the coronavirus in 2020. But my workplace is also big on improving developer experience. This means a lot of SDKs for the microservices. We also love monorepos, so it&amp;rsquo;s all of these SDKs in one large repo.">
+    <meta name="twitter:description" content="Perl gives me headaches. But I&amp;rsquo;m fond of one of Larry Wall&amp;rsquo;s three virtues: Laziness. This is a story of how sometimes laziness lets you do fun things.
+Distributed systems and microservices are as ubiquitous as the coronavirus in 2020. This results in a requirement for a lot of integration. And a nice way to maintain the glue code is to use SDKs rather than have multiple services write the transport glue themselves.">
     <meta name="twitter:image" content="/images/avatar.jpg">
   
 
   
   <meta property="og:type" content="article">
   <meta property="og:title" content="A little code generation in Go in 2020.">
-  <meta property="og:description" content="Perl gives me headaches. But I&amp;rsquo;m fond of one of Larry Wall&amp;rsquo;s three virtues: Laziness. This is a story of how sometimes Laziness lets you do fun things.
-Distributed systems and microservices are as ubiquitous as the coronavirus in 2020. But my workplace is also big on improving developer experience. This means a lot of SDKs for the microservices. We also love monorepos, so it&amp;rsquo;s all of these SDKs in one large repo.">
+  <meta property="og:description" content="Perl gives me headaches. But I&amp;rsquo;m fond of one of Larry Wall&amp;rsquo;s three virtues: Laziness. This is a story of how sometimes laziness lets you do fun things.
+Distributed systems and microservices are as ubiquitous as the coronavirus in 2020. This results in a requirement for a lot of integration. And a nice way to maintain the glue code is to use SDKs rather than have multiple services write the transport glue themselves.">
   <meta property="og:url" content="/post/code-gen/">
   <meta property="og:image" content="/images/avatar.jpg">
 
@@ -204,14 +204,19 @@ Distributed systems and microservices are as ubiquitous as the coronavirus in 20
       <h1 class="post-title">A little code generation in Go in 2020.</h1>
       <p class="post-meta">@Sudarshan · Mar 14, 2020 · 3 min read</p>
     </header>
-    <article class="post-content"><p>Perl gives me headaches. But I&rsquo;m fond of one of Larry Wall&rsquo;s <a href="http://threevirtues.com/">three virtues</a>:
-<code>Laziness</code>. This is a story of how sometimes Laziness lets you do fun things.</p>
+    <article class="post-content">
 
-<p>Distributed systems and microservices are as ubiquitous as the coronavirus in 2020. But my workplace
-is also big on improving developer experience. This means a lot of SDKs for the microservices. We also
-love monorepos, so it&rsquo;s all of these SDKs in one large repo.</p>
+<p>Perl gives me headaches. But I&rsquo;m fond of one of Larry Wall&rsquo;s <a href="http://threevirtues.com/">three virtues</a>:
+<code>Laziness</code>. This is a story of how sometimes laziness lets you do fun things.</p>
 
-<p>It was all nice and fun until we had to start writing an SDK for each new addition.</p>
+<p>Distributed systems and microservices are as ubiquitous as the coronavirus in 2020. This
+results in a requirement for a lot of integration. And a nice way to maintain the glue
+code is to use SDKs rather than have multiple services write the transport glue themselves.
+Like so&hellip;</p>
+
+<p><img src="https://sudarshan-reddy.github.io/images/microservices.jpg" alt="microservices" /></p>
+
+<p>It was all nice and fun until we had to start writing an SDK for each new microservice.</p>
 
 <p>And each new endpoint.</p>
 
@@ -222,7 +227,7 @@ for each of these implementations.</p>
 
 <p>Like so:</p>
 
-<p><code>https://awesomewebsite.com/v1/getdetails</code></p>
+<p><code>https://awesomewebsite/v1/getdetails</code></p>
 <div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#66d9ef">func</span> (<span style="color:#a6e22e">c</span> <span style="color:#f92672">*</span><span style="color:#a6e22e">client</span>) <span style="color:#a6e22e">GetDetails</span>() (<span style="color:#f92672">*</span><span style="color:#a6e22e">Details</span>, <span style="color:#66d9ef">error</span>) {
 	<span style="color:#a6e22e">op</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">client</span>.<span style="color:#a6e22e">Operation</span>{
 		<span style="color:#a6e22e">HTTPMethod</span>: <span style="color:#a6e22e">http</span>.<span style="color:#a6e22e">MethodGet</span>,
@@ -243,7 +248,7 @@ for each of these implementations.</p>
 <p>If you notice, most of the code is tedious housekeeping that gets repeated. So getrandomstuff
 becomes</p>
 
-<p><code>https://awesomewebsite.com/v1/getrandomstuff</code></p>
+<p><code>https://awesomewebsite/v1/getrandomstuff</code></p>
 <div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#66d9ef">func</span> (<span style="color:#a6e22e">c</span> <span style="color:#f92672">*</span><span style="color:#a6e22e">client</span>) <span style="color:#a6e22e">GetRandomStuff</span>() (<span style="color:#f92672">*</span><span style="color:#a6e22e">RandomStuff</span>, <span style="color:#66d9ef">error</span>) {
 	<span style="color:#a6e22e">op</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">client</span>.<span style="color:#a6e22e">Operation</span>{
 		<span style="color:#a6e22e">HTTPMethod</span>: <span style="color:#a6e22e">http</span>.<span style="color:#a6e22e">MethodGet</span>,
@@ -262,17 +267,34 @@ becomes</p>
 	<span style="color:#66d9ef">return</span> <span style="color:#a6e22e">response</span>, <span style="color:#66d9ef">nil</span>
 }</code></pre></div>
 <p>This seems to be a prime candidate to automate. Step in code generation. Now what I wanted to do
-was to use a specification that the user is able to add that the generator captures and
-translates into this.</p>
+was to use a specification that the user is able to add a configuration that the generator captures and
+translates into something like the snippets about. Lets define a set of rules to outline this.</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#66d9ef">type</span> <span style="color:#a6e22e">Generator</span> <span style="color:#66d9ef">interface</span> {
+	<span style="color:#a6e22e">Generate</span>(<span style="color:#a6e22e">Reader</span>, <span style="color:#a6e22e">Writer</span>) <span style="color:#66d9ef">error</span>
+}
+
+<span style="color:#75715e">// Reader is a general wrapper on io.Reader to read an input to obtain
+</span><span style="color:#75715e">// the apis.
+</span><span style="color:#75715e"></span><span style="color:#66d9ef">type</span> <span style="color:#a6e22e">Reader</span> <span style="color:#66d9ef">interface</span> {
+	<span style="color:#a6e22e">ReadAPI</span>(<span style="color:#a6e22e">io</span>.<span style="color:#a6e22e">Reader</span>) ([]<span style="color:#a6e22e">API</span>, <span style="color:#66d9ef">error</span>)
+}
+
+<span style="color:#75715e">// Writer is a general wrapper on io.Writer to write the processed file.
+</span><span style="color:#75715e"></span><span style="color:#66d9ef">type</span> <span style="color:#a6e22e">Writer</span> <span style="color:#66d9ef">interface</span> {
+	<span style="color:#a6e22e">WriteAPI</span>(<span style="color:#a6e22e">io</span>.<span style="color:#a6e22e">Writer</span>, []<span style="color:#a6e22e">API</span>) <span style="color:#66d9ef">error</span>
+}</code></pre></div>
+<p>So, we need something to Read from and somewhere to Write.</p>
+
+<h2 id="reader">Reader</h2>
 
 <p>Multiple options presented themselves.</p>
 
-<p>It could be an API specification: But everyone hates swagger so much. It seemed to be punishment for
+<p><em>It could be an API specification:</em> But everyone hates swagger so much. It seemed to be punishment for
 the developers to write the yaml with all of swagger&rsquo;s quirks.</p>
 
-<p>I hate swagger so there&rsquo;s no example.</p>
+<p>Writing Swagger yamls are painful and so there is no example.</p>
 
-<p>It could be a JSON/XML based configuration system: Still needed the developer to work on a different
+<p><em>It could be a JSON/XML based configuration system:</em> Still needed the developer to work on a different
 language compared to what the rest of the codebase was.</p>
 <div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-json" data-lang="json">{
     <span style="color:#f92672">&#34;methods&#34;</span>: [
@@ -296,7 +318,7 @@ language compared to what the rest of the codebase was.</p>
         }
     ]
 }</code></pre></div>
-<p>It could be an interface also written in Go: The user will have to add a method to an interface
+<p><em>It could be an interface also written in Go:</em> The user will have to add a method to an interface
 and define the structures. The downside of this is the http endpoint and verb have to be annoted.</p>
 <div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#66d9ef">type</span> <span style="color:#a6e22e">Client</span> <span style="color:#66d9ef">interface</span>{
     <span style="color:#75715e">// Get v1/getdetails
@@ -313,7 +335,17 @@ and define the structures. The downside of this is the http endpoint and verb ha
 It seemed intuitive and granted control to a Go developer. It also presented the biggest challenge
 of the three. Reading an AST.</p>
 
-<p>&mdash; WORK IN PROGRESS&mdash;</p>
+<p><Introduction about ASTs></p>
+
+<p><How to read Go ASTs></p>
+
+<h2 id="writer">Writer</h2>
+
+<p><Go Templates></p>
+
+<h2 id="tips">Tips</h2>
+
+<h2 id="why-this-is-a-good-idea">Why this is a good idea</h2>
 </article>
     <footer class="post-footer">
       
