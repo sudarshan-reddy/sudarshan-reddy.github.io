@@ -451,102 +451,99 @@ interfaces.</p>
 <span style="color:#f92672">...</span></code></pre></div>
 <p>Now that we have the interfaces we extract the other stuff we mentioned above
 from 2-4.</p>
-
-<pre><code>    func getMethods(fields []*ast.Field) []Method {
-    	var methods = make([]Method, 0)
-    	for _, method := range fields {
-    		if len(method.Names) == 0 {
-    			continue
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go">    <span style="color:#66d9ef">func</span> <span style="color:#a6e22e">getMethods</span>(<span style="color:#a6e22e">fields</span> []<span style="color:#f92672">*</span><span style="color:#a6e22e">ast</span>.<span style="color:#a6e22e">Field</span>) []<span style="color:#a6e22e">Method</span> {
+    	<span style="color:#66d9ef">var</span> <span style="color:#a6e22e">methods</span> = make([]<span style="color:#a6e22e">Method</span>, <span style="color:#ae81ff">0</span>)
+    	<span style="color:#66d9ef">for</span> <span style="color:#a6e22e">_</span>, <span style="color:#a6e22e">method</span> <span style="color:#f92672">:=</span> <span style="color:#66d9ef">range</span> <span style="color:#a6e22e">fields</span> {
+    		<span style="color:#66d9ef">if</span> len(<span style="color:#a6e22e">method</span>.<span style="color:#a6e22e">Names</span>) <span style="color:#f92672">==</span> <span style="color:#ae81ff">0</span> {
+    			<span style="color:#66d9ef">continue</span>
     		}
     
-    		var ignore bool
-    		var matches [][]string
-    		for _, d := range method.Doc.List {
-    			comment := extractComment(d.Text)
-    			if comment == &quot;Ignore&quot; {
-    				ignore = true
-    			} else {
-    				matches = verbEndpointRegex.FindAllStringSubmatch(comment, -1)
+    		<span style="color:#66d9ef">var</span> <span style="color:#a6e22e">ignore</span> <span style="color:#66d9ef">bool</span>
+    		<span style="color:#66d9ef">var</span> <span style="color:#a6e22e">matches</span> [][]<span style="color:#66d9ef">string</span>
+    		<span style="color:#66d9ef">for</span> <span style="color:#a6e22e">_</span>, <span style="color:#a6e22e">d</span> <span style="color:#f92672">:=</span> <span style="color:#66d9ef">range</span> <span style="color:#a6e22e">method</span>.<span style="color:#a6e22e">Doc</span>.<span style="color:#a6e22e">List</span> {
+    			<span style="color:#a6e22e">comment</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">extractComment</span>(<span style="color:#a6e22e">d</span>.<span style="color:#a6e22e">Text</span>)
+    			<span style="color:#66d9ef">if</span> <span style="color:#a6e22e">comment</span> <span style="color:#f92672">==</span> <span style="color:#e6db74">&#34;Ignore&#34;</span> {
+    				<span style="color:#a6e22e">ignore</span> = <span style="color:#66d9ef">true</span>
+    			} <span style="color:#66d9ef">else</span> {
+    				<span style="color:#a6e22e">matches</span> = <span style="color:#a6e22e">verbEndpointRegex</span>.<span style="color:#a6e22e">FindAllStringSubmatch</span>(<span style="color:#a6e22e">comment</span>, <span style="color:#f92672">-</span><span style="color:#ae81ff">1</span>)
     			}
     		}
-    		if ignore {
-    			continue
+    		<span style="color:#66d9ef">if</span> <span style="color:#a6e22e">ignore</span> {
+    			<span style="color:#66d9ef">continue</span>
     		}
     
-    		fn, ok := method.Type.(*ast.FuncType)
-    		if !ok {
-    			continue
+    		<span style="color:#a6e22e">fn</span>, <span style="color:#a6e22e">ok</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">method</span>.<span style="color:#a6e22e">Type</span>.(<span style="color:#f92672">*</span><span style="color:#a6e22e">ast</span>.<span style="color:#a6e22e">FuncType</span>)
+    		<span style="color:#66d9ef">if</span> !<span style="color:#a6e22e">ok</span> {
+    			<span style="color:#66d9ef">continue</span>
     		}
     
-    		var methodData Method
-    		methodData.Verb = matches[0][0]
-    		methodData.Path = matches[1][0]
-    		methodData.MethodName = method.Names[0].String()
-    		methodData.InputParams = getFields(fn.Params.List)
-    		methodData.OutputParams = getFields(fn.Results.List)
+    		<span style="color:#66d9ef">var</span> <span style="color:#a6e22e">methodData</span> <span style="color:#a6e22e">Method</span>
+    		<span style="color:#a6e22e">methodData</span>.<span style="color:#a6e22e">Verb</span> = <span style="color:#a6e22e">matches</span>[<span style="color:#ae81ff">0</span>][<span style="color:#ae81ff">0</span>]
+    		<span style="color:#a6e22e">methodData</span>.<span style="color:#a6e22e">Path</span> = <span style="color:#a6e22e">matches</span>[<span style="color:#ae81ff">1</span>][<span style="color:#ae81ff">0</span>]
+    		<span style="color:#a6e22e">methodData</span>.<span style="color:#a6e22e">MethodName</span> = <span style="color:#a6e22e">method</span>.<span style="color:#a6e22e">Names</span>[<span style="color:#ae81ff">0</span>].<span style="color:#a6e22e">String</span>()
+    		<span style="color:#a6e22e">methodData</span>.<span style="color:#a6e22e">InputParams</span> = <span style="color:#a6e22e">getFields</span>(<span style="color:#a6e22e">fn</span>.<span style="color:#a6e22e">Params</span>.<span style="color:#a6e22e">List</span>)
+    		<span style="color:#a6e22e">methodData</span>.<span style="color:#a6e22e">OutputParams</span> = <span style="color:#a6e22e">getFields</span>(<span style="color:#a6e22e">fn</span>.<span style="color:#a6e22e">Results</span>.<span style="color:#a6e22e">List</span>)
     
-    		methods = append(methods, methodData)
+    		<span style="color:#a6e22e">methods</span> = append(<span style="color:#a6e22e">methods</span>, <span style="color:#a6e22e">methodData</span>)
     	}
-    	return methods
+    	<span style="color:#66d9ef">return</span> <span style="color:#a6e22e">methods</span>
     }
     
-    func extractComment(comment string) string {
-    	slashRemoved := strings.Trim(comment, &quot;//&quot;)
-    	return strings.Trim(slashRemoved, &quot; &quot;)
+    <span style="color:#66d9ef">func</span> <span style="color:#a6e22e">extractComment</span>(<span style="color:#a6e22e">comment</span> <span style="color:#66d9ef">string</span>) <span style="color:#66d9ef">string</span> {
+    	<span style="color:#a6e22e">slashRemoved</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">strings</span>.<span style="color:#a6e22e">Trim</span>(<span style="color:#a6e22e">comment</span>, <span style="color:#e6db74">&#34;//&#34;</span>)
+    	<span style="color:#66d9ef">return</span> <span style="color:#a6e22e">strings</span>.<span style="color:#a6e22e">Trim</span>(<span style="color:#a6e22e">slashRemoved</span>, <span style="color:#e6db74">&#34; &#34;</span>)
     }
     
-    func getFields(fields []*ast.Field) []Parameter {
-    	params := make([]Parameter, 0)
-    	for _, field := range fields {
-    		var name string
-    		if len(field.Names) &gt; 0 {
-    			name = field.Names[0].Name
+    <span style="color:#66d9ef">func</span> <span style="color:#a6e22e">getFields</span>(<span style="color:#a6e22e">fields</span> []<span style="color:#f92672">*</span><span style="color:#a6e22e">ast</span>.<span style="color:#a6e22e">Field</span>) []<span style="color:#a6e22e">Parameter</span> {
+    	<span style="color:#a6e22e">params</span> <span style="color:#f92672">:=</span> make([]<span style="color:#a6e22e">Parameter</span>, <span style="color:#ae81ff">0</span>)
+    	<span style="color:#66d9ef">for</span> <span style="color:#a6e22e">_</span>, <span style="color:#a6e22e">field</span> <span style="color:#f92672">:=</span> <span style="color:#66d9ef">range</span> <span style="color:#a6e22e">fields</span> {
+    		<span style="color:#66d9ef">var</span> <span style="color:#a6e22e">name</span> <span style="color:#66d9ef">string</span>
+    		<span style="color:#66d9ef">if</span> len(<span style="color:#a6e22e">field</span>.<span style="color:#a6e22e">Names</span>) &gt; <span style="color:#ae81ff">0</span> {
+    			<span style="color:#a6e22e">name</span> = <span style="color:#a6e22e">field</span>.<span style="color:#a6e22e">Names</span>[<span style="color:#ae81ff">0</span>].<span style="color:#a6e22e">Name</span>
     		}
-    		switch t := field.Type.(type) {
-    		case *ast.SelectorExpr:
-    			p := Parameter{
-    				Name: name,
-    				Type: selectorToString(t),
+    		<span style="color:#66d9ef">switch</span> <span style="color:#a6e22e">t</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">field</span>.<span style="color:#a6e22e">Type</span>.(<span style="color:#66d9ef">type</span>) {
+    		<span style="color:#66d9ef">case</span> <span style="color:#f92672">*</span><span style="color:#a6e22e">ast</span>.<span style="color:#a6e22e">SelectorExpr</span>:
+    			<span style="color:#a6e22e">p</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">Parameter</span>{
+    				<span style="color:#a6e22e">Name</span>: <span style="color:#a6e22e">name</span>,
+    				<span style="color:#a6e22e">Type</span>: <span style="color:#a6e22e">selectorToString</span>(<span style="color:#a6e22e">t</span>),
     			}
-    			params = append(params, p)
-    		case *ast.StarExpr:
-    			p := Parameter{
-    				Name: name,
-    				Type: starToString(t),
+    			<span style="color:#a6e22e">params</span> = append(<span style="color:#a6e22e">params</span>, <span style="color:#a6e22e">p</span>)
+    		<span style="color:#66d9ef">case</span> <span style="color:#f92672">*</span><span style="color:#a6e22e">ast</span>.<span style="color:#a6e22e">StarExpr</span>:
+    			<span style="color:#a6e22e">p</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">Parameter</span>{
+    				<span style="color:#a6e22e">Name</span>: <span style="color:#a6e22e">name</span>,
+    				<span style="color:#a6e22e">Type</span>: <span style="color:#a6e22e">starToString</span>(<span style="color:#a6e22e">t</span>),
     			}
-    			params = append(params, p)
-    		case *ast.Ident:
-    			p := Parameter{
-    				Name: name,
-    				Type: t.Name,
+    			<span style="color:#a6e22e">params</span> = append(<span style="color:#a6e22e">params</span>, <span style="color:#a6e22e">p</span>)
+    		<span style="color:#66d9ef">case</span> <span style="color:#f92672">*</span><span style="color:#a6e22e">ast</span>.<span style="color:#a6e22e">Ident</span>:
+    			<span style="color:#a6e22e">p</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">Parameter</span>{
+    				<span style="color:#a6e22e">Name</span>: <span style="color:#a6e22e">name</span>,
+    				<span style="color:#a6e22e">Type</span>: <span style="color:#a6e22e">t</span>.<span style="color:#a6e22e">Name</span>,
     			}
-    			params = append(params, p)
+    			<span style="color:#a6e22e">params</span> = append(<span style="color:#a6e22e">params</span>, <span style="color:#a6e22e">p</span>)
     		}
     
     	}
-    	return params
+    	<span style="color:#66d9ef">return</span> <span style="color:#a6e22e">params</span>
     }
     
-    func selectorToString(t *ast.SelectorExpr) string {
-    	var param bytes.Buffer
-    	if ident, ok := t.X.(*ast.Ident); ok {
-    		param.WriteString(ident.Name)
+    <span style="color:#66d9ef">func</span> <span style="color:#a6e22e">selectorToString</span>(<span style="color:#a6e22e">t</span> <span style="color:#f92672">*</span><span style="color:#a6e22e">ast</span>.<span style="color:#a6e22e">SelectorExpr</span>) <span style="color:#66d9ef">string</span> {
+    	<span style="color:#66d9ef">var</span> <span style="color:#a6e22e">param</span> <span style="color:#a6e22e">bytes</span>.<span style="color:#a6e22e">Buffer</span>
+    	<span style="color:#66d9ef">if</span> <span style="color:#a6e22e">ident</span>, <span style="color:#a6e22e">ok</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">t</span>.<span style="color:#a6e22e">X</span>.(<span style="color:#f92672">*</span><span style="color:#a6e22e">ast</span>.<span style="color:#a6e22e">Ident</span>); <span style="color:#a6e22e">ok</span> {
+    		<span style="color:#a6e22e">param</span>.<span style="color:#a6e22e">WriteString</span>(<span style="color:#a6e22e">ident</span>.<span style="color:#a6e22e">Name</span>)
     	}
-    	param.WriteString(&quot;.&quot;)
-    	param.WriteString(t.Sel.Name)
-    	return param.String()
+    	<span style="color:#a6e22e">param</span>.<span style="color:#a6e22e">WriteString</span>(<span style="color:#e6db74">&#34;.&#34;</span>)
+    	<span style="color:#a6e22e">param</span>.<span style="color:#a6e22e">WriteString</span>(<span style="color:#a6e22e">t</span>.<span style="color:#a6e22e">Sel</span>.<span style="color:#a6e22e">Name</span>)
+    	<span style="color:#66d9ef">return</span> <span style="color:#a6e22e">param</span>.<span style="color:#a6e22e">String</span>()
     }
     
-    func starToString(t *ast.StarExpr) string {
-    	var param bytes.Buffer
-    	param.WriteString(&quot;*&quot;)
-    	if ident, ok := t.X.(*ast.Ident); ok {
-    		param.WriteString(ident.Name)
+    <span style="color:#66d9ef">func</span> <span style="color:#a6e22e">starToString</span>(<span style="color:#a6e22e">t</span> <span style="color:#f92672">*</span><span style="color:#a6e22e">ast</span>.<span style="color:#a6e22e">StarExpr</span>) <span style="color:#66d9ef">string</span> {
+    	<span style="color:#66d9ef">var</span> <span style="color:#a6e22e">param</span> <span style="color:#a6e22e">bytes</span>.<span style="color:#a6e22e">Buffer</span>
+    	<span style="color:#a6e22e">param</span>.<span style="color:#a6e22e">WriteString</span>(<span style="color:#e6db74">&#34;*&#34;</span>)
+    	<span style="color:#66d9ef">if</span> <span style="color:#a6e22e">ident</span>, <span style="color:#a6e22e">ok</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">t</span>.<span style="color:#a6e22e">X</span>.(<span style="color:#f92672">*</span><span style="color:#a6e22e">ast</span>.<span style="color:#a6e22e">Ident</span>); <span style="color:#a6e22e">ok</span> {
+    		<span style="color:#a6e22e">param</span>.<span style="color:#a6e22e">WriteString</span>(<span style="color:#a6e22e">ident</span>.<span style="color:#a6e22e">Name</span>)
     	}
-    	return param.String()
-    }
-</code></pre>
-
+    	<span style="color:#66d9ef">return</span> <span style="color:#a6e22e">param</span>.<span style="color:#a6e22e">String</span>()
+    }</code></pre></div>
 <p><strong>Code Generation:</strong> Is basically generating runnable, optimized code in the format
 the compiler wants and for that we have the &hellip;</p>
 
