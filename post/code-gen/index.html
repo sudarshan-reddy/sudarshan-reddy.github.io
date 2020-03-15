@@ -240,7 +240,7 @@ that can be generated. Here is a layout of the project.</p>
 that are important. NewRequest which creates a wrapped http request and Send()
 which is sort of like <code>client.Do()</code>.</p>
 
-<p>api.go is a collection of all the methods that the sdk exposes.</p>
+<p>api.go is a collection of all the methods attached to an interface that the sdk exposes.</p>
 
 <p>methods.go is what we want to generate. It will be a collection of implementations
 of helpers that call the api and parse and respond readable Go structures. Like so:</p>
@@ -313,7 +313,7 @@ the developers to write the yaml with all of swagger&rsquo;s quirks.</p>
 <p>Writing Swagger yamls are painful and so there is no example.</p>
 
 <p><strong>It could be a JSON/XML based configuration system:</strong> Still needed the developer to work on a different
-language compared to what the rest of the codebase was.</p>
+&ldquo;language/syntax&rdquo; compared to what the rest of the codebase was.</p>
 <div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-json" data-lang="json">{
     <span style="color:#f92672">&#34;methods&#34;</span>: [
         {
@@ -414,11 +414,14 @@ APIs and their methods.</p>
 	<span style="color:#a6e22e">OutputParams</span> []<span style="color:#a6e22e">Parameter</span>
 }</code></pre></div>
 <p>Now that I had the AST parsed thanks to <code>ParseFile</code>, I had to loop through
-it to obtain:
-1. All the interface declarations.
-2. All the methods attached to the interface declarations.
-3. The input and output parameters of these methods.
-4. The code annotation talking about the http verb and endpoint.</p>
+it to obtain:</p>
+
+<ul>
+<li>All the interface declarations.</li>
+<li>All the methods attached to the interface declarations.</li>
+<li>The input and output parameters of these methods.</li>
+<li>The code annotation talking about the http verb and endpoint.</li>
+</ul>
 
 <p><code>Decls</code> is all the declarations. We loop through that and assert for
 interfaces.</p>
