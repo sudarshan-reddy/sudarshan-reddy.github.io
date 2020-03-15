@@ -202,7 +202,7 @@ Distributed systems and microservices are as ubiquitous as the coronavirus in 20
   <section class="main post-detail">
     <header class="post-header">
       <h1 class="post-title">A little code generation in Go in 2020.</h1>
-      <p class="post-meta">@Sudarshan · Mar 14, 2020 · 3 min read</p>
+      <p class="post-meta">@Sudarshan · Mar 14, 2020 · 6 min read</p>
     </header>
     <article class="post-content">
 
@@ -222,10 +222,25 @@ Like so&hellip;</p>
 
 <p>And each new parameter addition.</p>
 
-<p>Our http client was sufficiently abstracted away so we were basically copy pasting code
-for each of these implementations.</p>
+<p>So the SDK has two components. The component that is manually built and the parts
+that can be generated. Here is a layout of the project.</p>
 
-<p>Like so:</p>
+<pre><code>---
+ - client
+ - api.go
+ - methods.go
+ - go.mod
+ - go.sum
+</code></pre>
+
+<p>client is the http.Client embedded with some retry logic etc. It has two methods
+that are important. NewRequest which creates a wrapped http request and Send()
+which is sort of like <code>client.Do()</code>.</p>
+
+<p>api.go is a collection of all the methods that the sdk exposes.</p>
+
+<p>methods.go is what we want to generate. It will be a collection of implementations
+of helpers that call the api and parse and respond readable Go structures. Like so:</p>
 
 <p><code>https://awesomewebsite/v1/getdetails</code></p>
 <div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#66d9ef">func</span> (<span style="color:#a6e22e">c</span> <span style="color:#f92672">*</span><span style="color:#a6e22e">client</span>) <span style="color:#a6e22e">GetDetails</span>() (<span style="color:#f92672">*</span><span style="color:#a6e22e">Details</span>, <span style="color:#66d9ef">error</span>) {
@@ -266,8 +281,8 @@ becomes</p>
 
 	<span style="color:#66d9ef">return</span> <span style="color:#a6e22e">response</span>, <span style="color:#66d9ef">nil</span>
 }</code></pre></div>
-<p>This seems to be a prime candidate to automate. Step in code generation. Now what I wanted to do
-was to use a specification that the user is able to add a configuration that the generator captures and
+<p>Step in code generation. Now what I wanted to do was to use a specification that
+the user is able to add a configuration that the generator captures and
 translates into something like the snippets about. Lets define a set of rules to outline this.</p>
 <div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#66d9ef">type</span> <span style="color:#a6e22e">Generator</span> <span style="color:#66d9ef">interface</span> {
 	<span style="color:#a6e22e">Generate</span>(<span style="color:#a6e22e">Reader</span>, <span style="color:#a6e22e">Writer</span>) <span style="color:#66d9ef">error</span>
@@ -289,12 +304,12 @@ translates into something like the snippets about. Lets define a set of rules to
 
 <p>Multiple options presented themselves.</p>
 
-<p><em>It could be an API specification:</em> But everyone hates swagger so much. It seemed to be punishment for
+<p><strong>It could be an API specification:</strong> But everyone hates swagger so much. It seemed to be punishment for
 the developers to write the yaml with all of swagger&rsquo;s quirks.</p>
 
 <p>Writing Swagger yamls are painful and so there is no example.</p>
 
-<p><em>It could be a JSON/XML based configuration system:</em> Still needed the developer to work on a different
+<p><strong>It could be a JSON/XML based configuration system:</strong> Still needed the developer to work on a different
 language compared to what the rest of the codebase was.</p>
 <div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-json" data-lang="json">{
     <span style="color:#f92672">&#34;methods&#34;</span>: [
@@ -318,7 +333,7 @@ language compared to what the rest of the codebase was.</p>
         }
     ]
 }</code></pre></div>
-<p><em>It could be an interface also written in Go:</em> The user will have to add a method to an interface
+<p><strong>It could be an interface also written in Go:</strong> The user will have to add a method to an interface
 and define the structures. The downside of this is the http endpoint and verb have to be annoted.</p>
 <div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#66d9ef">type</span> <span style="color:#a6e22e">Client</span> <span style="color:#66d9ef">interface</span>{
     <span style="color:#75715e">// Get v1/getdetails
@@ -333,11 +348,77 @@ and define the structures. The downside of this is the http endpoint and verb ha
 <span style="color:#66d9ef">type</span> <span style="color:#a6e22e">RandomStuff</span> <span style="color:#66d9ef">struct</span>{}</code></pre></div>
 <p>Out of these three options, the one I preferred was adding to the interface.
 It seemed intuitive and granted control to a Go developer. It also presented the biggest challenge
-of the three. Reading an AST.</p>
+of the three. Reading an AST. We could obviously just read the file like a plaintext
+but that seems very hacky and tightly coupled to a pre-conceived notion of how we expect
+the signatures to be written. Granted, we still expect annotations to be in a certain way
+but its much more malleable.</p>
 
-<p><Introduction about ASTs></p>
+<h3 id="ast-quick-primer">AST - Quick primer</h3>
 
-<p><How to read Go ASTs></p>
+<p>ASTs are very common in compiled languages. An AST is an intermediate form of representation
+of code that the compiler can read and optimize. If you think about it,
+what we are doing is what a compiler would do. The only difference here being us translating
+go code to more go code. This brings us to&hellip;</p>
+
+<h3 id="compilers-very-very-quick-primer">Compilers - Very very quick primer</h3>
+
+<p>Most compilers break down into three primary stages: Parsing, Transformation and
+Code Generation.</p>
+
+<p><strong>Parsing:</strong> Parsing is generally broken down into Lexical analysis and synctactic analysis.
+A lexer generally is responsible for this <code>tokenization</code> process. Tokens are tiny little
+objects that describe an isolated piece of the syntax. They could be numbers, operators
+or symbols amongst other things.
+Syntactic analysis is what we are interested in. It takes the tokens and builds an
+intermediate representation called the Abstract Syntax Tree.
+Luckily for us, go allows us to use their tools: go/ast, go/parser, go/token.</p>
+
+<p>I&rsquo;m not the biggest fan of the <code>internal</code> package in go but code generators
+seem to be the perfect candidate to put in here.</p>
+
+<p>I created two packages <code>internal/generator/</code> and <code>internal/cmd</code> to add the generator
+code.</p>
+
+<p>The parsing part of the AST was already done by Go. All I had to do was to
+call the already existing functions like so&hellip;</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go">    <span style="color:#a6e22e">fs</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">token</span>.<span style="color:#a6e22e">NewFileSet</span>()
+	<span style="color:#a6e22e">p</span>, <span style="color:#a6e22e">err</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">parser</span>.<span style="color:#a6e22e">ParseFile</span>(<span style="color:#a6e22e">fs</span>, <span style="color:#e6db74">&#34;&#34;</span>, <span style="color:#a6e22e">r</span>, <span style="color:#a6e22e">parser</span>.<span style="color:#a6e22e">ParseComments</span>)
+	<span style="color:#66d9ef">if</span> <span style="color:#a6e22e">err</span> <span style="color:#f92672">!=</span> <span style="color:#66d9ef">nil</span> {
+		<span style="color:#66d9ef">return</span> <span style="color:#66d9ef">nil</span>, <span style="color:#a6e22e">err</span>
+    }</code></pre></div>
+<p><strong>Transformation:</strong> Transformation is manipulating the AST to make changes to it
+to enable the final process of&hellip;</p>
+
+<p>I wanted to transform the AST into a data model that would be easy for the code
+generation to happen. I laid out a structure like this because I was dealing with
+APIs and their methods.</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#75715e">// API is a set of indicatives that we will loop through
+</span><span style="color:#75715e">// to generate code.
+</span><span style="color:#75715e"></span><span style="color:#66d9ef">type</span> <span style="color:#a6e22e">API</span> <span style="color:#66d9ef">struct</span> {
+	<span style="color:#a6e22e">InterfaceName</span> <span style="color:#66d9ef">string</span>
+	<span style="color:#a6e22e">Methods</span>       []<span style="color:#a6e22e">Method</span>
+}
+
+<span style="color:#75715e">// Method represents a set of metadata levels details that belong
+</span><span style="color:#75715e">// to an api method.
+</span><span style="color:#75715e"></span><span style="color:#66d9ef">type</span> <span style="color:#a6e22e">Method</span> <span style="color:#66d9ef">struct</span> {
+	<span style="color:#a6e22e">Endpoint</span>     <span style="color:#66d9ef">string</span>
+	<span style="color:#a6e22e">MethodName</span>   <span style="color:#66d9ef">string</span>
+	<span style="color:#a6e22e">Path</span>         <span style="color:#66d9ef">string</span>
+	<span style="color:#a6e22e">Verb</span>         <span style="color:#66d9ef">string</span>
+	<span style="color:#a6e22e">Body</span>         <span style="color:#66d9ef">string</span>
+	<span style="color:#a6e22e">InputParams</span>  []<span style="color:#a6e22e">Parameter</span>
+	<span style="color:#a6e22e">OutputParams</span> []<span style="color:#a6e22e">Parameter</span>
+}</code></pre></div>
+<p>Now that I had the AST parsed thanks to <code>ParseFile</code>, I had to loop through
+it to obtain:
+1. All the interface declarations.
+2. All the methods attached to the interface declarations.
+3. The input and output parameters of these methods.
+4. The code annotation talking about the http verb and endpoint.</p>
+
+<p><strong>Code Generation:</strong> Is basically generating runnable, optimized code in the format
+the compiler wants.</p>
 
 <h2 id="writer">Writer</h2>
 
