@@ -368,107 +368,103 @@ to suit my demonstration.</p>
 
 <p>This lets the caller implement Authorizer. Nothing new so far. Now the caller can
 implement variations of Basic and Bearer Auth.</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-rust" data-lang="rust"><span style="color:#66d9ef">use</span> reqwest::{Client, Method, RequestBuilder};
 
-<pre><code>use reqwest::{Client, Method, RequestBuilder};
-
-trait Authorizer {
-    fn authorize_request(&amp;self, req: RequestBuilder) -&gt; RequestBuilder;
+<span style="color:#66d9ef">trait</span> Authorizer {
+    <span style="color:#66d9ef">fn</span> <span style="color:#a6e22e">authorize_request</span>(<span style="color:#f92672">&amp;</span>self, req: <span style="color:#a6e22e">RequestBuilder</span>) -&gt; <span style="color:#a6e22e">RequestBuilder</span>;
 }
 
-struct Cl {
-    client: Client,
-    auth: Box&lt;dyn Authorizer&gt;,
+<span style="color:#66d9ef">struct</span> <span style="color:#a6e22e">Cl</span> {
+    client: <span style="color:#a6e22e">Client</span>,
+    auth: Box<span style="color:#f92672">&lt;</span>dyn Authorizer<span style="color:#f92672">&gt;</span>,
 }
 
-impl Cl {
-    fn new(auth: Box&lt;dyn Authorizer&gt;) -&gt; Self {
+<span style="color:#66d9ef">impl</span> Cl {
+    <span style="color:#66d9ef">fn</span> <span style="color:#a6e22e">new</span>(auth: Box<span style="color:#f92672">&lt;</span>dyn Authorizer<span style="color:#f92672">&gt;</span>) -&gt; <span style="color:#a6e22e">Self</span> {
         Cl {
-            client: Client::new(),
-            auth: auth,
+            client: <span style="color:#a6e22e">Client</span>::new(),
+            auth: <span style="color:#a6e22e">auth</span>,
         }
     }
 
-    async fn make_request(&amp;self, url: &amp;str) -&gt; Result&lt;String, Error&gt; {
-        let req = self.client.request(Method::GET, url);
-        let req = self.auth.authorize_request(req);
-        let res = req.send().await?;
-        let res_str = res.text().await?;
+    async <span style="color:#66d9ef">fn</span> <span style="color:#a6e22e">make_request</span>(<span style="color:#f92672">&amp;</span>self, url: <span style="color:#66d9ef">&amp;</span><span style="color:#66d9ef">str</span>) -&gt; Result<span style="color:#f92672">&lt;</span>String, Error<span style="color:#f92672">&gt;</span> {
+        <span style="color:#66d9ef">let</span> req <span style="color:#f92672">=</span> self.client.request(Method::GET, url);
+        <span style="color:#66d9ef">let</span> req <span style="color:#f92672">=</span> self.auth.authorize_request(req);
+        <span style="color:#66d9ef">let</span> res <span style="color:#f92672">=</span> req.send().await<span style="color:#f92672">?</span>;
+        <span style="color:#66d9ef">let</span> res_str <span style="color:#f92672">=</span> res.text().await<span style="color:#f92672">?</span>;
         Ok(res_str)
     }
 }
 
-type Error = Box&lt;dyn std::error::Error + Send + Sync&gt;;
+<span style="color:#66d9ef">type</span> <span style="color:#a6e22e">Error</span> <span style="color:#f92672">=</span> Box<span style="color:#f92672">&lt;</span>dyn std::error::Error <span style="color:#f92672">+</span> Send <span style="color:#f92672">+</span> Sync<span style="color:#f92672">&gt;</span>;
 
-#[tokio::main]
-async fn main() -&gt; Result&lt;(), Error&gt; {
-    let bearer_client = Cl::new(Box::new(BearerTokenAuthorizer::new(&quot;key&quot;, &quot;value&quot;)));
-    let resp = bearer_client
-        .make_request(&quot;http://site-that-needs-bearer-token&quot;)
-        .await?;
-    println!(&quot;{}&quot;, resp);
+<span style="color:#75715e">#[tokio::main]</span>
+async <span style="color:#66d9ef">fn</span> <span style="color:#a6e22e">main</span>() -&gt; Result<span style="color:#f92672">&lt;</span>(), Error<span style="color:#f92672">&gt;</span> {
+    <span style="color:#66d9ef">let</span> bearer_client <span style="color:#f92672">=</span> Cl::new(Box::new(BearerTokenAuthorizer::new(<span style="color:#e6db74">&#34;key&#34;</span>, <span style="color:#e6db74">&#34;value&#34;</span>)));
+    <span style="color:#66d9ef">let</span> resp <span style="color:#f92672">=</span> bearer_client
+        .make_request(<span style="color:#e6db74">&#34;http://site-that-needs-bearer-token&#34;</span>)
+        .await<span style="color:#f92672">?</span>;
+    println<span style="color:#f92672">!</span>(<span style="color:#e6db74">&#34;{}&#34;</span>, resp);
 
-    let basic_auth_client = Cl::new(Box::new(BasicAuth::new(&quot;user&quot;, &quot;password&quot;)));
-    let resp = basic_auth_client
-        .make_request(&quot;http://site-that-needs-basic-auth&quot;)
-        .await?;
-    println!(&quot;{}&quot;, resp);
+    <span style="color:#66d9ef">let</span> basic_auth_client <span style="color:#f92672">=</span> Cl::new(Box::new(BasicAuth::new(<span style="color:#e6db74">&#34;user&#34;</span>, <span style="color:#e6db74">&#34;password&#34;</span>)));
+    <span style="color:#66d9ef">let</span> resp <span style="color:#f92672">=</span> basic_auth_client
+        .make_request(<span style="color:#e6db74">&#34;http://site-that-needs-basic-auth&#34;</span>)
+        .await<span style="color:#f92672">?</span>;
+    println<span style="color:#f92672">!</span>(<span style="color:#e6db74">&#34;{}&#34;</span>, resp);
     Ok(())
 }
 
-pub struct BasicAuth {
+<span style="color:#66d9ef">pub</span> <span style="color:#66d9ef">struct</span> <span style="color:#a6e22e">BasicAuth</span> {
     user: String,
     api_token: String,
 }
 
-impl Authorizer for BasicAuth {
-    fn authorize_request(&amp;self, req: RequestBuilder) -&gt; RequestBuilder {
+<span style="color:#66d9ef">impl</span> Authorizer <span style="color:#66d9ef">for</span> BasicAuth {
+    <span style="color:#66d9ef">fn</span> <span style="color:#a6e22e">authorize_request</span>(<span style="color:#f92672">&amp;</span>self, req: <span style="color:#a6e22e">RequestBuilder</span>) -&gt; <span style="color:#a6e22e">RequestBuilder</span> {
         req.basic_auth(self.user.to_owned(), Some(self.api_token.to_owned()))
     }
 }
 
-impl BasicAuth {
-    fn new(user: &amp;str, value: &amp;str) -&gt; Self {
+<span style="color:#66d9ef">impl</span> BasicAuth {
+    <span style="color:#66d9ef">fn</span> <span style="color:#a6e22e">new</span>(user: <span style="color:#66d9ef">&amp;</span><span style="color:#66d9ef">str</span>, value: <span style="color:#66d9ef">&amp;</span><span style="color:#66d9ef">str</span>) -&gt; <span style="color:#a6e22e">Self</span> {
         BasicAuth {
-            user: user.to_string(),
-            api_token: value.to_string(),
+            user: <span style="color:#a6e22e">user</span>.to_string(),
+            api_token: <span style="color:#a6e22e">value</span>.to_string(),
         }
     }
 }
 
-pub struct BearerTokenAuthorizer {
+<span style="color:#66d9ef">pub</span> <span style="color:#66d9ef">struct</span> <span style="color:#a6e22e">BearerTokenAuthorizer</span> {
     token_key: String,
     token_value: String,
 }
 
-impl Authorizer for BearerTokenAuthorizer {
-    fn authorize_request(&amp;self, req: RequestBuilder) -&gt; RequestBuilder {
+<span style="color:#66d9ef">impl</span> Authorizer <span style="color:#66d9ef">for</span> BearerTokenAuthorizer {
+    <span style="color:#66d9ef">fn</span> <span style="color:#a6e22e">authorize_request</span>(<span style="color:#f92672">&amp;</span>self, req: <span style="color:#a6e22e">RequestBuilder</span>) -&gt; <span style="color:#a6e22e">RequestBuilder</span> {
         req.header(reqwest::header::AUTHORIZATION, self.token_value.clone())
     }
 }
 
-impl BearerTokenAuthorizer {
-    fn new(key: &amp;str, value: &amp;str) -&gt; Self {
-        let value = format!(&quot;Bearer {}&quot;, value.to_string());
+<span style="color:#66d9ef">impl</span> BearerTokenAuthorizer {
+    <span style="color:#66d9ef">fn</span> <span style="color:#a6e22e">new</span>(key: <span style="color:#66d9ef">&amp;</span><span style="color:#66d9ef">str</span>, value: <span style="color:#66d9ef">&amp;</span><span style="color:#66d9ef">str</span>) -&gt; <span style="color:#a6e22e">Self</span> {
+        <span style="color:#66d9ef">let</span> value <span style="color:#f92672">=</span> format<span style="color:#f92672">!</span>(<span style="color:#e6db74">&#34;Bearer {}&#34;</span>, value.to_string());
         BearerTokenAuthorizer {
-            token_key: key.to_string(),
-            token_value: value,
+            token_key: <span style="color:#a6e22e">key</span>.to_string(),
+            token_value: <span style="color:#a6e22e">value</span>,
         }
     }
 }
-</code></pre>
-
+</code></pre></div>
 <p>So far, so good right?</p>
 
 <p>So for my usecase&hellip; I wanted to clone the Client around. This meant deriving
 a trait. As simple as</p>
-
-<pre><code>#[derive(Clone)]
-struct Cl {
-    client: Client,
-    auth: Box&lt;dyn Authorizer&gt;,
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-rust" data-lang="rust"><span style="color:#75715e">#[derive(Clone)]</span>
+<span style="color:#66d9ef">struct</span> <span style="color:#a6e22e">Cl</span> {
+    client: <span style="color:#a6e22e">Client</span>,
+    auth: Box<span style="color:#f92672">&lt;</span>dyn Authorizer<span style="color:#f92672">&gt;</span>,
 }
-</code></pre>
-
+</code></pre></div>
 <p>When building we get an error</p>
 <div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash"> copy-box-traits % cargo build
    Compiling copy-box-traits v0.1.0 <span style="color:#f92672">(</span>/Users/sudarsan/dev/rust/copy-box-traits<span style="color:#f92672">)</span>
