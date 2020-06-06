@@ -194,6 +194,19 @@
   
    <article class="post-entry">
   <header class="post-header">
+    <h3 class="post-title"><a href="/post/rust-box-traits-clone/" class="post-link">Cloning boxed traits in Rust</a></h3>
+    <p class="post-meta">@Sudarshan · Jun 6, 2020 · 5 min read</p>
+  </header>
+  
+  <p class="post-summary">I enjoy coding with Rust’s composition system mixed with generics. It makes adding and incorporating changes all that more easier. I recently ran into a problem when I wanted to copy a group of boxed traits.
+Lets start simple. Imagine I have an http client that makes requests… like so…
+use reqwest::{Client, Method, RequestBuilder}; struct Cl { client: Client, } impl Cl { fn new() -&gt; Self { Cl { client: Client::new(), } } async fn make_request(&amp;self, url: &amp;str) -&gt; Result&lt;String, Error&gt; { let req = self.</p>
+  <footer class="post-footer">
+    <a class="read-more" href="/post/rust-box-traits-clone/">Read More →</a>
+  </footer>
+</article>
+  <article class="post-entry">
+  <header class="post-header">
     <h3 class="post-title"><a href="/post/code-gen/" class="post-link">A little code generation in Go in 2020.</a></h3>
     <p class="post-meta">@Sudarshan · Mar 14, 2020 · 9 min read</p>
   </header>

@@ -1,0 +1,637 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+
+  <meta charset="utf-8" />
+
+  
+  <title>Cloning boxed traits in Rust</title>
+
+  
+  
+  <link href="//cdn.jsdelivr.net" rel="dns-prefetch">
+  <link href="//cdnjs.cloudflare.com" rel="dns-prefetch">
+  <link href="//at.alicdn.com" rel="dns-prefetch">
+  <link href="//fonts.googleapis.com" rel="dns-prefetch">
+  <link href="//fonts.gstatic.com" rel="dns-prefetch">
+  <link href="///disqus.com" rel="dns-prefetch">
+  <link href="//c.disquscdn.com" rel="dns-prefetch">
+  
+  <link href="//www.google-analytics.com" rel="dns-prefetch">
+  
+
+  
+
+  
+  
+  <meta name="description" content="I enjoy coding with Rust&amp;rsquo;s composition system mixed with generics. It makes adding and incorporating changes all that more easier. I recently ran into a problem when I wanted to copy a group of boxed traits.
+Lets start simple. Imagine I have an http client that makes requests&amp;hellip; like so&amp;hellip;
+use reqwest::{Client, Method, RequestBuilder}; struct Cl { client: Client, } impl Cl { fn new() -&amp;gt; Self { Cl { client: Client::new(), } } async fn make_request(&amp;amp;self, url: &amp;amp;str) -&amp;gt; Result&amp;lt;String, Error&amp;gt; { let req = self.">
+
+  
+  
+    <meta name="twitter:card" content="summary">
+    <meta name="twitter:site" content="@sudproquo">
+    <meta name="twitter:title" content="Cloning boxed traits in Rust">
+    <meta name="twitter:description" content="I enjoy coding with Rust&amp;rsquo;s composition system mixed with generics. It makes adding and incorporating changes all that more easier. I recently ran into a problem when I wanted to copy a group of boxed traits.
+Lets start simple. Imagine I have an http client that makes requests&amp;hellip; like so&amp;hellip;
+use reqwest::{Client, Method, RequestBuilder}; struct Cl { client: Client, } impl Cl { fn new() -&amp;gt; Self { Cl { client: Client::new(), } } async fn make_request(&amp;amp;self, url: &amp;amp;str) -&amp;gt; Result&amp;lt;String, Error&amp;gt; { let req = self.">
+    <meta name="twitter:image" content="/images/avatar.jpg">
+  
+
+  
+  <meta property="og:type" content="article">
+  <meta property="og:title" content="Cloning boxed traits in Rust">
+  <meta property="og:description" content="I enjoy coding with Rust&amp;rsquo;s composition system mixed with generics. It makes adding and incorporating changes all that more easier. I recently ran into a problem when I wanted to copy a group of boxed traits.
+Lets start simple. Imagine I have an http client that makes requests&amp;hellip; like so&amp;hellip;
+use reqwest::{Client, Method, RequestBuilder}; struct Cl { client: Client, } impl Cl { fn new() -&amp;gt; Self { Cl { client: Client::new(), } } async fn make_request(&amp;amp;self, url: &amp;amp;str) -&amp;gt; Result&amp;lt;String, Error&amp;gt; { let req = self.">
+  <meta property="og:url" content="/post/rust-box-traits-clone/">
+  <meta property="og:image" content="/images/avatar.jpg">
+
+
+
+
+<meta name="generator" content="Hugo 0.55.6">
+
+
+<link rel="canonical" href="/post/rust-box-traits-clone/">
+
+<meta name="renderer" content="webkit">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="format-detection" content="telephone=no,email=no,adress=no">
+<meta http-equiv="Cache-Control" content="no-transform">
+
+
+<meta name="robots" content="index,follow">
+<meta name="referrer" content="origin-when-cross-origin">
+
+
+
+
+
+
+
+<meta name="theme-color" content="#02b875">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black">
+<meta name="apple-mobile-web-app-title" content="Geek and Latin">
+<meta name="msapplication-tooltip" content="Geek and Latin">
+<meta name='msapplication-navbutton-color' content="#02b875">
+<meta name="msapplication-TileColor" content="#02b875">
+<meta name="msapplication-TileImage" content="/icons/icon-144x144.png">
+<link rel="icon" href="/favicon.ico">
+<link rel="icon" type="image/png" sizes="16x16" href="/icons/icon-16x16.png">
+<link rel="icon" type="image/png" sizes="32x32" href="/icons/icon-32x32.png">
+<link rel="icon" sizes="192x192" href="/icons/icon-192x192.png">
+<link rel="apple-touch-icon" href="/icons/icon-152x152.png">
+<link rel="manifest" href="/manifest.json">
+
+
+<link rel="preload" href="/styles/main.min.css" as="style">
+
+<link rel="preload" href="https://fonts.googleapis.com/css?family=Lobster" as="style">
+<link rel="preload" href="/images/avatar.jpg" as="image">
+<link rel="preload" href="/images/grey-prism.svg" as="image">
+
+
+<style>
+  body {
+    background: rgb(244, 243, 241) url('/images/grey-prism.svg') repeat fixed;
+  }
+</style>
+<link rel="stylesheet" href="/styles/main.min.css">
+
+<link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Lobster">
+
+
+
+<script src="https://cdn.jsdelivr.net/npm/medium-zoom@1.0.2/dist/medium-zoom.min.js"></script>
+
+
+
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/video.js@7.3.0/dist/video-js.min.css">
+
+
+
+  
+  
+<!--[if lte IE 8]>
+  <script src="https://cdn.jsdelivr.net/npm/html5shiv@3.7.3/dist/html5shiv.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/respond.js@1.4.2/dest/respond.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/videojs-ie8@1.1.2/dist/videojs-ie8.min.js"></script>
+<![endif]-->
+
+<!--[if lte IE 9]>
+  <script src="https://cdn.jsdelivr.net/npm/eligrey-classlist-js-polyfill@1.2.20180112/classList.min.js"></script>
+<![endif]-->
+
+
+</head>
+  <body>
+    
+    <div class="suspension">
+      <a role="button" aria-label="Go to top" title="Go to top" class="to-top is-hide"><span class="icon icon-up" aria-hidden="true"></span></a>
+      
+        
+        <a role="button" aria-label="Go to comments" title="Go to comments" class="to-comment" href="#disqus_thread"><span class="icon icon-comment" aria-hidden="true"></span></a>
+        
+      
+    </div>
+    
+    
+  <header class="site-header">
+  <img class="avatar" src="/images/avatar.jpg" alt="Avatar">
+  
+  <h2 class="title">Geek and Latin</h2>
+  
+  <p class="subtitle"></p>
+  <button class="menu-toggle" type="button" aria-label="Main Menu" aria-expanded="false" tab-index="0">
+    <span class="icon icon-menu" aria-hidden="true"></span>
+  </button>
+
+  <nav class="site-menu collapsed">
+    <h2 class="offscreen">Main Menu</h2>
+    <ul class="menu-list">
+      
+      
+      
+      
+        <li class="menu-item
+          
+          
+           is-active">
+          <a href="/">Home</a>
+        </li>
+      
+        <li class="menu-item
+          
+          
+          ">
+          <a href="https://github.com/sudarshan-reddy">Works</a>
+        </li>
+      
+        <li class="menu-item
+          
+          
+          ">
+          <a href="/tags/">Tags</a>
+        </li>
+      
+    </ul>
+  </nav>
+  <nav class="social-menu collapsed">
+    <h2 class="offscreen">Social Networks</h2>
+    <ul class="social-list"><li class="social-item">
+          <a href="mailto:sudar.theone@gmail.com" title="Email" aria-label="Email">
+            <span class="icon icon-email" aria-hidden="true"></span>
+          </a>
+        </li><li class="social-item">
+          <a href="//github.com/sudarshan-reddy" title="GitHub" aria-label="GitHub">
+            <span class="icon icon-github" aria-hidden="true"></span>
+          </a>
+        </li><li class="social-item">
+          <a href="//twitter.com/sudproquo" title="Twitter" aria-label="Twitter">
+            <span class="icon icon-twitter" aria-hidden="true"></span>
+          </a>
+        </li><li class="social-item">
+          <a href="//www.linkedin.com/in/sudarshan-reddy31" title="Linkedin" aria-label="Linkedin">
+            <span class="icon icon-linkedin" aria-hidden="true"></span>
+          </a>
+        </li></ul>
+  </nav>
+</header>
+
+  <section class="main post-detail">
+    <header class="post-header">
+      <h1 class="post-title">Cloning boxed traits in Rust</h1>
+      <p class="post-meta">@Sudarshan · Jun 6, 2020 · 5 min read</p>
+    </header>
+    <article class="post-content"><p>I enjoy coding with Rust&rsquo;s composition system mixed with generics. It makes
+adding and incorporating changes all that more easier. I recently ran into
+a problem when I wanted to copy a group of boxed traits.</p>
+
+<p>Lets start simple. Imagine I have an http client that makes requests&hellip; like so&hellip;</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-rust" data-lang="rust"><span style="color:#66d9ef">use</span> reqwest::{Client, Method, RequestBuilder};
+
+<span style="color:#66d9ef">struct</span> <span style="color:#a6e22e">Cl</span> {
+    client: <span style="color:#a6e22e">Client</span>,
+}
+
+<span style="color:#66d9ef">impl</span> Cl {
+    <span style="color:#66d9ef">fn</span> <span style="color:#a6e22e">new</span>() -&gt; <span style="color:#a6e22e">Self</span> {
+        Cl {
+            client: <span style="color:#a6e22e">Client</span>::new(),
+        }
+    }
+
+    async <span style="color:#66d9ef">fn</span> <span style="color:#a6e22e">make_request</span>(<span style="color:#f92672">&amp;</span>self, url: <span style="color:#66d9ef">&amp;</span><span style="color:#66d9ef">str</span>) -&gt; Result<span style="color:#f92672">&lt;</span>String, Error<span style="color:#f92672">&gt;</span> {
+        <span style="color:#66d9ef">let</span> req <span style="color:#f92672">=</span> self.client.request(Method::GET, url);
+        <span style="color:#66d9ef">let</span> res <span style="color:#f92672">=</span> req.send().await<span style="color:#f92672">?</span>;
+        <span style="color:#66d9ef">let</span> res_str <span style="color:#f92672">=</span> res.text().await<span style="color:#f92672">?</span>;
+        Ok(res_str)
+    }
+}
+
+<span style="color:#66d9ef">type</span> <span style="color:#a6e22e">Error</span> <span style="color:#f92672">=</span> Box<span style="color:#f92672">&lt;</span>dyn std::error::Error <span style="color:#f92672">+</span> Send <span style="color:#f92672">+</span> Sync<span style="color:#f92672">&gt;</span>;
+
+<span style="color:#75715e">#[tokio::main]</span>
+async <span style="color:#66d9ef">fn</span> <span style="color:#a6e22e">main</span>() -&gt; Result<span style="color:#f92672">&lt;</span>(), Error<span style="color:#f92672">&gt;</span> {
+    <span style="color:#66d9ef">let</span> c <span style="color:#f92672">=</span> Cl::new();
+    <span style="color:#66d9ef">let</span> resp <span style="color:#f92672">=</span> c.make_request(<span style="color:#e6db74">&#34;http://google.com&#34;</span>).await<span style="color:#f92672">?</span>;
+    println<span style="color:#f92672">!</span>(<span style="color:#e6db74">&#34;{}&#34;</span>, resp);
+    Ok(())
+}
+</code></pre></div>
+<p>Now, this just works. What if we used an endpoint that needed authentication
+instead of google.com? Assuming this service used basic authentication, we&rsquo;d
+do something like this.</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-rust" data-lang="rust"><span style="color:#66d9ef">use</span> reqwest::{Client, Method, RequestBuilder};
+
+<span style="color:#66d9ef">struct</span> <span style="color:#a6e22e">Cl</span> {
+    client: <span style="color:#a6e22e">Client</span>,
+}
+
+<span style="color:#66d9ef">impl</span> Cl {
+    <span style="color:#66d9ef">fn</span> <span style="color:#a6e22e">new</span>() -&gt; <span style="color:#a6e22e">Self</span> {
+        Cl {
+            client: <span style="color:#a6e22e">Client</span>::new(),
+        }
+    }
+
+    async <span style="color:#66d9ef">fn</span> <span style="color:#a6e22e">make_request</span>(
+        <span style="color:#f92672">&amp;</span>self,
+        url: <span style="color:#66d9ef">&amp;</span><span style="color:#66d9ef">str</span>,
+        user_name: <span style="color:#66d9ef">&amp;</span><span style="color:#66d9ef">str</span>,
+        password: <span style="color:#66d9ef">&amp;</span><span style="color:#66d9ef">str</span>,
+    ) -&gt; Result<span style="color:#f92672">&lt;</span>String, Error<span style="color:#f92672">&gt;</span> {
+        <span style="color:#66d9ef">let</span> req <span style="color:#f92672">=</span> self.client.request(Method::GET, url);
+        <span style="color:#66d9ef">let</span> res <span style="color:#f92672">=</span> req
+            .basic_auth(user_name.to_string(), Some(password.to_string()))
+            .send()
+            .await<span style="color:#f92672">?</span>;
+        <span style="color:#66d9ef">let</span> res_str <span style="color:#f92672">=</span> res.text().await<span style="color:#f92672">?</span>;
+        Ok(res_str)
+    }
+}
+
+<span style="color:#66d9ef">type</span> <span style="color:#a6e22e">Error</span> <span style="color:#f92672">=</span> Box<span style="color:#f92672">&lt;</span>dyn std::error::Error <span style="color:#f92672">+</span> Send <span style="color:#f92672">+</span> Sync<span style="color:#f92672">&gt;</span>;
+
+<span style="color:#75715e">#[tokio::main]</span>
+async <span style="color:#66d9ef">fn</span> <span style="color:#a6e22e">main</span>() -&gt; Result<span style="color:#f92672">&lt;</span>(), Error<span style="color:#f92672">&gt;</span> {
+    <span style="color:#66d9ef">let</span> c <span style="color:#f92672">=</span> Cl::new();
+    <span style="color:#66d9ef">let</span> resp <span style="color:#f92672">=</span> c
+        .make_request(<span style="color:#e6db74">&#34;http://site-with-basic-auth.com&#34;</span>, <span style="color:#e6db74">&#34;username&#34;</span>, <span style="color:#e6db74">&#34;password&#34;</span>)
+        .await<span style="color:#f92672">?</span>;
+    println<span style="color:#f92672">!</span>(<span style="color:#e6db74">&#34;{}&#34;</span>, resp);
+    Ok(())
+}
+</code></pre></div>
+<p>But what if we wanted to use a site that gave you a pre-created bearer token?</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-rust" data-lang="rust"><span style="color:#66d9ef">use</span> reqwest::{Client, Method, RequestBuilder};
+
+<span style="color:#66d9ef">struct</span> <span style="color:#a6e22e">Cl</span> {
+    client: <span style="color:#a6e22e">Client</span>,
+}
+
+<span style="color:#66d9ef">impl</span> Cl {
+    <span style="color:#66d9ef">fn</span> <span style="color:#a6e22e">new</span>() -&gt; <span style="color:#a6e22e">Self</span> {
+        Cl {
+            client: <span style="color:#a6e22e">Client</span>::new(),
+        }
+    }
+
+    async <span style="color:#66d9ef">fn</span> <span style="color:#a6e22e">make_request</span>(<span style="color:#f92672">&amp;</span>self, url: <span style="color:#66d9ef">&amp;</span><span style="color:#66d9ef">str</span>, token_value: <span style="color:#66d9ef">&amp;</span><span style="color:#66d9ef">str</span>) -&gt; Result<span style="color:#f92672">&lt;</span>String, Error<span style="color:#f92672">&gt;</span> {
+        <span style="color:#66d9ef">let</span> req <span style="color:#f92672">=</span> self.client.request(Method::GET, url);
+        <span style="color:#66d9ef">let</span> res <span style="color:#f92672">=</span> req
+            .header(reqwest::header::AUTHORIZATION, token_value.clone())
+            .send()
+            .await<span style="color:#f92672">?</span>;
+        <span style="color:#66d9ef">let</span> res_str <span style="color:#f92672">=</span> res.text().await<span style="color:#f92672">?</span>;
+        Ok(res_str)
+    }
+}
+
+<span style="color:#66d9ef">type</span> <span style="color:#a6e22e">Error</span> <span style="color:#f92672">=</span> Box<span style="color:#f92672">&lt;</span>dyn std::error::Error <span style="color:#f92672">+</span> Send <span style="color:#f92672">+</span> Sync<span style="color:#f92672">&gt;</span>;
+
+<span style="color:#75715e">#[tokio::main]</span>
+async <span style="color:#66d9ef">fn</span> <span style="color:#a6e22e">main</span>() -&gt; Result<span style="color:#f92672">&lt;</span>(), Error<span style="color:#f92672">&gt;</span> {
+    <span style="color:#66d9ef">let</span> c <span style="color:#f92672">=</span> Cl::new();
+    <span style="color:#66d9ef">let</span> resp <span style="color:#f92672">=</span> c
+        .make_request(<span style="color:#e6db74">&#34;http://site-that-needs-bearer-token&#34;</span>, <span style="color:#e6db74">&#34;Bearer token&#34;</span>)
+        .await<span style="color:#f92672">?</span>;
+    println<span style="color:#f92672">!</span>(<span style="color:#e6db74">&#34;{}&#34;</span>, resp);
+    Ok(())
+}
+</code></pre></div>
+<p>Now, we don&rsquo;t want <code>make_request</code> to keep changing or override it. Enter traits.
+We could simply replace the myriad input variables with a trait that looks like
+this.</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-rust" data-lang="rust"><span style="color:#66d9ef">trait</span> Authorizer {
+    <span style="color:#66d9ef">fn</span> <span style="color:#a6e22e">authorize_request</span>(<span style="color:#f92672">&amp;</span>self, req: <span style="color:#a6e22e">RequestBuilder</span>) -&gt; <span style="color:#a6e22e">RequestBuilder</span>;
+}
+</code></pre></div>
+<p>and now we re-write <code>make_request</code> to look like this</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-rust" data-lang="rust"><span style="color:#66d9ef">use</span> reqwest::{Client, Method, RequestBuilder};
+
+<span style="color:#66d9ef">trait</span> Authorizer {
+    <span style="color:#66d9ef">fn</span> <span style="color:#a6e22e">authorize_request</span>(<span style="color:#f92672">&amp;</span>self, req: <span style="color:#a6e22e">RequestBuilder</span>) -&gt; <span style="color:#a6e22e">RequestBuilder</span>;
+}
+
+<span style="color:#66d9ef">struct</span> <span style="color:#a6e22e">Cl</span> {
+    client: <span style="color:#a6e22e">Client</span>,
+    auth: Box<span style="color:#f92672">&lt;</span>dyn Authorizer<span style="color:#f92672">&gt;</span>,
+}
+
+<span style="color:#66d9ef">impl</span> Cl {
+    <span style="color:#66d9ef">fn</span> <span style="color:#a6e22e">new</span>(auth: Box<span style="color:#f92672">&lt;</span>dyn Authorizer<span style="color:#f92672">&gt;</span>) -&gt; <span style="color:#a6e22e">Self</span> {
+        Cl {
+            client: <span style="color:#a6e22e">Client</span>::new(),
+            auth: <span style="color:#a6e22e">auth</span>,
+        }
+    }
+
+    async <span style="color:#66d9ef">fn</span> <span style="color:#a6e22e">make_request</span>(<span style="color:#f92672">&amp;</span>self, url: <span style="color:#66d9ef">&amp;</span><span style="color:#66d9ef">str</span>) -&gt; Result<span style="color:#f92672">&lt;</span>String, Error<span style="color:#f92672">&gt;</span> {
+        <span style="color:#66d9ef">let</span> req <span style="color:#f92672">=</span> self.client.request(Method::GET, url);
+        <span style="color:#66d9ef">let</span> req <span style="color:#f92672">=</span> self.auth.authorize_request(req);
+        <span style="color:#66d9ef">let</span> res <span style="color:#f92672">=</span> req.send().await<span style="color:#f92672">?</span>;
+        <span style="color:#66d9ef">let</span> res_str <span style="color:#f92672">=</span> res.text().await<span style="color:#f92672">?</span>;
+        Ok(res_str)
+    }
+}
+</code></pre></div>
+<p>Note: I could have simply have included the trait as a field to make_request like so</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-rust" data-lang="rust">    async <span style="color:#66d9ef">fn</span> <span style="color:#a6e22e">make_request</span>(<span style="color:#f92672">&amp;</span>self, url: <span style="color:#66d9ef">&amp;</span><span style="color:#66d9ef">str</span>, <span style="color:#f92672">&amp;</span>dyn Authorizer) -&gt; Result<span style="color:#f92672">&lt;</span>String, Error<span style="color:#f92672">&gt;</span> {
+</code></pre></div>
+<p>This makes authorizer be dynamic for different urls. I changed this out a bit
+to suit my demonstration.</p>
+
+<p>This lets the caller implement Authorizer. Nothing new so far. Now the caller can
+implement variations of Basic and Bearer Auth.</p>
+
+<pre><code>use reqwest::{Client, Method, RequestBuilder};
+
+trait Authorizer {
+    fn authorize_request(&amp;self, req: RequestBuilder) -&gt; RequestBuilder;
+}
+
+struct Cl {
+    client: Client,
+    auth: Box&lt;dyn Authorizer&gt;,
+}
+
+impl Cl {
+    fn new(auth: Box&lt;dyn Authorizer&gt;) -&gt; Self {
+        Cl {
+            client: Client::new(),
+            auth: auth,
+        }
+    }
+
+    async fn make_request(&amp;self, url: &amp;str) -&gt; Result&lt;String, Error&gt; {
+        let req = self.client.request(Method::GET, url);
+        let req = self.auth.authorize_request(req);
+        let res = req.send().await?;
+        let res_str = res.text().await?;
+        Ok(res_str)
+    }
+}
+
+type Error = Box&lt;dyn std::error::Error + Send + Sync&gt;;
+
+#[tokio::main]
+async fn main() -&gt; Result&lt;(), Error&gt; {
+    let bearer_client = Cl::new(Box::new(BearerTokenAuthorizer::new(&quot;key&quot;, &quot;value&quot;)));
+    let resp = bearer_client
+        .make_request(&quot;http://site-that-needs-bearer-token&quot;)
+        .await?;
+    println!(&quot;{}&quot;, resp);
+
+    let basic_auth_client = Cl::new(Box::new(BasicAuth::new(&quot;user&quot;, &quot;password&quot;)));
+    let resp = basic_auth_client
+        .make_request(&quot;http://site-that-needs-basic-auth&quot;)
+        .await?;
+    println!(&quot;{}&quot;, resp);
+    Ok(())
+}
+
+pub struct BasicAuth {
+    user: String,
+    api_token: String,
+}
+
+impl Authorizer for BasicAuth {
+    fn authorize_request(&amp;self, req: RequestBuilder) -&gt; RequestBuilder {
+        req.basic_auth(self.user.to_owned(), Some(self.api_token.to_owned()))
+    }
+}
+
+impl BasicAuth {
+    fn new(user: &amp;str, value: &amp;str) -&gt; Self {
+        BasicAuth {
+            user: user.to_string(),
+            api_token: value.to_string(),
+        }
+    }
+}
+
+pub struct BearerTokenAuthorizer {
+    token_key: String,
+    token_value: String,
+}
+
+impl Authorizer for BearerTokenAuthorizer {
+    fn authorize_request(&amp;self, req: RequestBuilder) -&gt; RequestBuilder {
+        req.header(reqwest::header::AUTHORIZATION, self.token_value.clone())
+    }
+}
+
+impl BearerTokenAuthorizer {
+    fn new(key: &amp;str, value: &amp;str) -&gt; Self {
+        let value = format!(&quot;Bearer {}&quot;, value.to_string());
+        BearerTokenAuthorizer {
+            token_key: key.to_string(),
+            token_value: value,
+        }
+    }
+}
+</code></pre>
+
+<p>So far, so good right?</p>
+
+<p>So for my usecase&hellip; I wanted to clone the Client around. This meant deriving
+a trait. As simple as</p>
+
+<pre><code>#[derive(Clone)]
+struct Cl {
+    client: Client,
+    auth: Box&lt;dyn Authorizer&gt;,
+}
+</code></pre>
+
+<p>When building we get an error</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash"> copy-box-traits % cargo build
+   Compiling copy-box-traits v0.1.0 <span style="color:#f92672">(</span>/Users/sudarsan/dev/rust/copy-box-traits<span style="color:#f92672">)</span>
+error<span style="color:#f92672">[</span>E0277<span style="color:#f92672">]</span>: the trait bound <span style="color:#e6db74">`</span>dyn Authorizer: std::clone::Clone<span style="color:#e6db74">`</span> is not satisfied
+  --&gt; src/main.rs:10:5
+   |
+<span style="color:#ae81ff">10</span> |     auth: Box&lt;dyn Authorizer&gt;,
+   |     ^^^^^^^^^^^^^^^^^^^^^^^^^ the trait <span style="color:#e6db74">`</span>std::clone::Clone<span style="color:#e6db74">`</span> is not implemented <span style="color:#66d9ef">for</span> <span style="color:#e6db74">`</span>dyn Authorizer<span style="color:#e6db74">`</span>
+   |</code></pre></div>
+<p>OOPS.</p>
+
+<p>So now I had to implement a custom clone for my Boxed trait.</p>
+
+<p>This didn&rsquo;t seem as straightforward as I thought it would be. I started with&hellip;</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-rust" data-lang="rust"><span style="color:#66d9ef">impl</span> Clone <span style="color:#66d9ef">for</span> Box<span style="color:#f92672">&lt;</span>dyn Authorizer<span style="color:#f92672">&gt;</span> {
+    <span style="color:#66d9ef">fn</span> <span style="color:#a6e22e">clone</span>(<span style="color:#f92672">&amp;</span>self) -&gt; <span style="color:#a6e22e">Self</span> {
+        Box::new(<span style="color:#f92672">*</span>self.clone())
+    }
+}
+</code></pre></div>
+<p>Now&hellip; Rust would complain saying&hellip;</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">the size <span style="color:#66d9ef">for</span> values of type <span style="color:#e6db74">`</span>dyn Authorizer<span style="color:#e6db74">`</span> cannot be known at compilation time</code></pre></div>
+<p>I clearly can&rsquo;t dereference the box and put it back in after cloning it.</p>
+
+<p>So the right way to do it, is to implement a generic authorizer cloner trait <code>CloneAuthorizer</code> for all types <T>.
+Now all we have to do is add this as a built in trait to the trait. This
+is because only built in traits can be used as closure or object bounds.</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-rust" data-lang="rust"><span style="color:#66d9ef">trait</span> Authorizer: <span style="color:#a6e22e">CloneAuthorizer</span> {
+    <span style="color:#66d9ef">fn</span> <span style="color:#a6e22e">authorize_request</span>(<span style="color:#f92672">&amp;</span>self, req: <span style="color:#a6e22e">RequestBuilder</span>) -&gt; <span style="color:#a6e22e">RequestBuilder</span>;
+}
+
+<span style="color:#66d9ef">impl</span> Clone <span style="color:#66d9ef">for</span> Box<span style="color:#f92672">&lt;</span>dyn Authorizer<span style="color:#f92672">&gt;</span> {
+    <span style="color:#66d9ef">fn</span> <span style="color:#a6e22e">clone</span>(<span style="color:#f92672">&amp;</span>self) -&gt; <span style="color:#a6e22e">Self</span> {
+        self.clone_authorizer()
+    }
+}
+
+<span style="color:#66d9ef">trait</span> CloneAuthorizer {
+    <span style="color:#66d9ef">fn</span> <span style="color:#a6e22e">clone_authorizer</span>(<span style="color:#f92672">&amp;</span>self) -&gt; Box<span style="color:#f92672">&lt;</span>dyn Authorizer<span style="color:#f92672">&gt;</span>;
+}
+
+<span style="color:#66d9ef">impl</span><span style="color:#f92672">&lt;</span>T<span style="color:#f92672">&gt;</span> CloneAuthorizer <span style="color:#66d9ef">for</span> T
+<span style="color:#66d9ef">where</span>
+    T: <span style="color:#a6e22e">Authorizer</span> <span style="color:#f92672">+</span> Clone <span style="color:#f92672">+</span> &#39;static,
+{
+    <span style="color:#66d9ef">fn</span> <span style="color:#a6e22e">clone_authorizer</span>(<span style="color:#f92672">&amp;</span>self) -&gt; Box<span style="color:#f92672">&lt;</span>dyn Authorizer<span style="color:#f92672">&gt;</span> {
+        Box::new(self.clone())
+    }
+}
+</code></pre></div>
+<p>This makes the <code>Box&lt;dyn Authorizer&gt;</code> or any struct with this trait clone-able.</p>
+
+<p>The full code can be found at <a href="https://github.com/sudarshan-reddy/copy-box-traits">https://github.com/sudarshan-reddy/copy-box-traits</a></p>
+</article>
+    <footer class="post-footer">
+      
+      <ul class="post-tags">
+        
+          <li><a href="/tags/rust"><span class="tag">Rust</span></a></li>
+        
+          <li><a href="/tags/traits"><span class="tag">Traits</span></a></li>
+        
+      </ul>
+      
+      <p class="post-copyright">
+        © sudarshan-reddy@github.io
+      </p>
+    </footer>
+    
+      <div id="disqus_thread"></div>
+<script type="application/javascript">
+    var disqus_config = function () {
+    
+    
+    
+    };
+    (function() {
+        if (["localhost", "127.0.0.1"].indexOf(window.location.hostname) != -1) {
+            document.getElementById('disqus_thread').innerHTML = 'Disqus comments not available by default when the website is previewed locally.';
+            return;
+        }
+        var d = document, s = d.createElement('script'); s.async = true;
+        s.src = '//' + "sudarshan-reddy-github-io" + '.disqus.com/embed.js';
+        s.setAttribute('data-timestamp', +new Date());
+        (d.head || d.body).appendChild(s);
+    })();
+</script>
+<noscript>Please enable JavaScript to view the <a href="https://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+<a href="https://disqus.com" class="dsq-brlink">comments powered by <span class="logo-disqus">Disqus</span></a>
+      
+    
+  </section>
+  
+<footer class="site-footer">
+  <p>© 2017-2020 Geek and Latin</p>
+  <p>Powered by <a href="https://gohugo.io/" target="_blank" rel="noopener">Hugo</a> with theme <a href="https://github.com/laozhu/hugo-nuo" target="_blank" rel="noopener">Nuo</a>.</p>
+  
+</footer>
+
+
+<script src="https://cdn.jsdelivr.net/npm/smooth-scroll@15.0.0/dist/smooth-scroll.min.js"></script>
+
+
+
+<script async src="https://cdn.jsdelivr.net/npm/video.js@7.3.0/dist/video.min.js"></script>
+
+
+
+
+<script async src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+<script type="text/x-mathjax-config">
+  MathJax.Hub.Config({
+    tex2jax: {
+      inlineMath: [['$','$'], ['\\(','\\)']],
+      displayMath: [['$$','$$'], ['\\[','\\]']],
+      processEscapes: true,
+      processEnvironments: true,
+      skipTags: ['script', 'noscript', 'style', 'textarea', 'pre'],
+      TeX: { equationNumbers: { autoNumber: "AMS" },
+      extensions: ["AMSmath.js", "AMSsymbols.js"] }
+    },
+  });
+</script>
+<script type="text/x-mathjax-config">
+  // Fix <code> tags after MathJax finishes running. This is a
+  // hack to overcome a shortcoming of Markdown. Discussion at
+  // https://github.com/mojombo/jekyll/issues/199
+  MathJax.Hub.Queue(() => {
+    MathJax.Hub.getAllJax().map(v => v.SourceElement().parentNode.className += ' has-jax');
+  });
+</script>
+
+
+
+<script src="/scripts/index.min.js"></script>
+
+<script>
+  if ('serviceWorker' in navigator) {
+    navigator.serviceWorker.register('\/service-worker.js').then(function() {
+      console.log('[ServiceWorker] Registered');
+    });
+  }
+</script>
+
+
+
+
+<script type="application/javascript">
+var doNotTrack = false;
+if (!doNotTrack) {
+	window.ga=window.ga||function(){(ga.q=ga.q||[]).push(arguments)};ga.l=+new Date;
+	ga('create', 'UA-120606360-1', 'auto');
+	
+	ga('send', 'pageview');
+}
+</script>
+<script async src='https://www.google-analytics.com/analytics.js'></script>
+
+
+
+
+
+
+
+  </body>
+</html>

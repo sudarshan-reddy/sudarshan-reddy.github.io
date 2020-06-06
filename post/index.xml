@@ -7,10 +7,21 @@
     <generator>Hugo -- gohugo.io</generator>
     <language>en</language>
     <copyright>© sudarshan-reddy@github.io</copyright>
-    <lastBuildDate>Sat, 14 Mar 2020 00:00:00 +0000</lastBuildDate>
+    <lastBuildDate>Sat, 06 Jun 2020 00:00:00 +0000</lastBuildDate>
     
 	<atom:link href="/post/index.xml" rel="self" type="application/rss+xml" />
     
+    
+    <item>
+      <title>Cloning boxed traits in Rust</title>
+      <link>/post/rust-box-traits-clone/</link>
+      <pubDate>Sat, 06 Jun 2020 00:00:00 +0000</pubDate>
+      
+      <guid>/post/rust-box-traits-clone/</guid>
+      <description>I enjoy coding with Rust&amp;rsquo;s composition system mixed with generics. It makes adding and incorporating changes all that more easier. I recently ran into a problem when I wanted to copy a group of boxed traits.
+Lets start simple. Imagine I have an http client that makes requests&amp;hellip; like so&amp;hellip;
+use reqwest::{Client, Method, RequestBuilder}; struct Cl { client: Client, } impl Cl { fn new() -&amp;gt; Self { Cl { client: Client::new(), } } async fn make_request(&amp;amp;self, url: &amp;amp;str) -&amp;gt; Result&amp;lt;String, Error&amp;gt; { let req = self.</description>
+    </item>
     
     <item>
       <title>A little code generation in Go in 2020.</title>
