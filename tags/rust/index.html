@@ -204,8 +204,8 @@
     <p class="post-meta">@Sudarshan · Jun 6, 2020 · 5 min read</p>
   </header>
   
-  <p class="post-summary">I enjoy coding with Rust’s composition system mixed with generics. It makes adding and incorporating changes all that more easier. I recently ran into a problem when I wanted to copy a group of boxed traits.
-Lets start simple. Imagine I have an http client that makes requests… like so…
+  <p class="post-summary">I enjoy coding with Rust’s composition system. It’s nice to also have generics. It makes adding and incorporating changes rather nice. I recently ran into a problem when I wanted to copy a group of boxed traits.
+Lets start from the beginning. Imagine we have an http client that makes requests give a URL. Like so…
 use reqwest::{Client, Method, RequestBuilder}; struct Cl { client: Client, } impl Cl { fn new() -&gt; Self { Cl { client: Client::new(), } } async fn make_request(&amp;self, url: &amp;str) -&gt; Result&lt;String, Error&gt; { let req = self.</p>
   <footer class="post-footer">
     <a class="read-more" href="/post/rust-box-traits-clone/">Read More →</a>

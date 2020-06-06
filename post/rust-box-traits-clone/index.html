@@ -24,8 +24,8 @@
 
   
   
-  <meta name="description" content="I enjoy coding with Rust&amp;rsquo;s composition system mixed with generics. It makes adding and incorporating changes all that more easier. I recently ran into a problem when I wanted to copy a group of boxed traits.
-Lets start simple. Imagine I have an http client that makes requests&amp;hellip; like so&amp;hellip;
+  <meta name="description" content="I enjoy coding with Rust&amp;rsquo;s composition system. It&amp;rsquo;s nice to also have generics. It makes adding and incorporating changes rather nice. I recently ran into a problem when I wanted to copy a group of boxed traits.
+Lets start from the beginning. Imagine we have an http client that makes requests give a URL. Like so&amp;hellip;
 use reqwest::{Client, Method, RequestBuilder}; struct Cl { client: Client, } impl Cl { fn new() -&amp;gt; Self { Cl { client: Client::new(), } } async fn make_request(&amp;amp;self, url: &amp;amp;str) -&amp;gt; Result&amp;lt;String, Error&amp;gt; { let req = self.">
 
   
@@ -33,8 +33,8 @@ use reqwest::{Client, Method, RequestBuilder}; struct Cl { client: Client, } imp
     <meta name="twitter:card" content="summary">
     <meta name="twitter:site" content="@sudproquo">
     <meta name="twitter:title" content="Cloning boxed traits in Rust">
-    <meta name="twitter:description" content="I enjoy coding with Rust&amp;rsquo;s composition system mixed with generics. It makes adding and incorporating changes all that more easier. I recently ran into a problem when I wanted to copy a group of boxed traits.
-Lets start simple. Imagine I have an http client that makes requests&amp;hellip; like so&amp;hellip;
+    <meta name="twitter:description" content="I enjoy coding with Rust&amp;rsquo;s composition system. It&amp;rsquo;s nice to also have generics. It makes adding and incorporating changes rather nice. I recently ran into a problem when I wanted to copy a group of boxed traits.
+Lets start from the beginning. Imagine we have an http client that makes requests give a URL. Like so&amp;hellip;
 use reqwest::{Client, Method, RequestBuilder}; struct Cl { client: Client, } impl Cl { fn new() -&amp;gt; Self { Cl { client: Client::new(), } } async fn make_request(&amp;amp;self, url: &amp;amp;str) -&amp;gt; Result&amp;lt;String, Error&amp;gt; { let req = self.">
     <meta name="twitter:image" content="/images/avatar.jpg">
   
@@ -42,8 +42,8 @@ use reqwest::{Client, Method, RequestBuilder}; struct Cl { client: Client, } imp
   
   <meta property="og:type" content="article">
   <meta property="og:title" content="Cloning boxed traits in Rust">
-  <meta property="og:description" content="I enjoy coding with Rust&amp;rsquo;s composition system mixed with generics. It makes adding and incorporating changes all that more easier. I recently ran into a problem when I wanted to copy a group of boxed traits.
-Lets start simple. Imagine I have an http client that makes requests&amp;hellip; like so&amp;hellip;
+  <meta property="og:description" content="I enjoy coding with Rust&amp;rsquo;s composition system. It&amp;rsquo;s nice to also have generics. It makes adding and incorporating changes rather nice. I recently ran into a problem when I wanted to copy a group of boxed traits.
+Lets start from the beginning. Imagine we have an http client that makes requests give a URL. Like so&amp;hellip;
 use reqwest::{Client, Method, RequestBuilder}; struct Cl { client: Client, } impl Cl { fn new() -&amp;gt; Self { Cl { client: Client::new(), } } async fn make_request(&amp;amp;self, url: &amp;amp;str) -&amp;gt; Result&amp;lt;String, Error&amp;gt; { let req = self.">
   <meta property="og:url" content="/post/rust-box-traits-clone/">
   <meta property="og:image" content="/images/avatar.jpg">
@@ -207,11 +207,12 @@ use reqwest::{Client, Method, RequestBuilder}; struct Cl { client: Client, } imp
       <h1 class="post-title">Cloning boxed traits in Rust</h1>
       <p class="post-meta">@Sudarshan · Jun 6, 2020 · 5 min read</p>
     </header>
-    <article class="post-content"><p>I enjoy coding with Rust&rsquo;s composition system mixed with generics. It makes
-adding and incorporating changes all that more easier. I recently ran into
+    <article class="post-content"><p>I enjoy coding with Rust&rsquo;s composition system. It&rsquo;s nice to also have  generics. It makes
+adding and incorporating changes rather nice. I recently ran into
 a problem when I wanted to copy a group of boxed traits.</p>
 
-<p>Lets start simple. Imagine I have an http client that makes requests&hellip; like so&hellip;</p>
+<p>Lets start from the beginning. Imagine we have an http client that makes requests
+give a URL. Like so&hellip;</p>
 <div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-rust" data-lang="rust"><span style="color:#66d9ef">use</span> reqwest::{Client, Method, RequestBuilder};
 
 <span style="color:#66d9ef">struct</span> <span style="color:#a6e22e">Cl</span> {
@@ -287,7 +288,7 @@ async <span style="color:#66d9ef">fn</span> <span style="color:#a6e22e">main</sp
     Ok(())
 }
 </code></pre></div>
-<p>But what if we wanted to use a site that gave you a pre-created bearer token?</p>
+<p>But what if we wanted to call an endpoint that with a bearer token?</p>
 <div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-rust" data-lang="rust"><span style="color:#66d9ef">use</span> reqwest::{Client, Method, RequestBuilder};
 
 <span style="color:#66d9ef">struct</span> <span style="color:#a6e22e">Cl</span> {
@@ -366,8 +367,9 @@ this.</p>
 <p>This makes authorizer be dynamic for different urls. I changed this out a bit
 to suit my demonstration.</p>
 
-<p>This lets the caller implement Authorizer. Nothing new so far. Now the caller can
-implement variations of Basic and Bearer Auth.</p>
+<p>However, imagine I had a use case that required clients made with base endpoints
+for different APIs. This lets the caller implement Authorizer. Nothing new so far.
+Now the caller can implement variations of Basic and Bearer Auth.</p>
 <div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-rust" data-lang="rust"><span style="color:#66d9ef">use</span> reqwest::{Client, Method, RequestBuilder};
 
 <span style="color:#66d9ef">trait</span> Authorizer {
@@ -465,7 +467,7 @@ a trait. As simple as</p>
     auth: Box<span style="color:#f92672">&lt;</span>dyn Authorizer<span style="color:#f92672">&gt;</span>,
 }
 </code></pre></div>
-<p>When building we get an error</p>
+<p>Lets try to build it.</p>
 <div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash"> copy-box-traits % cargo build
    Compiling copy-box-traits v0.1.0 <span style="color:#f92672">(</span>/Users/sudarsan/dev/rust/copy-box-traits<span style="color:#f92672">)</span>
 error<span style="color:#f92672">[</span>E0277<span style="color:#f92672">]</span>: the trait bound <span style="color:#e6db74">`</span>dyn Authorizer: std::clone::Clone<span style="color:#e6db74">`</span> is not satisfied
