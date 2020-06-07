@@ -325,8 +325,7 @@ is because only built in traits can be used as closure or object bounds.&lt;/p&g
     }
 }
 &lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;This makes the &lt;code&gt;Box&amp;lt;dyn Authorizer&amp;gt;&lt;/code&gt; or any struct with this trait clone-able.&lt;/p&gt;
-&lt;p&gt;The full code can be found at &lt;a href=&#34;https://github.com/sudarshan-reddy/copy-box-traits&#34;&gt;https://github.com/sudarshan-reddy/copy-box-traits&lt;/a&gt;&lt;/p&gt;
-</description>
+&lt;p&gt;The full code can be found at &lt;a href=&#34;https://github.com/sudarshan-reddy/copy-box-traits&#34;&gt;https://github.com/sudarshan-reddy/copy-box-traits&lt;/a&gt;&lt;/p&gt;</description>
     </item>
     
     <item>

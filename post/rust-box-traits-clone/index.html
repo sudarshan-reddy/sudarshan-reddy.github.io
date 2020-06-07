@@ -14,14 +14,16 @@
 <link rel="icon" type="image/x-icon" href="https://geekandlatin.com/favicon.ico">
 <link rel="apple-touch-icon-precomposed" href="https://geekandlatin.com/favicon.png">
 
-<link rel="stylesheet" href="https://geekandlatin.com/css/style.css?rnd=1591513646" />
+<link rel="stylesheet" href="https://geekandlatin.com/css/style.css?rnd=1591520862" />
 
 
 
 <meta property="og:title" content="Cloning boxed traits in Rust" />
-<meta property="og:description" content="I enjoy coding with Rust&rsquo;s composition system. It&rsquo;s nice to also have generics. It makes adding and incorporating changes rather nice. I recently ran into a problem when I wanted to copy a group of boxed traits.
-Lets start from the beginning. Imagine we have an http client that makes requests give a URL. Like so&hellip;
-use reqwest::{Client, Method, RequestBuilder}; struct Cl { client: Client, } impl Cl { fn new() -&gt; Self { Cl { client: Client::new(), } } async fn make_request(&amp;self, url: &amp;str) -&gt; Result&lt;String, Error&gt; { let req = self." />
+<meta property="og:description" content="I enjoy coding with Rust&rsquo;s composition system. It&rsquo;s nice to also have  generics. It makes
+adding and incorporating changes rather nice. I recently ran into
+a problem when I wanted to copy a group of boxed traits.
+Lets start from the beginning. Imagine we have an http client that makes requests
+give a URL. Like so&hellip;" />
 <meta property="og:type" content="article" />
 <meta property="og:url" content="https://geekandlatin.com/post/rust-box-traits-clone/" />
 <meta property="article:published_time" content="2020-06-06T00:00:00+00:00" />
@@ -29,9 +31,11 @@ use reqwest::{Client, Method, RequestBuilder}; struct Cl { client: Client, } imp
 
 <meta name="twitter:card" content="summary"/>
 <meta name="twitter:title" content="Cloning boxed traits in Rust"/>
-<meta name="twitter:description" content="I enjoy coding with Rust&rsquo;s composition system. It&rsquo;s nice to also have generics. It makes adding and incorporating changes rather nice. I recently ran into a problem when I wanted to copy a group of boxed traits.
-Lets start from the beginning. Imagine we have an http client that makes requests give a URL. Like so&hellip;
-use reqwest::{Client, Method, RequestBuilder}; struct Cl { client: Client, } impl Cl { fn new() -&gt; Self { Cl { client: Client::new(), } } async fn make_request(&amp;self, url: &amp;str) -&gt; Result&lt;String, Error&gt; { let req = self."/>
+<meta name="twitter:description" content="I enjoy coding with Rust&rsquo;s composition system. It&rsquo;s nice to also have  generics. It makes
+adding and incorporating changes rather nice. I recently ran into
+a problem when I wanted to copy a group of boxed traits.
+Lets start from the beginning. Imagine we have an http client that makes requests
+give a URL. Like so&hellip;"/>
 
 
 
@@ -366,7 +370,6 @@ is because only built in traits can be used as closure or object bounds.</p>
 }
 </code></pre></div><p>This makes the <code>Box&lt;dyn Authorizer&gt;</code> or any struct with this trait clone-able.</p>
 <p>The full code can be found at <a href="https://github.com/sudarshan-reddy/copy-box-traits">https://github.com/sudarshan-reddy/copy-box-traits</a></p>
-
         </div>
         
 
@@ -404,7 +407,7 @@ is because only built in traits can be used as closure or object bounds.</p>
             return;
         }
         var d = document, s = d.createElement('script'); s.async = true;
-        s.src = '//' + "sudarshan-reddy.github.io" + '.disqus.com/embed.js';
+        s.src = '//' + "sudarshan-reddy-github-io" + '.disqus.com/embed.js';
         s.setAttribute('data-timestamp', +new Date());
         (d.head || d.body).appendChild(s);
     })();
