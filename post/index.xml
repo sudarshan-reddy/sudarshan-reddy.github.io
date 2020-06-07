@@ -698,11 +698,11 @@ root file.&lt;/p&gt;
       <pubDate>Mon, 10 Feb 2020 00:00:00 +0000</pubDate>
       
       <guid>https://geekandlatin.com/post/drone-follow-face/</guid>
-      <description>&lt;!-- raw HTML omitted --&gt;
-&lt;p&gt;It&amp;rsquo;s that time of the year again when I decide to add to my blog. It was my
+      <description>&lt;p&gt;It&amp;rsquo;s that time of the year again when I decide to add to my blog. It was my
 birthday last week and I decided to buy myself a small DJI drone to hack with.
 I wanted to get something lightweight, cheap and easily replaced. The DJI Tello
 so far has turned out to be delightfully sufficient for my criteria.&lt;/p&gt;
+&lt;p&gt;The video is &lt;a href=&#34;https://sudarshan-reddy.github.io/images/Dronevideo.mp4&#34;&gt;here&lt;/a&gt;.&lt;/p&gt;
 &lt;p&gt;The experiment I set out to do is to have the Tello latch on to a face and
 follow it. To do this, I needed to be able to:&lt;/p&gt;
 &lt;pre&gt;&lt;code&gt;- Control the drone&#39;s movements.
