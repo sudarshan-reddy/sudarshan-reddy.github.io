@@ -1,26 +1,319 @@
-<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
-    <title>rust on Geek and Latin</title>
-    <link>/tags/rust/</link>
-    <description>Recent content in rust on Geek and Latin</description>
+    <title>rust on Sudarshan&#39;s blog</title>
+    <link>https://geekandlatin.com/tags/rust/</link>
+    <description>Sudarshan&#39;s blog (rust)</description>
     <generator>Hugo -- gohugo.io</generator>
-    <language>en</language>
-    <copyright>© sudarshan-reddy@github.io</copyright>
+    <language>en-us</language>
     <lastBuildDate>Sat, 06 Jun 2020 00:00:00 +0000</lastBuildDate>
     
-	<atom:link href="/tags/rust/index.xml" rel="self" type="application/rss+xml" />
+    <atom:link href="https://geekandlatin.com/tags/rust/index.xml" rel="self" type="application/rss+xml" />
     
     
     <item>
       <title>Cloning boxed traits in Rust</title>
-      <link>/post/rust-box-traits-clone/</link>
+      <link>https://geekandlatin.com/post/rust-box-traits-clone/</link>
       <pubDate>Sat, 06 Jun 2020 00:00:00 +0000</pubDate>
       
-      <guid>/post/rust-box-traits-clone/</guid>
-      <description>I enjoy coding with Rust&amp;rsquo;s composition system. It&amp;rsquo;s nice to also have generics. It makes adding and incorporating changes rather nice. I recently ran into a problem when I wanted to copy a group of boxed traits.
-Lets start from the beginning. Imagine we have an http client that makes requests give a URL. Like so&amp;hellip;
-use reqwest::{Client, Method, RequestBuilder}; struct Cl { client: Client, } impl Cl { fn new() -&amp;gt; Self { Cl { client: Client::new(), } } async fn make_request(&amp;amp;self, url: &amp;amp;str) -&amp;gt; Result&amp;lt;String, Error&amp;gt; { let req = self.</description>
+      <guid>https://geekandlatin.com/post/rust-box-traits-clone/</guid>
+      <description>&lt;p&gt;I enjoy coding with Rust&amp;rsquo;s composition system. It&amp;rsquo;s nice to also have  generics. It makes
+adding and incorporating changes rather nice. I recently ran into
+a problem when I wanted to copy a group of boxed traits.&lt;/p&gt;
+&lt;p&gt;Lets start from the beginning. Imagine we have an http client that makes requests
+give a URL. Like so&amp;hellip;&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-rust&#34; data-lang=&#34;rust&#34;&gt;&lt;span style=&#34;color:#66d9ef&#34;&gt;use&lt;/span&gt; reqwest::{Client, Method, RequestBuilder};
+
+&lt;span style=&#34;color:#66d9ef&#34;&gt;struct&lt;/span&gt; &lt;span style=&#34;color:#a6e22e&#34;&gt;Cl&lt;/span&gt; {
+    client: &lt;span style=&#34;color:#a6e22e&#34;&gt;Client&lt;/span&gt;,
+}
+
+&lt;span style=&#34;color:#66d9ef&#34;&gt;impl&lt;/span&gt; Cl {
+    &lt;span style=&#34;color:#66d9ef&#34;&gt;fn&lt;/span&gt; &lt;span style=&#34;color:#a6e22e&#34;&gt;new&lt;/span&gt;() -&amp;gt; &lt;span style=&#34;color:#a6e22e&#34;&gt;Self&lt;/span&gt; {
+        Cl {
+            client: &lt;span style=&#34;color:#a6e22e&#34;&gt;Client&lt;/span&gt;::new(),
+        }
+    }
+
+    async &lt;span style=&#34;color:#66d9ef&#34;&gt;fn&lt;/span&gt; &lt;span style=&#34;color:#a6e22e&#34;&gt;make_request&lt;/span&gt;(&lt;span style=&#34;color:#f92672&#34;&gt;&amp;amp;&lt;/span&gt;self, url: &lt;span style=&#34;color:#66d9ef&#34;&gt;&amp;amp;&lt;/span&gt;&lt;span style=&#34;color:#66d9ef&#34;&gt;str&lt;/span&gt;) -&amp;gt; Result&lt;span style=&#34;color:#f92672&#34;&gt;&amp;lt;&lt;/span&gt;String, Error&lt;span style=&#34;color:#f92672&#34;&gt;&amp;gt;&lt;/span&gt; {
+        &lt;span style=&#34;color:#66d9ef&#34;&gt;let&lt;/span&gt; req &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; self.client.request(Method::GET, url);
+        &lt;span style=&#34;color:#66d9ef&#34;&gt;let&lt;/span&gt; res &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; req.send().await&lt;span style=&#34;color:#f92672&#34;&gt;?&lt;/span&gt;;
+        &lt;span style=&#34;color:#66d9ef&#34;&gt;let&lt;/span&gt; res_str &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; res.text().await&lt;span style=&#34;color:#f92672&#34;&gt;?&lt;/span&gt;;
+        Ok(res_str)
+    }
+}
+
+&lt;span style=&#34;color:#66d9ef&#34;&gt;type&lt;/span&gt; &lt;span style=&#34;color:#a6e22e&#34;&gt;Error&lt;/span&gt; &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; Box&lt;span style=&#34;color:#f92672&#34;&gt;&amp;lt;&lt;/span&gt;dyn std::error::Error &lt;span style=&#34;color:#f92672&#34;&gt;+&lt;/span&gt; Send &lt;span style=&#34;color:#f92672&#34;&gt;+&lt;/span&gt; Sync&lt;span style=&#34;color:#f92672&#34;&gt;&amp;gt;&lt;/span&gt;;
+
+&lt;span style=&#34;color:#75715e&#34;&gt;#[tokio::main]&lt;/span&gt;
+async &lt;span style=&#34;color:#66d9ef&#34;&gt;fn&lt;/span&gt; &lt;span style=&#34;color:#a6e22e&#34;&gt;main&lt;/span&gt;() -&amp;gt; Result&lt;span style=&#34;color:#f92672&#34;&gt;&amp;lt;&lt;/span&gt;(), Error&lt;span style=&#34;color:#f92672&#34;&gt;&amp;gt;&lt;/span&gt; {
+    &lt;span style=&#34;color:#66d9ef&#34;&gt;let&lt;/span&gt; c &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; Cl::new();
+    &lt;span style=&#34;color:#66d9ef&#34;&gt;let&lt;/span&gt; resp &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; c.make_request(&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;http://google.com&amp;#34;&lt;/span&gt;).await&lt;span style=&#34;color:#f92672&#34;&gt;?&lt;/span&gt;;
+    println&lt;span style=&#34;color:#f92672&#34;&gt;!&lt;/span&gt;(&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;{}&amp;#34;&lt;/span&gt;, resp);
+    Ok(())
+}
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;Now, this just works. What if we used an endpoint that needed authentication
+instead of google.com? Assuming this service used basic authentication, we&amp;rsquo;d
+do something like this.&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-rust&#34; data-lang=&#34;rust&#34;&gt;&lt;span style=&#34;color:#66d9ef&#34;&gt;use&lt;/span&gt; reqwest::{Client, Method, RequestBuilder};
+
+&lt;span style=&#34;color:#66d9ef&#34;&gt;struct&lt;/span&gt; &lt;span style=&#34;color:#a6e22e&#34;&gt;Cl&lt;/span&gt; {
+    client: &lt;span style=&#34;color:#a6e22e&#34;&gt;Client&lt;/span&gt;,
+}
+
+&lt;span style=&#34;color:#66d9ef&#34;&gt;impl&lt;/span&gt; Cl {
+    &lt;span style=&#34;color:#66d9ef&#34;&gt;fn&lt;/span&gt; &lt;span style=&#34;color:#a6e22e&#34;&gt;new&lt;/span&gt;() -&amp;gt; &lt;span style=&#34;color:#a6e22e&#34;&gt;Self&lt;/span&gt; {
+        Cl {
+            client: &lt;span style=&#34;color:#a6e22e&#34;&gt;Client&lt;/span&gt;::new(),
+        }
+    }
+
+    async &lt;span style=&#34;color:#66d9ef&#34;&gt;fn&lt;/span&gt; &lt;span style=&#34;color:#a6e22e&#34;&gt;make_request&lt;/span&gt;(
+        &lt;span style=&#34;color:#f92672&#34;&gt;&amp;amp;&lt;/span&gt;self,
+        url: &lt;span style=&#34;color:#66d9ef&#34;&gt;&amp;amp;&lt;/span&gt;&lt;span style=&#34;color:#66d9ef&#34;&gt;str&lt;/span&gt;,
+        user_name: &lt;span style=&#34;color:#66d9ef&#34;&gt;&amp;amp;&lt;/span&gt;&lt;span style=&#34;color:#66d9ef&#34;&gt;str&lt;/span&gt;,
+        password: &lt;span style=&#34;color:#66d9ef&#34;&gt;&amp;amp;&lt;/span&gt;&lt;span style=&#34;color:#66d9ef&#34;&gt;str&lt;/span&gt;,
+    ) -&amp;gt; Result&lt;span style=&#34;color:#f92672&#34;&gt;&amp;lt;&lt;/span&gt;String, Error&lt;span style=&#34;color:#f92672&#34;&gt;&amp;gt;&lt;/span&gt; {
+        &lt;span style=&#34;color:#66d9ef&#34;&gt;let&lt;/span&gt; req &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; self.client.request(Method::GET, url);
+        &lt;span style=&#34;color:#66d9ef&#34;&gt;let&lt;/span&gt; res &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; req
+            .basic_auth(user_name.to_string(), Some(password.to_string()))
+            .send()
+            .await&lt;span style=&#34;color:#f92672&#34;&gt;?&lt;/span&gt;;
+        &lt;span style=&#34;color:#66d9ef&#34;&gt;let&lt;/span&gt; res_str &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; res.text().await&lt;span style=&#34;color:#f92672&#34;&gt;?&lt;/span&gt;;
+        Ok(res_str)
+    }
+}
+
+&lt;span style=&#34;color:#66d9ef&#34;&gt;type&lt;/span&gt; &lt;span style=&#34;color:#a6e22e&#34;&gt;Error&lt;/span&gt; &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; Box&lt;span style=&#34;color:#f92672&#34;&gt;&amp;lt;&lt;/span&gt;dyn std::error::Error &lt;span style=&#34;color:#f92672&#34;&gt;+&lt;/span&gt; Send &lt;span style=&#34;color:#f92672&#34;&gt;+&lt;/span&gt; Sync&lt;span style=&#34;color:#f92672&#34;&gt;&amp;gt;&lt;/span&gt;;
+
+&lt;span style=&#34;color:#75715e&#34;&gt;#[tokio::main]&lt;/span&gt;
+async &lt;span style=&#34;color:#66d9ef&#34;&gt;fn&lt;/span&gt; &lt;span style=&#34;color:#a6e22e&#34;&gt;main&lt;/span&gt;() -&amp;gt; Result&lt;span style=&#34;color:#f92672&#34;&gt;&amp;lt;&lt;/span&gt;(), Error&lt;span style=&#34;color:#f92672&#34;&gt;&amp;gt;&lt;/span&gt; {
+    &lt;span style=&#34;color:#66d9ef&#34;&gt;let&lt;/span&gt; c &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; Cl::new();
+    &lt;span style=&#34;color:#66d9ef&#34;&gt;let&lt;/span&gt; resp &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; c
+        .make_request(&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;http://site-with-basic-auth.com&amp;#34;&lt;/span&gt;, &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;username&amp;#34;&lt;/span&gt;, &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;password&amp;#34;&lt;/span&gt;)
+        .await&lt;span style=&#34;color:#f92672&#34;&gt;?&lt;/span&gt;;
+    println&lt;span style=&#34;color:#f92672&#34;&gt;!&lt;/span&gt;(&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;{}&amp;#34;&lt;/span&gt;, resp);
+    Ok(())
+}
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;But what if we wanted to call an endpoint that authenticates with a bearer token?&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-rust&#34; data-lang=&#34;rust&#34;&gt;&lt;span style=&#34;color:#66d9ef&#34;&gt;use&lt;/span&gt; reqwest::{Client, Method, RequestBuilder};
+
+&lt;span style=&#34;color:#66d9ef&#34;&gt;struct&lt;/span&gt; &lt;span style=&#34;color:#a6e22e&#34;&gt;Cl&lt;/span&gt; {
+    client: &lt;span style=&#34;color:#a6e22e&#34;&gt;Client&lt;/span&gt;,
+}
+
+&lt;span style=&#34;color:#66d9ef&#34;&gt;impl&lt;/span&gt; Cl {
+    &lt;span style=&#34;color:#66d9ef&#34;&gt;fn&lt;/span&gt; &lt;span style=&#34;color:#a6e22e&#34;&gt;new&lt;/span&gt;() -&amp;gt; &lt;span style=&#34;color:#a6e22e&#34;&gt;Self&lt;/span&gt; {
+        Cl {
+            client: &lt;span style=&#34;color:#a6e22e&#34;&gt;Client&lt;/span&gt;::new(),
+        }
+    }
+
+    async &lt;span style=&#34;color:#66d9ef&#34;&gt;fn&lt;/span&gt; &lt;span style=&#34;color:#a6e22e&#34;&gt;make_request&lt;/span&gt;(&lt;span style=&#34;color:#f92672&#34;&gt;&amp;amp;&lt;/span&gt;self, url: &lt;span style=&#34;color:#66d9ef&#34;&gt;&amp;amp;&lt;/span&gt;&lt;span style=&#34;color:#66d9ef&#34;&gt;str&lt;/span&gt;, token_value: &lt;span style=&#34;color:#66d9ef&#34;&gt;&amp;amp;&lt;/span&gt;&lt;span style=&#34;color:#66d9ef&#34;&gt;str&lt;/span&gt;) -&amp;gt; Result&lt;span style=&#34;color:#f92672&#34;&gt;&amp;lt;&lt;/span&gt;String, Error&lt;span style=&#34;color:#f92672&#34;&gt;&amp;gt;&lt;/span&gt; {
+        &lt;span style=&#34;color:#66d9ef&#34;&gt;let&lt;/span&gt; req &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; self.client.request(Method::GET, url);
+        &lt;span style=&#34;color:#66d9ef&#34;&gt;let&lt;/span&gt; res &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; req
+            .header(reqwest::header::AUTHORIZATION, token_value.clone())
+            .send()
+            .await&lt;span style=&#34;color:#f92672&#34;&gt;?&lt;/span&gt;;
+        &lt;span style=&#34;color:#66d9ef&#34;&gt;let&lt;/span&gt; res_str &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; res.text().await&lt;span style=&#34;color:#f92672&#34;&gt;?&lt;/span&gt;;
+        Ok(res_str)
+    }
+}
+
+&lt;span style=&#34;color:#66d9ef&#34;&gt;type&lt;/span&gt; &lt;span style=&#34;color:#a6e22e&#34;&gt;Error&lt;/span&gt; &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; Box&lt;span style=&#34;color:#f92672&#34;&gt;&amp;lt;&lt;/span&gt;dyn std::error::Error &lt;span style=&#34;color:#f92672&#34;&gt;+&lt;/span&gt; Send &lt;span style=&#34;color:#f92672&#34;&gt;+&lt;/span&gt; Sync&lt;span style=&#34;color:#f92672&#34;&gt;&amp;gt;&lt;/span&gt;;
+
+&lt;span style=&#34;color:#75715e&#34;&gt;#[tokio::main]&lt;/span&gt;
+async &lt;span style=&#34;color:#66d9ef&#34;&gt;fn&lt;/span&gt; &lt;span style=&#34;color:#a6e22e&#34;&gt;main&lt;/span&gt;() -&amp;gt; Result&lt;span style=&#34;color:#f92672&#34;&gt;&amp;lt;&lt;/span&gt;(), Error&lt;span style=&#34;color:#f92672&#34;&gt;&amp;gt;&lt;/span&gt; {
+    &lt;span style=&#34;color:#66d9ef&#34;&gt;let&lt;/span&gt; c &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; Cl::new();
+    &lt;span style=&#34;color:#66d9ef&#34;&gt;let&lt;/span&gt; resp &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; c
+        .make_request(&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;http://site-that-needs-bearer-token&amp;#34;&lt;/span&gt;, &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;Bearer token&amp;#34;&lt;/span&gt;)
+        .await&lt;span style=&#34;color:#f92672&#34;&gt;?&lt;/span&gt;;
+    println&lt;span style=&#34;color:#f92672&#34;&gt;!&lt;/span&gt;(&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;{}&amp;#34;&lt;/span&gt;, resp);
+    Ok(())
+}
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;Now, we don&amp;rsquo;t want &lt;code&gt;make_request&lt;/code&gt; to keep changing or override it. Enter traits.
+We could simply replace the myriad input variables with a trait that looks like
+this.&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-rust&#34; data-lang=&#34;rust&#34;&gt;&lt;span style=&#34;color:#66d9ef&#34;&gt;trait&lt;/span&gt; Authorizer {
+    &lt;span style=&#34;color:#66d9ef&#34;&gt;fn&lt;/span&gt; &lt;span style=&#34;color:#a6e22e&#34;&gt;authorize_request&lt;/span&gt;(&lt;span style=&#34;color:#f92672&#34;&gt;&amp;amp;&lt;/span&gt;self, req: &lt;span style=&#34;color:#a6e22e&#34;&gt;RequestBuilder&lt;/span&gt;) -&amp;gt; &lt;span style=&#34;color:#a6e22e&#34;&gt;RequestBuilder&lt;/span&gt;;
+}
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;and now we re-write &lt;code&gt;make_request&lt;/code&gt; to look like this&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-rust&#34; data-lang=&#34;rust&#34;&gt;&lt;span style=&#34;color:#66d9ef&#34;&gt;use&lt;/span&gt; reqwest::{Client, Method, RequestBuilder};
+
+&lt;span style=&#34;color:#66d9ef&#34;&gt;trait&lt;/span&gt; Authorizer {
+    &lt;span style=&#34;color:#66d9ef&#34;&gt;fn&lt;/span&gt; &lt;span style=&#34;color:#a6e22e&#34;&gt;authorize_request&lt;/span&gt;(&lt;span style=&#34;color:#f92672&#34;&gt;&amp;amp;&lt;/span&gt;self, req: &lt;span style=&#34;color:#a6e22e&#34;&gt;RequestBuilder&lt;/span&gt;) -&amp;gt; &lt;span style=&#34;color:#a6e22e&#34;&gt;RequestBuilder&lt;/span&gt;;
+}
+
+&lt;span style=&#34;color:#66d9ef&#34;&gt;struct&lt;/span&gt; &lt;span style=&#34;color:#a6e22e&#34;&gt;Cl&lt;/span&gt; {
+    client: &lt;span style=&#34;color:#a6e22e&#34;&gt;Client&lt;/span&gt;,
+    auth: Box&lt;span style=&#34;color:#f92672&#34;&gt;&amp;lt;&lt;/span&gt;dyn Authorizer&lt;span style=&#34;color:#f92672&#34;&gt;&amp;gt;&lt;/span&gt;,
+}
+
+&lt;span style=&#34;color:#66d9ef&#34;&gt;impl&lt;/span&gt; Cl {
+    &lt;span style=&#34;color:#66d9ef&#34;&gt;fn&lt;/span&gt; &lt;span style=&#34;color:#a6e22e&#34;&gt;new&lt;/span&gt;(auth: Box&lt;span style=&#34;color:#f92672&#34;&gt;&amp;lt;&lt;/span&gt;dyn Authorizer&lt;span style=&#34;color:#f92672&#34;&gt;&amp;gt;&lt;/span&gt;) -&amp;gt; &lt;span style=&#34;color:#a6e22e&#34;&gt;Self&lt;/span&gt; {
+        Cl {
+            client: &lt;span style=&#34;color:#a6e22e&#34;&gt;Client&lt;/span&gt;::new(),
+            auth: &lt;span style=&#34;color:#a6e22e&#34;&gt;auth&lt;/span&gt;,
+        }
+    }
+
+    async &lt;span style=&#34;color:#66d9ef&#34;&gt;fn&lt;/span&gt; &lt;span style=&#34;color:#a6e22e&#34;&gt;make_request&lt;/span&gt;(&lt;span style=&#34;color:#f92672&#34;&gt;&amp;amp;&lt;/span&gt;self, url: &lt;span style=&#34;color:#66d9ef&#34;&gt;&amp;amp;&lt;/span&gt;&lt;span style=&#34;color:#66d9ef&#34;&gt;str&lt;/span&gt;) -&amp;gt; Result&lt;span style=&#34;color:#f92672&#34;&gt;&amp;lt;&lt;/span&gt;String, Error&lt;span style=&#34;color:#f92672&#34;&gt;&amp;gt;&lt;/span&gt; {
+        &lt;span style=&#34;color:#66d9ef&#34;&gt;let&lt;/span&gt; req &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; self.client.request(Method::GET, url);
+        &lt;span style=&#34;color:#66d9ef&#34;&gt;let&lt;/span&gt; req &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; self.auth.authorize_request(req);
+        &lt;span style=&#34;color:#66d9ef&#34;&gt;let&lt;/span&gt; res &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; req.send().await&lt;span style=&#34;color:#f92672&#34;&gt;?&lt;/span&gt;;
+        &lt;span style=&#34;color:#66d9ef&#34;&gt;let&lt;/span&gt; res_str &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; res.text().await&lt;span style=&#34;color:#f92672&#34;&gt;?&lt;/span&gt;;
+        Ok(res_str)
+    }
+}
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;Note: I could have simply have included the trait as a field to make_request like so&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-rust&#34; data-lang=&#34;rust&#34;&gt;    async &lt;span style=&#34;color:#66d9ef&#34;&gt;fn&lt;/span&gt; &lt;span style=&#34;color:#a6e22e&#34;&gt;make_request&lt;/span&gt;(&lt;span style=&#34;color:#f92672&#34;&gt;&amp;amp;&lt;/span&gt;self, url: &lt;span style=&#34;color:#66d9ef&#34;&gt;&amp;amp;&lt;/span&gt;&lt;span style=&#34;color:#66d9ef&#34;&gt;str&lt;/span&gt;, &lt;span style=&#34;color:#f92672&#34;&gt;&amp;amp;&lt;/span&gt;dyn Authorizer) -&amp;gt; Result&lt;span style=&#34;color:#f92672&#34;&gt;&amp;lt;&lt;/span&gt;String, Error&lt;span style=&#34;color:#f92672&#34;&gt;&amp;gt;&lt;/span&gt; {
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;This makes authorizer be dynamic for different urls. I changed this out a bit
+to suit my demonstration.&lt;/p&gt;
+&lt;p&gt;However, imagine I had a use case that required clients made with base endpoints
+for different APIs. This lets the caller implement Authorizer. Nothing new so far.
+Now the caller can implement variations of Basic and Bearer Auth.&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-rust&#34; data-lang=&#34;rust&#34;&gt;&lt;span style=&#34;color:#66d9ef&#34;&gt;use&lt;/span&gt; reqwest::{Client, Method, RequestBuilder};
+
+&lt;span style=&#34;color:#66d9ef&#34;&gt;trait&lt;/span&gt; Authorizer {
+    &lt;span style=&#34;color:#66d9ef&#34;&gt;fn&lt;/span&gt; &lt;span style=&#34;color:#a6e22e&#34;&gt;authorize_request&lt;/span&gt;(&lt;span style=&#34;color:#f92672&#34;&gt;&amp;amp;&lt;/span&gt;self, req: &lt;span style=&#34;color:#a6e22e&#34;&gt;RequestBuilder&lt;/span&gt;) -&amp;gt; &lt;span style=&#34;color:#a6e22e&#34;&gt;RequestBuilder&lt;/span&gt;;
+}
+
+&lt;span style=&#34;color:#66d9ef&#34;&gt;struct&lt;/span&gt; &lt;span style=&#34;color:#a6e22e&#34;&gt;Cl&lt;/span&gt; {
+    client: &lt;span style=&#34;color:#a6e22e&#34;&gt;Client&lt;/span&gt;,
+    auth: Box&lt;span style=&#34;color:#f92672&#34;&gt;&amp;lt;&lt;/span&gt;dyn Authorizer&lt;span style=&#34;color:#f92672&#34;&gt;&amp;gt;&lt;/span&gt;,
+}
+
+&lt;span style=&#34;color:#66d9ef&#34;&gt;impl&lt;/span&gt; Cl {
+    &lt;span style=&#34;color:#66d9ef&#34;&gt;fn&lt;/span&gt; &lt;span style=&#34;color:#a6e22e&#34;&gt;new&lt;/span&gt;(auth: Box&lt;span style=&#34;color:#f92672&#34;&gt;&amp;lt;&lt;/span&gt;dyn Authorizer&lt;span style=&#34;color:#f92672&#34;&gt;&amp;gt;&lt;/span&gt;) -&amp;gt; &lt;span style=&#34;color:#a6e22e&#34;&gt;Self&lt;/span&gt; {
+        Cl {
+            client: &lt;span style=&#34;color:#a6e22e&#34;&gt;Client&lt;/span&gt;::new(),
+            auth: &lt;span style=&#34;color:#a6e22e&#34;&gt;auth&lt;/span&gt;,
+        }
+    }
+
+    async &lt;span style=&#34;color:#66d9ef&#34;&gt;fn&lt;/span&gt; &lt;span style=&#34;color:#a6e22e&#34;&gt;make_request&lt;/span&gt;(&lt;span style=&#34;color:#f92672&#34;&gt;&amp;amp;&lt;/span&gt;self, url: &lt;span style=&#34;color:#66d9ef&#34;&gt;&amp;amp;&lt;/span&gt;&lt;span style=&#34;color:#66d9ef&#34;&gt;str&lt;/span&gt;) -&amp;gt; Result&lt;span style=&#34;color:#f92672&#34;&gt;&amp;lt;&lt;/span&gt;String, Error&lt;span style=&#34;color:#f92672&#34;&gt;&amp;gt;&lt;/span&gt; {
+        &lt;span style=&#34;color:#66d9ef&#34;&gt;let&lt;/span&gt; req &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; self.client.request(Method::GET, url);
+        &lt;span style=&#34;color:#66d9ef&#34;&gt;let&lt;/span&gt; req &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; self.auth.authorize_request(req);
+        &lt;span style=&#34;color:#66d9ef&#34;&gt;let&lt;/span&gt; res &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; req.send().await&lt;span style=&#34;color:#f92672&#34;&gt;?&lt;/span&gt;;
+        &lt;span style=&#34;color:#66d9ef&#34;&gt;let&lt;/span&gt; res_str &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; res.text().await&lt;span style=&#34;color:#f92672&#34;&gt;?&lt;/span&gt;;
+        Ok(res_str)
+    }
+}
+
+&lt;span style=&#34;color:#66d9ef&#34;&gt;type&lt;/span&gt; &lt;span style=&#34;color:#a6e22e&#34;&gt;Error&lt;/span&gt; &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; Box&lt;span style=&#34;color:#f92672&#34;&gt;&amp;lt;&lt;/span&gt;dyn std::error::Error &lt;span style=&#34;color:#f92672&#34;&gt;+&lt;/span&gt; Send &lt;span style=&#34;color:#f92672&#34;&gt;+&lt;/span&gt; Sync&lt;span style=&#34;color:#f92672&#34;&gt;&amp;gt;&lt;/span&gt;;
+
+&lt;span style=&#34;color:#75715e&#34;&gt;#[tokio::main]&lt;/span&gt;
+async &lt;span style=&#34;color:#66d9ef&#34;&gt;fn&lt;/span&gt; &lt;span style=&#34;color:#a6e22e&#34;&gt;main&lt;/span&gt;() -&amp;gt; Result&lt;span style=&#34;color:#f92672&#34;&gt;&amp;lt;&lt;/span&gt;(), Error&lt;span style=&#34;color:#f92672&#34;&gt;&amp;gt;&lt;/span&gt; {
+    &lt;span style=&#34;color:#66d9ef&#34;&gt;let&lt;/span&gt; bearer_client &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; Cl::new(Box::new(BearerTokenAuthorizer::new(&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;key&amp;#34;&lt;/span&gt;, &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;value&amp;#34;&lt;/span&gt;)));
+    &lt;span style=&#34;color:#66d9ef&#34;&gt;let&lt;/span&gt; resp &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; bearer_client
+        .make_request(&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;http://site-that-needs-bearer-token&amp;#34;&lt;/span&gt;)
+        .await&lt;span style=&#34;color:#f92672&#34;&gt;?&lt;/span&gt;;
+    println&lt;span style=&#34;color:#f92672&#34;&gt;!&lt;/span&gt;(&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;{}&amp;#34;&lt;/span&gt;, resp);
+
+    &lt;span style=&#34;color:#66d9ef&#34;&gt;let&lt;/span&gt; basic_auth_client &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; Cl::new(Box::new(BasicAuth::new(&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;user&amp;#34;&lt;/span&gt;, &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;password&amp;#34;&lt;/span&gt;)));
+    &lt;span style=&#34;color:#66d9ef&#34;&gt;let&lt;/span&gt; resp &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; basic_auth_client
+        .make_request(&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;http://site-that-needs-basic-auth&amp;#34;&lt;/span&gt;)
+        .await&lt;span style=&#34;color:#f92672&#34;&gt;?&lt;/span&gt;;
+    println&lt;span style=&#34;color:#f92672&#34;&gt;!&lt;/span&gt;(&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;{}&amp;#34;&lt;/span&gt;, resp);
+    Ok(())
+}
+
+&lt;span style=&#34;color:#66d9ef&#34;&gt;pub&lt;/span&gt; &lt;span style=&#34;color:#66d9ef&#34;&gt;struct&lt;/span&gt; &lt;span style=&#34;color:#a6e22e&#34;&gt;BasicAuth&lt;/span&gt; {
+    user: String,
+    api_token: String,
+}
+
+&lt;span style=&#34;color:#66d9ef&#34;&gt;impl&lt;/span&gt; Authorizer &lt;span style=&#34;color:#66d9ef&#34;&gt;for&lt;/span&gt; BasicAuth {
+    &lt;span style=&#34;color:#66d9ef&#34;&gt;fn&lt;/span&gt; &lt;span style=&#34;color:#a6e22e&#34;&gt;authorize_request&lt;/span&gt;(&lt;span style=&#34;color:#f92672&#34;&gt;&amp;amp;&lt;/span&gt;self, req: &lt;span style=&#34;color:#a6e22e&#34;&gt;RequestBuilder&lt;/span&gt;) -&amp;gt; &lt;span style=&#34;color:#a6e22e&#34;&gt;RequestBuilder&lt;/span&gt; {
+        req.basic_auth(self.user.to_owned(), Some(self.api_token.to_owned()))
+    }
+}
+
+&lt;span style=&#34;color:#66d9ef&#34;&gt;impl&lt;/span&gt; BasicAuth {
+    &lt;span style=&#34;color:#66d9ef&#34;&gt;fn&lt;/span&gt; &lt;span style=&#34;color:#a6e22e&#34;&gt;new&lt;/span&gt;(user: &lt;span style=&#34;color:#66d9ef&#34;&gt;&amp;amp;&lt;/span&gt;&lt;span style=&#34;color:#66d9ef&#34;&gt;str&lt;/span&gt;, value: &lt;span style=&#34;color:#66d9ef&#34;&gt;&amp;amp;&lt;/span&gt;&lt;span style=&#34;color:#66d9ef&#34;&gt;str&lt;/span&gt;) -&amp;gt; &lt;span style=&#34;color:#a6e22e&#34;&gt;Self&lt;/span&gt; {
+        BasicAuth {
+            user: &lt;span style=&#34;color:#a6e22e&#34;&gt;user&lt;/span&gt;.to_string(),
+            api_token: &lt;span style=&#34;color:#a6e22e&#34;&gt;value&lt;/span&gt;.to_string(),
+        }
+    }
+}
+
+&lt;span style=&#34;color:#66d9ef&#34;&gt;pub&lt;/span&gt; &lt;span style=&#34;color:#66d9ef&#34;&gt;struct&lt;/span&gt; &lt;span style=&#34;color:#a6e22e&#34;&gt;BearerTokenAuthorizer&lt;/span&gt; {
+    token_key: String,
+    token_value: String,
+}
+
+&lt;span style=&#34;color:#66d9ef&#34;&gt;impl&lt;/span&gt; Authorizer &lt;span style=&#34;color:#66d9ef&#34;&gt;for&lt;/span&gt; BearerTokenAuthorizer {
+    &lt;span style=&#34;color:#66d9ef&#34;&gt;fn&lt;/span&gt; &lt;span style=&#34;color:#a6e22e&#34;&gt;authorize_request&lt;/span&gt;(&lt;span style=&#34;color:#f92672&#34;&gt;&amp;amp;&lt;/span&gt;self, req: &lt;span style=&#34;color:#a6e22e&#34;&gt;RequestBuilder&lt;/span&gt;) -&amp;gt; &lt;span style=&#34;color:#a6e22e&#34;&gt;RequestBuilder&lt;/span&gt; {
+        req.header(reqwest::header::AUTHORIZATION, self.token_value.clone())
+    }
+}
+
+&lt;span style=&#34;color:#66d9ef&#34;&gt;impl&lt;/span&gt; BearerTokenAuthorizer {
+    &lt;span style=&#34;color:#66d9ef&#34;&gt;fn&lt;/span&gt; &lt;span style=&#34;color:#a6e22e&#34;&gt;new&lt;/span&gt;(key: &lt;span style=&#34;color:#66d9ef&#34;&gt;&amp;amp;&lt;/span&gt;&lt;span style=&#34;color:#66d9ef&#34;&gt;str&lt;/span&gt;, value: &lt;span style=&#34;color:#66d9ef&#34;&gt;&amp;amp;&lt;/span&gt;&lt;span style=&#34;color:#66d9ef&#34;&gt;str&lt;/span&gt;) -&amp;gt; &lt;span style=&#34;color:#a6e22e&#34;&gt;Self&lt;/span&gt; {
+        &lt;span style=&#34;color:#66d9ef&#34;&gt;let&lt;/span&gt; value &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; format&lt;span style=&#34;color:#f92672&#34;&gt;!&lt;/span&gt;(&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;Bearer {}&amp;#34;&lt;/span&gt;, value.to_string());
+        BearerTokenAuthorizer {
+            token_key: &lt;span style=&#34;color:#a6e22e&#34;&gt;key&lt;/span&gt;.to_string(),
+            token_value: &lt;span style=&#34;color:#a6e22e&#34;&gt;value&lt;/span&gt;,
+        }
+    }
+}
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;So far, so good right?&lt;/p&gt;
+&lt;p&gt;So for my usecase&amp;hellip; I wanted to clone the Client around. This meant deriving
+a trait. As simple as&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-rust&#34; data-lang=&#34;rust&#34;&gt;&lt;span style=&#34;color:#75715e&#34;&gt;#[derive(Clone)]&lt;/span&gt;
+&lt;span style=&#34;color:#66d9ef&#34;&gt;struct&lt;/span&gt; &lt;span style=&#34;color:#a6e22e&#34;&gt;Cl&lt;/span&gt; {
+    client: &lt;span style=&#34;color:#a6e22e&#34;&gt;Client&lt;/span&gt;,
+    auth: Box&lt;span style=&#34;color:#f92672&#34;&gt;&amp;lt;&lt;/span&gt;dyn Authorizer&lt;span style=&#34;color:#f92672&#34;&gt;&amp;gt;&lt;/span&gt;,
+}
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;Lets try to build it.&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-bash&#34; data-lang=&#34;bash&#34;&gt; copy-box-traits % cargo build
+   Compiling copy-box-traits v0.1.0 &lt;span style=&#34;color:#f92672&#34;&gt;(&lt;/span&gt;/Users/sudarsan/dev/rust/copy-box-traits&lt;span style=&#34;color:#f92672&#34;&gt;)&lt;/span&gt;
+error&lt;span style=&#34;color:#f92672&#34;&gt;[&lt;/span&gt;E0277&lt;span style=&#34;color:#f92672&#34;&gt;]&lt;/span&gt;: the trait bound &lt;span style=&#34;color:#e6db74&#34;&gt;`&lt;/span&gt;dyn Authorizer: std::clone::Clone&lt;span style=&#34;color:#e6db74&#34;&gt;`&lt;/span&gt; is not satisfied
+  --&amp;gt; src/main.rs:10:5
+   |
+&lt;span style=&#34;color:#ae81ff&#34;&gt;10&lt;/span&gt; |     auth: Box&amp;lt;dyn Authorizer&amp;gt;,
+   |     ^^^^^^^^^^^^^^^^^^^^^^^^^ the trait &lt;span style=&#34;color:#e6db74&#34;&gt;`&lt;/span&gt;std::clone::Clone&lt;span style=&#34;color:#e6db74&#34;&gt;`&lt;/span&gt; is not implemented &lt;span style=&#34;color:#66d9ef&#34;&gt;for&lt;/span&gt; &lt;span style=&#34;color:#e6db74&#34;&gt;`&lt;/span&gt;dyn Authorizer&lt;span style=&#34;color:#e6db74&#34;&gt;`&lt;/span&gt;
+   |
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;OOPS.&lt;/p&gt;
+&lt;p&gt;So now I had to implement a custom clone for my Boxed trait.&lt;/p&gt;
+&lt;p&gt;This didn&amp;rsquo;t seem as straightforward as I thought it would be. I started with&amp;hellip;&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-rust&#34; data-lang=&#34;rust&#34;&gt;&lt;span style=&#34;color:#66d9ef&#34;&gt;impl&lt;/span&gt; Clone &lt;span style=&#34;color:#66d9ef&#34;&gt;for&lt;/span&gt; Box&lt;span style=&#34;color:#f92672&#34;&gt;&amp;lt;&lt;/span&gt;dyn Authorizer&lt;span style=&#34;color:#f92672&#34;&gt;&amp;gt;&lt;/span&gt; {
+    &lt;span style=&#34;color:#66d9ef&#34;&gt;fn&lt;/span&gt; &lt;span style=&#34;color:#a6e22e&#34;&gt;clone&lt;/span&gt;(&lt;span style=&#34;color:#f92672&#34;&gt;&amp;amp;&lt;/span&gt;self) -&amp;gt; &lt;span style=&#34;color:#a6e22e&#34;&gt;Self&lt;/span&gt; {
+        Box::new(&lt;span style=&#34;color:#f92672&#34;&gt;*&lt;/span&gt;self.clone())
+    }
+}
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;Now&amp;hellip; Rust would complain saying&amp;hellip;&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-bash&#34; data-lang=&#34;bash&#34;&gt;the size &lt;span style=&#34;color:#66d9ef&#34;&gt;for&lt;/span&gt; values of type &lt;span style=&#34;color:#e6db74&#34;&gt;`&lt;/span&gt;dyn Authorizer&lt;span style=&#34;color:#e6db74&#34;&gt;`&lt;/span&gt; cannot be known at compilation time
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;I clearly can&amp;rsquo;t dereference the box and put it back in after cloning it.&lt;/p&gt;
+&lt;p&gt;So the right way to do it, is to implement a generic authorizer cloner trait &lt;code&gt;CloneAuthorizer&lt;/code&gt; for all types &lt;!-- raw HTML omitted --&gt;.
+Now all we have to do is add this as a built in trait to the trait. This
+is because only built in traits can be used as closure or object bounds.&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-rust&#34; data-lang=&#34;rust&#34;&gt;&lt;span style=&#34;color:#66d9ef&#34;&gt;trait&lt;/span&gt; Authorizer: &lt;span style=&#34;color:#a6e22e&#34;&gt;CloneAuthorizer&lt;/span&gt; {
+    &lt;span style=&#34;color:#66d9ef&#34;&gt;fn&lt;/span&gt; &lt;span style=&#34;color:#a6e22e&#34;&gt;authorize_request&lt;/span&gt;(&lt;span style=&#34;color:#f92672&#34;&gt;&amp;amp;&lt;/span&gt;self, req: &lt;span style=&#34;color:#a6e22e&#34;&gt;RequestBuilder&lt;/span&gt;) -&amp;gt; &lt;span style=&#34;color:#a6e22e&#34;&gt;RequestBuilder&lt;/span&gt;;
+}
+
+&lt;span style=&#34;color:#66d9ef&#34;&gt;impl&lt;/span&gt; Clone &lt;span style=&#34;color:#66d9ef&#34;&gt;for&lt;/span&gt; Box&lt;span style=&#34;color:#f92672&#34;&gt;&amp;lt;&lt;/span&gt;dyn Authorizer&lt;span style=&#34;color:#f92672&#34;&gt;&amp;gt;&lt;/span&gt; {
+    &lt;span style=&#34;color:#66d9ef&#34;&gt;fn&lt;/span&gt; &lt;span style=&#34;color:#a6e22e&#34;&gt;clone&lt;/span&gt;(&lt;span style=&#34;color:#f92672&#34;&gt;&amp;amp;&lt;/span&gt;self) -&amp;gt; &lt;span style=&#34;color:#a6e22e&#34;&gt;Self&lt;/span&gt; {
+        self.clone_authorizer()
+    }
+}
+
+&lt;span style=&#34;color:#66d9ef&#34;&gt;trait&lt;/span&gt; CloneAuthorizer {
+    &lt;span style=&#34;color:#66d9ef&#34;&gt;fn&lt;/span&gt; &lt;span style=&#34;color:#a6e22e&#34;&gt;clone_authorizer&lt;/span&gt;(&lt;span style=&#34;color:#f92672&#34;&gt;&amp;amp;&lt;/span&gt;self) -&amp;gt; Box&lt;span style=&#34;color:#f92672&#34;&gt;&amp;lt;&lt;/span&gt;dyn Authorizer&lt;span style=&#34;color:#f92672&#34;&gt;&amp;gt;&lt;/span&gt;;
+}
+
+&lt;span style=&#34;color:#66d9ef&#34;&gt;impl&lt;/span&gt;&lt;span style=&#34;color:#f92672&#34;&gt;&amp;lt;&lt;/span&gt;T&lt;span style=&#34;color:#f92672&#34;&gt;&amp;gt;&lt;/span&gt; CloneAuthorizer &lt;span style=&#34;color:#66d9ef&#34;&gt;for&lt;/span&gt; T
+&lt;span style=&#34;color:#66d9ef&#34;&gt;where&lt;/span&gt;
+    T: &lt;span style=&#34;color:#a6e22e&#34;&gt;Authorizer&lt;/span&gt; &lt;span style=&#34;color:#f92672&#34;&gt;+&lt;/span&gt; Clone &lt;span style=&#34;color:#f92672&#34;&gt;+&lt;/span&gt; &amp;#39;static,
+{
+    &lt;span style=&#34;color:#66d9ef&#34;&gt;fn&lt;/span&gt; &lt;span style=&#34;color:#a6e22e&#34;&gt;clone_authorizer&lt;/span&gt;(&lt;span style=&#34;color:#f92672&#34;&gt;&amp;amp;&lt;/span&gt;self) -&amp;gt; Box&lt;span style=&#34;color:#f92672&#34;&gt;&amp;lt;&lt;/span&gt;dyn Authorizer&lt;span style=&#34;color:#f92672&#34;&gt;&amp;gt;&lt;/span&gt; {
+        Box::new(self.clone())
+    }
+}
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;This makes the &lt;code&gt;Box&amp;lt;dyn Authorizer&amp;gt;&lt;/code&gt; or any struct with this trait clone-able.&lt;/p&gt;
+&lt;p&gt;The full code can be found at &lt;a href=&#34;https://github.com/sudarshan-reddy/copy-box-traits&#34;&gt;https://github.com/sudarshan-reddy/copy-box-traits&lt;/a&gt;&lt;/p&gt;
+</description>
     </item>
     
   </channel>

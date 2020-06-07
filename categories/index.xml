@@ -1,14 +1,13 @@
-<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
-    <title>Categories on Geek and Latin</title>
-    <link>/categories/</link>
-    <description>Recent content in Categories on Geek and Latin</description>
+    <title>Categories on Sudarshan&#39;s blog</title>
+    <link>https://geekandlatin.com/categories/</link>
+    <description>Sudarshan&#39;s blog (Categories)</description>
     <generator>Hugo -- gohugo.io</generator>
-    <language>en</language>
-    <copyright>© sudarshan-reddy@github.io</copyright>
+    <language>en-us</language>
     
-	<atom:link href="/categories/index.xml" rel="self" type="application/rss+xml" />
+    <atom:link href="https://geekandlatin.com/categories/index.xml" rel="self" type="application/rss+xml" />
     
     
   </channel>

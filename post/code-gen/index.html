@@ -1,66 +1,35 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en-us">
 <head>
+    
+        
+<meta charset="utf-8">
+<meta name="HandheldFriendly" content="True">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="referrer" content="no-referrer-when-downgrade">
 
-  <meta charset="utf-8" />
+<title>A little code generation in Go in 2020. - Sudarshan&#39;s blog</title>
+<meta name="description" content="">
 
-  
-  <title>A little code generation in Go in 2020.</title>
+<link rel="icon" type="image/x-icon" href="https://geekandlatin.com/favicon.ico">
+<link rel="apple-touch-icon-precomposed" href="https://geekandlatin.com/favicon.png">
 
-  
-  
-  <link href="//cdn.jsdelivr.net" rel="dns-prefetch">
-  <link href="//cdnjs.cloudflare.com" rel="dns-prefetch">
-  <link href="//at.alicdn.com" rel="dns-prefetch">
-  <link href="//fonts.googleapis.com" rel="dns-prefetch">
-  <link href="//fonts.gstatic.com" rel="dns-prefetch">
-  <link href="///disqus.com" rel="dns-prefetch">
-  <link href="//c.disquscdn.com" rel="dns-prefetch">
-  
-  <link href="//www.google-analytics.com" rel="dns-prefetch">
-  
-
-  
-
-  
-  
-  <meta name="description" content="Perl gives me headaches. But I&amp;rsquo;m fond of one of Larry Wall&amp;rsquo;s three virtues: Laziness. This is a story of how sometimes laziness lets you do fun things.
-Distributed systems and microservices are as ubiquitous as the coronavirus in 2020. This results in a requirement for a lot of integration. And a nice way to maintain the glue code is to use SDKs rather than have multiple services write the transport glue themselves.">
-
-  
-  
-    <meta name="twitter:card" content="summary">
-    <meta name="twitter:site" content="@sudproquo">
-    <meta name="twitter:title" content="A little code generation in Go in 2020.">
-    <meta name="twitter:description" content="Perl gives me headaches. But I&amp;rsquo;m fond of one of Larry Wall&amp;rsquo;s three virtues: Laziness. This is a story of how sometimes laziness lets you do fun things.
-Distributed systems and microservices are as ubiquitous as the coronavirus in 2020. This results in a requirement for a lot of integration. And a nice way to maintain the glue code is to use SDKs rather than have multiple services write the transport glue themselves.">
-    <meta name="twitter:image" content="/images/avatar.jpg">
-  
-
-  
-  <meta property="og:type" content="article">
-  <meta property="og:title" content="A little code generation in Go in 2020.">
-  <meta property="og:description" content="Perl gives me headaches. But I&amp;rsquo;m fond of one of Larry Wall&amp;rsquo;s three virtues: Laziness. This is a story of how sometimes laziness lets you do fun things.
-Distributed systems and microservices are as ubiquitous as the coronavirus in 2020. This results in a requirement for a lot of integration. And a nice way to maintain the glue code is to use SDKs rather than have multiple services write the transport glue themselves.">
-  <meta property="og:url" content="/post/code-gen/">
-  <meta property="og:image" content="/images/avatar.jpg">
+<link rel="stylesheet" href="https://geekandlatin.com/css/style.css?rnd=1591511724" />
 
 
 
+<meta property="og:title" content="A little code generation in Go in 2020." />
+<meta property="og:description" content="Perl gives me headaches. But I&rsquo;m fond of one of Larry Wall&rsquo;s three virtues: Laziness. This is a story of how sometimes laziness lets you do fun things.
+Distributed systems and microservices are as ubiquitous as the coronavirus in 2020. This results in a requirement for a lot of integration. And a nice way to maintain the glue code is to use SDKs rather than have multiple services write the transport glue themselves." />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="https://geekandlatin.com/post/code-gen/" />
+<meta property="article:published_time" content="2020-03-14T00:00:00+00:00" />
+<meta property="article:modified_time" content="2020-03-14T00:00:00+00:00" />
 
-<meta name="generator" content="Hugo 0.55.6">
-
-
-<link rel="canonical" href="/post/code-gen/">
-
-<meta name="renderer" content="webkit">
-<meta name="viewport" content="width=device-width,initial-scale=1">
-<meta name="format-detection" content="telephone=no,email=no,adress=no">
-<meta http-equiv="Cache-Control" content="no-transform">
-
-
-<meta name="robots" content="index,follow">
-<meta name="referrer" content="origin-when-cross-origin">
+<meta name="twitter:card" content="summary"/>
+<meta name="twitter:title" content="A little code generation in Go in 2020."/>
+<meta name="twitter:description" content="Perl gives me headaches. But I&rsquo;m fond of one of Larry Wall&rsquo;s three virtues: Laziness. This is a story of how sometimes laziness lets you do fun things.
+Distributed systems and microservices are as ubiquitous as the coronavirus in 2020. This results in a requirement for a lot of integration. And a nice way to maintain the glue code is to use SDKs rather than have multiple services write the transport glue themselves."/>
 
 
 
@@ -68,183 +37,63 @@ Distributed systems and microservices are as ubiquitous as the coronavirus in 20
 
 
 
-<meta name="theme-color" content="#02b875">
-<meta name="apple-mobile-web-app-capable" content="yes">
-<meta name="apple-mobile-web-app-status-bar-style" content="black">
-<meta name="apple-mobile-web-app-title" content="Geek and Latin">
-<meta name="msapplication-tooltip" content="Geek and Latin">
-<meta name='msapplication-navbutton-color' content="#02b875">
-<meta name="msapplication-TileColor" content="#02b875">
-<meta name="msapplication-TileImage" content="/icons/icon-144x144.png">
-<link rel="icon" href="/favicon.ico">
-<link rel="icon" type="image/png" sizes="16x16" href="/icons/icon-16x16.png">
-<link rel="icon" type="image/png" sizes="32x32" href="/icons/icon-32x32.png">
-<link rel="icon" sizes="192x192" href="/icons/icon-192x192.png">
-<link rel="apple-touch-icon" href="/icons/icon-152x152.png">
-<link rel="manifest" href="/manifest.json">
-
-
-<link rel="preload" href="/styles/main.min.css" as="style">
-
-<link rel="preload" href="https://fonts.googleapis.com/css?family=Lobster" as="style">
-<link rel="preload" href="/images/avatar.jpg" as="image">
-<link rel="preload" href="/images/grey-prism.svg" as="image">
-
-
-<style>
-  body {
-    background: rgb(244, 243, 241) url('/images/grey-prism.svg') repeat fixed;
-  }
-</style>
-<link rel="stylesheet" href="/styles/main.min.css">
-
-<link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Lobster">
-
-
-
-<script src="https://cdn.jsdelivr.net/npm/medium-zoom@1.0.2/dist/medium-zoom.min.js"></script>
-
-
-
-
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/video.js@7.3.0/dist/video-js.min.css">
-
-
-
-  
-  
-<!--[if lte IE 8]>
-  <script src="https://cdn.jsdelivr.net/npm/html5shiv@3.7.3/dist/html5shiv.min.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/respond.js@1.4.2/dest/respond.min.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/videojs-ie8@1.1.2/dist/videojs-ie8.min.js"></script>
-<![endif]-->
-
-<!--[if lte IE 9]>
-  <script src="https://cdn.jsdelivr.net/npm/eligrey-classlist-js-polyfill@1.2.20180112/classList.min.js"></script>
-<![endif]-->
-
-
+    
 </head>
-  <body>
+<body>
+    <a class="skip-main" href="#main">Skip to main content</a>
+    <div class="container">
+        <header> 
+            
+                <h1 class="site-header">
+    <a href="/">Sudarshan&#39;s blog</a>
+</h1>
+<nav>
     
-    <div class="suspension">
-      <a role="button" aria-label="Go to top" title="Go to top" class="to-top is-hide"><span class="icon icon-up" aria-hidden="true"></span></a>
-      
-        
-        <a role="button" aria-label="Go to comments" title="Go to comments" class="to-comment" href="#disqus_thread"><span class="icon icon-comment" aria-hidden="true"></span></a>
-        
-      
-    </div>
     
+    <a class="" href="https://geekandlatin.com/about/" title="">About</a>
     
-  <header class="site-header">
-  <img class="avatar" src="/images/avatar.jpg" alt="Avatar">
-  
-  <h2 class="title">Geek and Latin</h2>
-  
-  <p class="subtitle"></p>
-  <button class="menu-toggle" type="button" aria-label="Main Menu" aria-expanded="false" tab-index="0">
-    <span class="icon icon-menu" aria-hidden="true"></span>
-  </button>
+    <a class="" href="https://geekandlatin.com/tags/" title="">Tags</a>
+    
+    <a class="" href="https://github.com/sudarshan-reddy/" title="">Github</a>
+    
+</nav>
 
-  <nav class="site-menu collapsed">
-    <h2 class="offscreen">Main Menu</h2>
-    <ul class="menu-list">
-      
-      
-      
-      
-        <li class="menu-item
-          
-          
-           is-active">
-          <a href="/">Home</a>
-        </li>
-      
-        <li class="menu-item
-          
-          
-          ">
-          <a href="https://github.com/sudarshan-reddy">Works</a>
-        </li>
-      
-        <li class="menu-item
-          
-          
-          ">
-          <a href="/tags/">Tags</a>
-        </li>
-      
-    </ul>
-  </nav>
-  <nav class="social-menu collapsed">
-    <h2 class="offscreen">Social Networks</h2>
-    <ul class="social-list"><li class="social-item">
-          <a href="mailto:sudar.theone@gmail.com" title="Email" aria-label="Email">
-            <span class="icon icon-email" aria-hidden="true"></span>
-          </a>
-        </li><li class="social-item">
-          <a href="//github.com/sudarshan-reddy" title="GitHub" aria-label="GitHub">
-            <span class="icon icon-github" aria-hidden="true"></span>
-          </a>
-        </li><li class="social-item">
-          <a href="//twitter.com/sudproquo" title="Twitter" aria-label="Twitter">
-            <span class="icon icon-twitter" aria-hidden="true"></span>
-          </a>
-        </li><li class="social-item">
-          <a href="//www.linkedin.com/in/sudarshan-reddy31" title="Linkedin" aria-label="Linkedin">
-            <span class="icon icon-linkedin" aria-hidden="true"></span>
-          </a>
-        </li></ul>
-  </nav>
-</header>
+            
+        </header>
+        <main id="main" tabindex="-1"> 
+            
 
-  <section class="main post-detail">
-    <header class="post-header">
-      <h1 class="post-title">A little code generation in Go in 2020.</h1>
-      <p class="post-meta">@Sudarshan · Mar 14, 2020 · 9 min read</p>
-    </header>
-    <article class="post-content">
-
-<p>Perl gives me headaches. But I&rsquo;m fond of one of Larry Wall&rsquo;s <a href="http://threevirtues.com/">three virtues</a>:
+    <article class="post">
+        <header>
+            <h1 class="post-title">A little code generation in Go in 2020.</h1>
+        </header>
+        <div class="content">
+            <p>Perl gives me headaches. But I&rsquo;m fond of one of Larry Wall&rsquo;s <a href="http://threevirtues.com/">three virtues</a>:
 <code>Laziness</code>. This is a story of how sometimes laziness lets you do fun things.</p>
-
 <p>Distributed systems and microservices are as ubiquitous as the coronavirus in 2020. This
 results in a requirement for a lot of integration. And a nice way to maintain the glue
 code is to use SDKs rather than have multiple services write the transport glue themselves.
 Like so&hellip;</p>
-
-<p><img src="https://sudarshan-reddy.github.io/images/microservices.jpg" alt="microservices" /></p>
-
+<p><img src="https://sudarshan-reddy.github.io/images/microservices.jpg" alt="microservices"></p>
 <p>It was all nice and fun until we had to start writing an SDK for each new microservice.</p>
-
 <p>And each new endpoint.</p>
-
 <p>And each new parameter addition.</p>
-
 <p>Generating these parts would make new additions trivial, keep the SDK codebases
 homogenous and eliminate the occurence of manual errors.</p>
-
 <p>So the SDK has two components. The component that is manually built and the parts
 that can be generated. Here is a layout of the project.</p>
-
 <pre><code>---
  - client
  - api.go
  - methods.go
  - go.mod
  - go.sum
-</code></pre>
-
-<p>client is the http.Client embedded with some retry logic etc. It has two methods
+</code></pre><p>client is the http.Client embedded with some retry logic etc. It has two methods
 that are important. NewRequest which creates a wrapped http request and Send()
 which is sort of like <code>client.Do()</code>.</p>
-
 <p>api.go is a collection of all the methods attached to an interface that the sdk exposes.</p>
-
 <p>methods.go is what we want to generate. It will be a collection of implementations
 of helpers that call the api and parse and respond readable Go structures. Like so:</p>
-
 <p><code>https://awesomewebsite/v1/getdetails</code></p>
 <div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#66d9ef">func</span> (<span style="color:#a6e22e">c</span> <span style="color:#f92672">*</span><span style="color:#a6e22e">client</span>) <span style="color:#a6e22e">GetDetails</span>() (<span style="color:#f92672">*</span><span style="color:#a6e22e">Details</span>, <span style="color:#66d9ef">error</span>) {
 	<span style="color:#a6e22e">op</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">client</span>.<span style="color:#a6e22e">Operation</span>{
@@ -262,10 +111,9 @@ of helpers that call the api and parse and respond readable Go structures. Like 
 	}
 
 	<span style="color:#66d9ef">return</span> <span style="color:#a6e22e">response</span>, <span style="color:#66d9ef">nil</span>
-}</code></pre></div>
-<p>If you notice, most of the code is tedious housekeeping that gets repeated. So getrandomstuff
+}
+</code></pre></div><p>If you notice, most of the code is tedious housekeeping that gets repeated. So getrandomstuff
 becomes</p>
-
 <p><code>https://awesomewebsite/v1/getrandomstuff</code></p>
 <div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#66d9ef">func</span> (<span style="color:#a6e22e">c</span> <span style="color:#f92672">*</span><span style="color:#a6e22e">client</span>) <span style="color:#a6e22e">GetRandomStuff</span>() (<span style="color:#f92672">*</span><span style="color:#a6e22e">RandomStuff</span>, <span style="color:#66d9ef">error</span>) {
 	<span style="color:#a6e22e">op</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">client</span>.<span style="color:#a6e22e">Operation</span>{
@@ -283,8 +131,8 @@ becomes</p>
 	}
 
 	<span style="color:#66d9ef">return</span> <span style="color:#a6e22e">response</span>, <span style="color:#66d9ef">nil</span>
-}</code></pre></div>
-<p>Step in code generation. Now what I wanted to do was to use a specification that
+}
+</code></pre></div><p>Step in code generation. Now what I wanted to do was to use a specification that
 the user is able to add a configuration that the generator captures and
 translates into something like the snippets about. Lets define a set of rules to outline this.</p>
 <div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#66d9ef">type</span> <span style="color:#a6e22e">Generator</span> <span style="color:#66d9ef">interface</span> {
@@ -300,18 +148,13 @@ translates into something like the snippets about. Lets define a set of rules to
 <span style="color:#75715e">// Writer is a general wrapper on io.Writer to write the processed file.
 </span><span style="color:#75715e"></span><span style="color:#66d9ef">type</span> <span style="color:#a6e22e">Writer</span> <span style="color:#66d9ef">interface</span> {
 	<span style="color:#a6e22e">WriteAPI</span>(<span style="color:#a6e22e">io</span>.<span style="color:#a6e22e">Writer</span>, []<span style="color:#a6e22e">API</span>) <span style="color:#66d9ef">error</span>
-}</code></pre></div>
-<p>So, we need something to Read from and somewhere to Write.</p>
-
+}
+</code></pre></div><p>So, we need something to Read from and somewhere to Write.</p>
 <h2 id="reader">Reader</h2>
-
 <p>Multiple options presented themselves.</p>
-
 <p><strong>It could be an API specification:</strong> But everyone hates swagger so much. It seemed to be punishment for
 the developers to write the yaml with all of swagger&rsquo;s quirks.</p>
-
 <p>Writing Swagger yamls are painful and so there is no example.</p>
-
 <p><strong>It could be a JSON/XML based configuration system:</strong> Still needed the developer to work on a different
 &ldquo;language/syntax&rdquo; compared to what the rest of the codebase was.</p>
 <div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-json" data-lang="json">{
@@ -335,8 +178,8 @@ the developers to write the yaml with all of swagger&rsquo;s quirks.</p>
             ]
         }
     ]
-}</code></pre></div>
-<p><strong>It could be an interface also written in Go:</strong> The user will have to add a method to an interface
+}
+</code></pre></div><p><strong>It could be an interface also written in Go:</strong> The user will have to add a method to an interface
 and define the structures. The downside of this is the http endpoint and verb have to be annoted.</p>
 <div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#66d9ef">type</span> <span style="color:#a6e22e">Client</span> <span style="color:#66d9ef">interface</span>{
     <span style="color:#75715e">// Get v1/getdetails
@@ -348,26 +191,21 @@ and define the structures. The downside of this is the http endpoint and verb ha
 
 <span style="color:#66d9ef">type</span> <span style="color:#a6e22e">Details</span> <span style="color:#66d9ef">struct</span>{}
 
-<span style="color:#66d9ef">type</span> <span style="color:#a6e22e">RandomStuff</span> <span style="color:#66d9ef">struct</span>{}</code></pre></div>
-<p>Out of these three options, the one I preferred was adding to the interface.
+<span style="color:#66d9ef">type</span> <span style="color:#a6e22e">RandomStuff</span> <span style="color:#66d9ef">struct</span>{}
+</code></pre></div><p>Out of these three options, the one I preferred was adding to the interface.
 It seemed intuitive and granted control to a Go developer. It also presented the biggest challenge
 of the three. Reading an AST. We could obviously just read the file like a plaintext
 but that seems very hacky and tightly coupled to a pre-conceived notion of how we expect
 the signatures to be written. Granted, we still expect annotations to be in a certain way
 but its much more malleable.</p>
-
-<h3 id="ast-quick-primer">AST - Quick primer</h3>
-
+<h3 id="ast---quick-primer">AST - Quick primer</h3>
 <p>ASTs are very common in compiled languages. An AST is an intermediate form of representation
 of code that the compiler can read and optimize. If you think about it,
 what we are doing is what a compiler would do. The only difference here being us translating
 go code to more go code. This brings us to&hellip;</p>
-
-<h3 id="compilers-very-very-quick-primer">Compilers - Very very quick primer</h3>
-
+<h3 id="compilers---very-very-quick-primer">Compilers - Very very quick primer</h3>
 <p>Most compilers break down into three primary stages: Parsing, Transformation and
 Code Generation.</p>
-
 <p><strong>Parsing:</strong> Parsing is generally broken down into Lexical analysis and synctactic analysis.
 A lexer generally is responsible for this <code>tokenization</code> process. Tokens are tiny little
 objects that describe an isolated piece of the syntax. They could be numbers, operators
@@ -375,23 +213,19 @@ or symbols amongst other things.
 Syntactic analysis is what we are interested in. It takes the tokens and builds an
 intermediate representation called the Abstract Syntax Tree.
 Luckily for us, go allows us to use their tools: go/ast, go/parser, go/token.</p>
-
 <p>I&rsquo;m not the biggest fan of the <code>internal</code> package in go but code generators
 seem to be the perfect candidate to put in here.</p>
-
 <p>I created two packages <code>internal/generator/</code> and <code>internal/cmd</code> to add the generator
 code.</p>
-
 <p>The parsing part of the AST was already done by Go. All I had to do was to
 call the already existing functions like so&hellip;</p>
 <div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go">    <span style="color:#a6e22e">fs</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">token</span>.<span style="color:#a6e22e">NewFileSet</span>()
 	<span style="color:#a6e22e">p</span>, <span style="color:#a6e22e">err</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">parser</span>.<span style="color:#a6e22e">ParseFile</span>(<span style="color:#a6e22e">fs</span>, <span style="color:#e6db74">&#34;&#34;</span>, <span style="color:#a6e22e">r</span>, <span style="color:#a6e22e">parser</span>.<span style="color:#a6e22e">ParseComments</span>)
 	<span style="color:#66d9ef">if</span> <span style="color:#a6e22e">err</span> <span style="color:#f92672">!=</span> <span style="color:#66d9ef">nil</span> {
 		<span style="color:#66d9ef">return</span> <span style="color:#66d9ef">nil</span>, <span style="color:#a6e22e">err</span>
-    }</code></pre></div>
-<p><strong>Transformation:</strong> Transformation is manipulating the AST to make changes to it
+    }
+</code></pre></div><p><strong>Transformation:</strong> Transformation is manipulating the AST to make changes to it
 to enable the final process of&hellip;</p>
-
 <p>I wanted to transform the AST into a data model that would be easy for the code
 generation to happen. I laid out a structure like this because I was dealing with
 APIs and their methods.</p>
@@ -412,17 +246,15 @@ APIs and their methods.</p>
 	<span style="color:#a6e22e">Body</span>         <span style="color:#66d9ef">string</span>
 	<span style="color:#a6e22e">InputParams</span>  []<span style="color:#a6e22e">Parameter</span>
 	<span style="color:#a6e22e">OutputParams</span> []<span style="color:#a6e22e">Parameter</span>
-}</code></pre></div>
-<p>Now that I had the AST parsed thanks to <code>ParseFile</code>, I had to loop through
+}
+</code></pre></div><p>Now that I had the AST parsed thanks to <code>ParseFile</code>, I had to loop through
 it to obtain:</p>
-
 <ul>
 <li>All the interface declarations.</li>
 <li>All the methods attached to the interface declarations.</li>
 <li>The input and output parameters of these methods.</li>
 <li>The code annotation talking about the http verb and endpoint.</li>
 </ul>
-
 <p><code>Decls</code> is all the declarations. We loop through that and assert for
 interfaces.</p>
 <div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#f92672">...</span>
@@ -451,8 +283,9 @@ interfaces.</p>
 			<span style="color:#66d9ef">if</span> !<span style="color:#a6e22e">ok</span> {
 				<span style="color:#66d9ef">continue</span>
 			}
-<span style="color:#f92672">...</span></code></pre></div>
-<p>Now that we have the interfaces we extract the other stuff we mentioned above
+<span style="color:#f92672">...</span>
+
+</code></pre></div><p>Now that we have the interfaces we extract the other stuff we mentioned above
 from 2-4.</p>
 <div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go">    <span style="color:#66d9ef">func</span> <span style="color:#a6e22e">getMethods</span>(<span style="color:#a6e22e">fields</span> []<span style="color:#f92672">*</span><span style="color:#a6e22e">ast</span>.<span style="color:#a6e22e">Field</span>) []<span style="color:#a6e22e">Method</span> {
     	<span style="color:#66d9ef">var</span> <span style="color:#a6e22e">methods</span> = make([]<span style="color:#a6e22e">Method</span>, <span style="color:#ae81ff">0</span>)
@@ -546,15 +379,12 @@ from 2-4.</p>
     		<span style="color:#a6e22e">param</span>.<span style="color:#a6e22e">WriteString</span>(<span style="color:#a6e22e">ident</span>.<span style="color:#a6e22e">Name</span>)
     	}
     	<span style="color:#66d9ef">return</span> <span style="color:#a6e22e">param</span>.<span style="color:#a6e22e">String</span>()
-    }</code></pre></div>
-<p><strong>Code Generation:</strong> Is basically generating runnable, optimized code in the format
+    }
+</code></pre></div><p><strong>Code Generation:</strong> Is basically generating runnable, optimized code in the format
 the compiler wants and for that we have the &hellip;</p>
-
 <h2 id="writer">Writer</h2>
-
 <p>The writer reads the transformation we applied (The API struct) and uses go&rsquo;s
 interesting template library to inject the values.</p>
-
 <p>The template library to achieve our example looks like so</p>
 <div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#66d9ef">const</span> <span style="color:#a6e22e">fnTmpl</span> = <span style="color:#e6db74">`
 </span><span style="color:#e6db74">		</span><span style="color:#75715e">{{</span><span style="color:#a6e22e">$i</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">separator</span> <span style="color:#e6db74">&#34;, &#34;</span><span style="color:#75715e">}}</span><span style="color:#e6db74">
@@ -591,8 +421,8 @@ interesting template library to inject the values.</p>
 		}
 		<span style="color:#66d9ef">return</span> <span style="color:#a6e22e">s</span>
 	}
-}</code></pre></div>
-<p>The injection looks like this.</p>
+}
+</code></pre></div><p>The injection looks like this.</p>
 <div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#66d9ef">for</span> <span style="color:#a6e22e">_</span>, <span style="color:#a6e22e">api</span> <span style="color:#f92672">:=</span> <span style="color:#66d9ef">range</span> <span style="color:#a6e22e">apis</span> {
 	<span style="color:#66d9ef">for</span> <span style="color:#a6e22e">_</span>, <span style="color:#a6e22e">method</span> <span style="color:#f92672">:=</span> <span style="color:#66d9ef">range</span> <span style="color:#a6e22e">api</span>.<span style="color:#a6e22e">Methods</span> {
 		<span style="color:#a6e22e">t</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">template</span>.<span style="color:#a6e22e">Must</span>(<span style="color:#a6e22e">template</span>.<span style="color:#a6e22e">New</span>(<span style="color:#e6db74">&#34;func&#34;</span>).
@@ -600,29 +430,39 @@ interesting template library to inject the values.</p>
 			<span style="color:#a6e22e">Parse</span>(<span style="color:#a6e22e">fnTmpl</span>))
 		<span style="color:#a6e22e">t</span>.<span style="color:#a6e22e">Execute</span>(<span style="color:#f92672">&amp;</span><span style="color:#a6e22e">buf</span>, <span style="color:#a6e22e">method</span>)
 	}
-}</code></pre></div>
-<p>And there you have it. The generation parts.
+}
+</code></pre></div><p>And there you have it. The generation parts.
 To get this to work with <code>go generate</code> all you have to do is add this to the
 root file.</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#f92672">//</span><span style="color:#66d9ef">go</span>:<span style="color:#a6e22e">generate</span> <span style="color:#66d9ef">go</span> <span style="color:#a6e22e">run</span> <span style="color:#a6e22e">internal</span><span style="color:#f92672">/</span><span style="color:#a6e22e">cmd</span><span style="color:#f92672">/</span><span style="color:#a6e22e">genmethods</span><span style="color:#f92672">/</span><span style="color:#a6e22e">generator</span>.<span style="color:#66d9ef">go</span></code></pre></div></article>
-    <footer class="post-footer">
-      
-      <ul class="post-tags">
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#75715e">//go:generate go run internal/cmd/genmethods/generator.go
+</span></code></pre></div>
+        </div>
         
-          <li><a href="/tags/go"><span class="tag">Go</span></a></li>
-        
-          <li><a href="/tags/ast"><span class="tag">Ast</span></a></li>
-        
-          <li><a href="/tags/code-generation"><span class="tag">Code Generation</span></a></li>
-        
-      </ul>
-      
-      <p class="post-copyright">
-        © sudarshan-reddy@github.io
-      </p>
-    </footer>
+
+
+<div class="post-info">
     
-      <div id="disqus_thread"></div>
+        <div class="post-date">2020-03-14</div>
+    
+    <div class="post-taxonomies">
+        
+            
+                <ul class="post-tags">
+                    
+                        <li><a href="https://geekandlatin.com/tags/go">#go</a></li>
+                    
+                        <li><a href="https://geekandlatin.com/tags/ast">#ast</a></li>
+                    
+                        <li><a href="https://geekandlatin.com/tags/code-generation">#code generation</a></li>
+                    
+                </ul>
+        
+    </div>
+</div>
+
+    </article>
+    
+        <div id="disqus_thread"></div>
 <script type="application/javascript">
     var disqus_config = function () {
     
@@ -635,87 +475,27 @@ root file.</p>
             return;
         }
         var d = document, s = d.createElement('script'); s.async = true;
-        s.src = '//' + "sudarshan-reddy-github-io" + '.disqus.com/embed.js';
+        s.src = '//' + "sudarshan-reddy.github.io" + '.disqus.com/embed.js';
         s.setAttribute('data-timestamp', +new Date());
         (d.head || d.body).appendChild(s);
     })();
 </script>
 <noscript>Please enable JavaScript to view the <a href="https://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
 <a href="https://disqus.com" class="dsq-brlink">comments powered by <span class="logo-disqus">Disqus</span></a>
-      
     
-  </section>
-  
-<footer class="site-footer">
-  <p>© 2017-2020 Geek and Latin</p>
-  <p>Powered by <a href="https://gohugo.io/" target="_blank" rel="noopener">Hugo</a> with theme <a href="https://github.com/laozhu/hugo-nuo" target="_blank" rel="noopener">Nuo</a>.</p>
-  
-</footer>
 
 
-<script src="https://cdn.jsdelivr.net/npm/smooth-scroll@15.0.0/dist/smooth-scroll.min.js"></script>
+        </main>
+        <footer>
+            
+                
+                
 
-
-
-<script async src="https://cdn.jsdelivr.net/npm/video.js@7.3.0/dist/video.min.js"></script>
-
-
-
-
-<script async src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
-<script type="text/x-mathjax-config">
-  MathJax.Hub.Config({
-    tex2jax: {
-      inlineMath: [['$','$'], ['\\(','\\)']],
-      displayMath: [['$$','$$'], ['\\[','\\]']],
-      processEscapes: true,
-      processEnvironments: true,
-      skipTags: ['script', 'noscript', 'style', 'textarea', 'pre'],
-      TeX: { equationNumbers: { autoNumber: "AMS" },
-      extensions: ["AMSmath.js", "AMSsymbols.js"] }
-    },
-  });
-</script>
-<script type="text/x-mathjax-config">
-  // Fix <code> tags after MathJax finishes running. This is a
-  // hack to overcome a shortcoming of Markdown. Discussion at
-  // https://github.com/mojombo/jekyll/issues/199
-  MathJax.Hub.Queue(() => {
-    MathJax.Hub.getAllJax().map(v => v.SourceElement().parentNode.className += ' has-jax');
-  });
-</script>
-
-
-
-<script src="/scripts/index.min.js"></script>
-
-<script>
-  if ('serviceWorker' in navigator) {
-    navigator.serviceWorker.register('\/service-worker.js').then(function() {
-      console.log('[ServiceWorker] Registered');
-    });
-  }
-</script>
-
-
-
-
-<script type="application/javascript">
-var doNotTrack = false;
-if (!doNotTrack) {
-	window.ga=window.ga||function(){(ga.q=ga.q||[]).push(arguments)};ga.l=+new Date;
-	ga('create', 'UA-120606360-1', 'auto');
-	
-	ga('send', 'pageview');
-}
-</script>
-<script async src='https://www.google-analytics.com/analytics.js'></script>
-
-
-
-
-
-
-
-  </body>
+                <p>© Sudarshan Reddy, 2020<br>
+Powered by <a target="_blank" href="https://gohugo.io/">Hugo</a>, theme <a target="_blank" href="https://github.com/mitrichius/hugo-theme-anubis">Anubis</a>.
+</p>
+            
+        </footer>
+    </div>
+</body>
 </html>

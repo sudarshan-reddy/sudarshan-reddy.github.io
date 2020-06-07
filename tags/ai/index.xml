@@ -1,25 +1,191 @@
-<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
-    <title>AI on Geek and Latin</title>
-    <link>/tags/ai/</link>
-    <description>Recent content in AI on Geek and Latin</description>
+    <title>AI on Sudarshan&#39;s blog</title>
+    <link>https://geekandlatin.com/tags/ai/</link>
+    <description>Sudarshan&#39;s blog (AI)</description>
     <generator>Hugo -- gohugo.io</generator>
-    <language>en</language>
-    <copyright>© sudarshan-reddy@github.io</copyright>
+    <language>en-us</language>
     <lastBuildDate>Wed, 08 Aug 2018 00:00:00 +0000</lastBuildDate>
     
-	<atom:link href="/tags/ai/index.xml" rel="self" type="application/rss+xml" />
+    <atom:link href="https://geekandlatin.com/tags/ai/index.xml" rel="self" type="application/rss+xml" />
     
     
     <item>
       <title>Training a simple gender classifier with Python and Predicting with Go</title>
-      <link>/post/keras-to-go/</link>
+      <link>https://geekandlatin.com/post/keras-to-go/</link>
       <pubDate>Wed, 08 Aug 2018 00:00:00 +0000</pubDate>
       
-      <guid>/post/keras-to-go/</guid>
-      <description>Ever since Tensorflow released Bindings for Go, I&amp;rsquo;ve been itching to give it a go. The ease of deployability with Go and microservice friendliness and even simple http performance improvements make it really handly to build a working prediction application with Go.
-The immediate and apparent downside for anyone who&amp;rsquo;s tried to train a model is how unintuitive scoping is with Tensorflow for Go.Python&amp;rsquo;s a lot easier to train models with for a newcomer because of a lot of things:</description>
+      <guid>https://geekandlatin.com/post/keras-to-go/</guid>
+      <description>&lt;p&gt;Ever since Tensorflow released Bindings for Go, I&amp;rsquo;ve been itching to give it a go.
+The ease of deployability with Go and microservice friendliness and even simple
+http performance improvements make it really handly to build a working
+prediction application with Go.&lt;/p&gt;
+&lt;p&gt;The immediate and apparent downside for anyone who&amp;rsquo;s tried to train a model is
+how unintuitive scoping is with Tensorflow for Go.Python&amp;rsquo;s a lot easier to train
+models with for a newcomer because of a lot of things:&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;    + The excellent Keras Library and API.
+    + Most tutorials and lessons are done with Python.
+    + Numpy is wonderfully intuitive.
+    + Fantastic image processing support.
+    + Generators are fun.
+&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;However, once the model is trained, making inference/applying feedforward does
+not need too much Tensorflow scoping wizardry.&lt;/p&gt;
+&lt;p&gt;Go is an obvious choice for deployment/inference because:&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;    + Fantastic for writing microservices.
+    + Nice for people who prefer composition over inheritance for app building.
+    + Benchmarks show Go is much faster than Python. While this does not matter 
+      when training because GPU compute doesn&#39;t require too much parallelism/concurrency.
+    + Go with Chi seems to trump Python with Flask and even Python with Twisted 
+      by a considerable margin
+    + Easy concurrency primitives add versatility to leverage the model.
+&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;If you want to skip the ramble and get your hands dirty,
+you can use &lt;a href=&#34;https://github.com/sudarshan-reddy/telemus&#34;&gt;telemus&lt;/a&gt; as a Quick Start.&lt;/p&gt;
+&lt;h2 id=&#34;training-a-gender-classifier-in-python&#34;&gt;Training a gender classifier in Python&lt;/h2&gt;
+&lt;p&gt;For my proof of concept, I decided to a do a simple real world classifier
+that would take in a picture and classify if it was male or female. To this end,
+we will be fine-tuning a ResNet50 model replacing the final layer with a
+Softmax Classifier.&lt;/p&gt;
+&lt;h3 id=&#34;data&#34;&gt;Data&lt;/h3&gt;
+&lt;p&gt;For the data, I will be using the wonderful CelebA dataset that labels 200,000
+odd celebrities with over 40 attributes (Male being one of them).&lt;/p&gt;
+&lt;p&gt;Now, I plan to source mine more data of my own for the future and therefore
+split the images into folders by class. If you intend to do this,
+the rudimentary script below helps.&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;    import csv
+    import shutil
+    import os
+    
+    src_path = &#39;/path/to/celebA/data&#39;
+    dst_path = &#39;/path/to/train/directory&#39;
+    
+    def prepare_celebA():
+        reader = csv.DictReader(open(&#39;list_attr_celeba.txt&#39;), delimiter=&#39; &#39;)
+        for row in reader:
+            img_name = row[&#39;image&#39;]
+            src = os.path.join(src_path, img_name)
+            if row[&#39;Male&#39;] == &#39;1&#39;:
+                dst = os.path.join(dst_path, &#39;male&#39;, img_name)
+                shutil.copyfile(src, dst)
+            if row[&#39;Male&#39;] == &#39;-1&#39;:
+                dst = os.path.join(dst_path, &#39;female&#39;, img_name)
+                shutil.copyfile(src, dst)
+    
+    if __name__ == &#39;__main__&#39; :
+        prepare_celebA()
+&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;The script above can be repurposed slightly for validation data as well.&lt;/p&gt;
+&lt;h3 id=&#34;pre-requisites-to-be-able-to-deploy-in-go&#34;&gt;Pre-requisites to be able to deploy in Go&lt;/h3&gt;
+&lt;p&gt;While I like Keras and use Keras to run my models, the Go application requires
+a number of things to be met.&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;    + The model to be transferred has to be a tensorflow graph.
+    + The tensorflow graph has to be saved with a tag.
+    + The input layer and inference layer have to be named.
+&lt;/code&gt;&lt;/pre&gt;&lt;h3 id=&#34;training&#34;&gt;Training&lt;/h3&gt;
+&lt;p&gt;With the pre-requisites above in mind, we start a tensorflow session and add
+it to a Keras backend first thing in our code.&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;    import tensorflow as tf
+    from keras import backend as K
+
+    sess = tf.Session()
+    K.set_session(sess)
+&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;I use two generators to read my prepared celeb data. The load_celeb_a code is listed below.&lt;/p&gt;
+&lt;p&gt;The images I use are 224 * 224 and I only have an Nvidia GTX 1080 so I tend
+to keep the train_batch_size to only as much as my GPU can handle.&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;    from keras.preprocessing.image import ImageDataGenerator
+    
+    train_directory = &amp;quot;&amp;quot;
+    valid_directory =&amp;quot;&amp;quot;
+    train_batch_size = &amp;quot;50&amp;quot;
+    valid_batch_size = &amp;quot;50&amp;quot;
+    
+    def load_celeb_data(img_rows=224, img_cols=224):
+        train_batches = ImageDataGenerator(
+        rotation_range=40,
+        width_shift_range=0.2,
+        height_shift_range=0.2,
+        shear_range=0.2,
+        zoom_range=0.2,
+        horizontal_flip=True,
+        fill_mode=&#39;nearest&#39;
+        ).flow_from_directory(train_directory,target_size=(img_rows,img_cols),
+                              shuffle=True,
+                              batch_size=train_batch_size, classes=(&#39;male&#39;,
+                                                                    &#39;female&#39;))
+        valid_batches = ImageDataGenerator().flow_from_directory(valid_directory,target_size=(img_rows,img_cols),
+                              shuffle=True,
+                              batch_size=valid_batch_size,classes=(&#39;male&#39;,&#39;female&#39;))
+    
+        return train_batches, valid_batches
+&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;Finally, finetune the model.&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt; model = keras.applications.resnet50.ResNet50()
+    classes = train_gen.class_indices
+    
+    model.layers.pop()
+
+    for layer in model.layers:
+        layer.trainable = False
+    for layer in model.layers[:30]:
+        layer.trainable = True
+    last = model.layers[-1].output
+
+    x = Dense(len(classes), activation=&amp;quot;softmax&amp;quot;, name=&amp;quot;inferenceLayer&amp;quot;)(last)
+
+    finetuned_model = Model(model.input, x)
+
+    finetuned_model.compile(optimizer=Adam(lr=1e-04), loss=&#39;categorical_crossentropy&#39;, metrics=[&#39;accuracy&#39;])
+&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;The most relevant change here for us is this line right here.&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;    x = Dense(len(classes), activation=&amp;quot;softmax&amp;quot;, name=&amp;quot;inferenceLayer&amp;quot;)(last)
+&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;I&amp;rsquo;ve gone ahead and named the inference layer (No points for originality there).&lt;/p&gt;
+&lt;p&gt;We use the ResNet50 model where the input layer is already named. Its called input_1.&lt;/p&gt;
+&lt;p&gt;Once the model is fit, make sure to save the graph with some tag.&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;    builder = tf.saved_model.builder.SavedModelBuilder(&amp;quot;forGo&amp;quot;)
+    builder.add_meta_graph_and_variables(sess, [&amp;quot;tags&amp;quot;])
+    builder.save()
+&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;This is going to get the model saved to a folder named &lt;code&gt;forGo&lt;/code&gt;.&lt;/p&gt;
+&lt;p&gt;You can find the full code &lt;a href=&#34;https://github.com/sudarshan-reddy/resnetClassifier&#34;&gt;here&lt;/a&gt;.&lt;/p&gt;
+&lt;h3 id=&#34;prediction&#34;&gt;Prediction&lt;/h3&gt;
+&lt;p&gt;Time to move to the prediction part. We will build a simple command line app
+that takes an argument of an image and predicts its output. Copy the forGo
+directory to a common location. I like to put it within the Go project directory
+because its not too large.&lt;/p&gt;
+&lt;p&gt;The Go program is laughably simple once we&amp;rsquo;ve got the others set up.&lt;/p&gt;
+&lt;p&gt;All we have to do is to read the image and convert it to a &lt;code&gt;*Tensor&lt;/code&gt; data type.&lt;/p&gt;
+&lt;p&gt;Here&amp;rsquo;s the gist.&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;    imageFile, err := os.Open(imgName)
+	if err != nil {
+		log.Fatal(err)
+	}
+	var imgBuffer bytes.Buffer
+	io.Copy(&amp;amp;imgBuffer, imageFile)
+	img, err := readImage(&amp;amp;imgBuffer, &amp;quot;jpg&amp;quot;)
+	if err != nil {
+		log.Fatal(&amp;quot;error reading image: &amp;quot;, err)
+	}
+
+	result, err := model.Session.Run(
+		map[tf.Output]*tf.Tensor{
+			model.Graph.Operation(&amp;quot;input_1&amp;quot;).Output(0): img,
+		},
+		[]tf.Output{
+			model.Graph.Operation(&amp;quot;inferenceLayer/Softmax&amp;quot;).Output(0),
+		},
+		nil,
+	)
+
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	if preds, ok := result[0].Value().([][]float32); ok {
+		fmt.Println(preds)
+		if preds[0][0] &amp;gt; preds[0][1] {
+			fmt.Println(&amp;quot;male&amp;quot;)
+		} else {
+			fmt.Println(&amp;quot;female&amp;quot;)
+		}
+	}
+&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;You can find the full code &lt;a href=&#34;https://github.com/sudarshan-reddy/resnetPredictor&#34;&gt;here&lt;/a&gt;&lt;/p&gt;
+</description>
     </item>
     
   </channel>
