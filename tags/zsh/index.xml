@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="utf-8" standalone="yes"?>
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
-    <title>zsh on Sudarshan&#39;s blog</title>
+    <title>zsh on Sudarshan&#39;s Blog</title>
     <link>https://geekandlatin.com/tags/zsh/</link>
-    <description>Sudarshan&#39;s blog (zsh)</description>
+    <description>Sudarshan&#39;s Blog (zsh)</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en-us</language>
     <lastBuildDate>Mon, 04 Dec 2017 00:00:00 +0000</lastBuildDate>

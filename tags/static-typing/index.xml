@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="utf-8" standalone="yes"?>
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
-    <title>static typing on Sudarshan&#39;s blog</title>
+    <title>static typing on Sudarshan&#39;s Blog</title>
     <link>https://geekandlatin.com/tags/static-typing/</link>
-    <description>Sudarshan&#39;s blog (static typing)</description>
+    <description>Sudarshan&#39;s Blog (static typing)</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en-us</language>
     <lastBuildDate>Mon, 07 Jan 2019 00:00:00 +0000</lastBuildDate>
