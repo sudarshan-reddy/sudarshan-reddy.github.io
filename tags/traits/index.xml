@@ -2,21 +2,21 @@
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
     <title>traits on Sudarshan&#39;s Blog</title>
-    <link>https://geekandlatin.com/tags/traits/</link>
+    <link>https://sudarsanreddy.com/tags/traits/</link>
     <description>Sudarshan&#39;s Blog (traits)</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en-us</language>
     <lastBuildDate>Sat, 06 Jun 2020 00:00:00 +0000</lastBuildDate>
     
-    <atom:link href="https://geekandlatin.com/tags/traits/index.xml" rel="self" type="application/rss+xml" />
+    <atom:link href="https://sudarsanreddy.com/tags/traits/index.xml" rel="self" type="application/rss+xml" />
     
     
     <item>
       <title>Cloning boxed traits in Rust</title>
-      <link>https://geekandlatin.com/post/rust-box-traits-clone/</link>
+      <link>https://sudarsanreddy.com/post/rust-box-traits-clone/</link>
       <pubDate>Sat, 06 Jun 2020 00:00:00 +0000</pubDate>
       
-      <guid>https://geekandlatin.com/post/rust-box-traits-clone/</guid>
+      <guid>https://sudarsanreddy.com/post/rust-box-traits-clone/</guid>
       <description>&lt;p&gt;I enjoy coding with Rust&amp;rsquo;s composition system. It&amp;rsquo;s nice to also have  generics. It makes
 adding and incorporating changes rather nice. I recently ran into
 a problem when I wanted to copy a group of boxed traits.&lt;/p&gt;

@@ -2,21 +2,21 @@
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
     <title>AI on Sudarshan&#39;s Blog</title>
-    <link>https://geekandlatin.com/tags/ai/</link>
+    <link>https://sudarsanreddy.com/tags/ai/</link>
     <description>Sudarshan&#39;s Blog (AI)</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en-us</language>
     <lastBuildDate>Wed, 08 Aug 2018 00:00:00 +0000</lastBuildDate>
     
-    <atom:link href="https://geekandlatin.com/tags/ai/index.xml" rel="self" type="application/rss+xml" />
+    <atom:link href="https://sudarsanreddy.com/tags/ai/index.xml" rel="self" type="application/rss+xml" />
     
     
     <item>
       <title>Training a simple gender classifier with Python and Predicting with Go</title>
-      <link>https://geekandlatin.com/post/keras-to-go/</link>
+      <link>https://sudarsanreddy.com/post/keras-to-go/</link>
       <pubDate>Wed, 08 Aug 2018 00:00:00 +0000</pubDate>
       
-      <guid>https://geekandlatin.com/post/keras-to-go/</guid>
+      <guid>https://sudarsanreddy.com/post/keras-to-go/</guid>
       <description>&lt;p&gt;Ever since Tensorflow released Bindings for Go, I&amp;rsquo;ve been itching to give it a go.
 The ease of deployability with Go and microservice friendliness and even simple
 http performance improvements make it really handly to build a working

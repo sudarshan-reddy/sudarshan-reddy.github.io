@@ -2,21 +2,21 @@
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
     <title>opencv on Sudarshan&#39;s Blog</title>
-    <link>https://geekandlatin.com/tags/opencv/</link>
+    <link>https://sudarsanreddy.com/tags/opencv/</link>
     <description>Sudarshan&#39;s Blog (opencv)</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en-us</language>
     <lastBuildDate>Mon, 10 Feb 2020 00:00:00 +0000</lastBuildDate>
     
-    <atom:link href="https://geekandlatin.com/tags/opencv/index.xml" rel="self" type="application/rss+xml" />
+    <atom:link href="https://sudarsanreddy.com/tags/opencv/index.xml" rel="self" type="application/rss+xml" />
     
     
     <item>
       <title>How I got a 100 Dollar toy drone to follow me around.</title>
-      <link>https://geekandlatin.com/post/drone-follow-face/</link>
+      <link>https://sudarsanreddy.com/post/drone-follow-face/</link>
       <pubDate>Mon, 10 Feb 2020 00:00:00 +0000</pubDate>
       
-      <guid>https://geekandlatin.com/post/drone-follow-face/</guid>
+      <guid>https://sudarsanreddy.com/post/drone-follow-face/</guid>
       <description>&lt;p&gt;It&amp;rsquo;s that time of the year again when I decide to add to my blog. It was my
 birthday last week and I decided to buy myself a small DJI drone to hack with.
 I wanted to get something lightweight, cheap and easily replaced. The DJI Tello

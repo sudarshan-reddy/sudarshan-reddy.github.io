@@ -2,21 +2,21 @@
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
     <title>unix on Sudarshan&#39;s Blog</title>
-    <link>https://geekandlatin.com/tags/unix/</link>
+    <link>https://sudarsanreddy.com/tags/unix/</link>
     <description>Sudarshan&#39;s Blog (unix)</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en-us</language>
     <lastBuildDate>Mon, 04 Dec 2017 00:00:00 +0000</lastBuildDate>
     
-    <atom:link href="https://geekandlatin.com/tags/unix/index.xml" rel="self" type="application/rss+xml" />
+    <atom:link href="https://sudarsanreddy.com/tags/unix/index.xml" rel="self" type="application/rss+xml" />
     
     
     <item>
       <title>Env variables</title>
-      <link>https://geekandlatin.com/post/env-variables/</link>
+      <link>https://sudarsanreddy.com/post/env-variables/</link>
       <pubDate>Mon, 04 Dec 2017 00:00:00 +0000</pubDate>
       
-      <guid>https://geekandlatin.com/post/env-variables/</guid>
+      <guid>https://sudarsanreddy.com/post/env-variables/</guid>
       <description>&lt;p&gt;Ever wake up on the symmetrical side of the bed? Like at the middle? Yep. That’s when you decide that you are never going to (ever) code in constants in your application. So how do you get them? Configuration files? JSONs? Yamls? Environment variables are more elegant and easier with a docker-compose no?&lt;/p&gt;
 &lt;p&gt;12 factor apps are what cool kids are doing these days (read three years ago). And it makes sense that you put your configurable variables into the environment and do a getenv. But what happens when you have twelve twelve factor apps with twelve different sets of environment configurations?&lt;/p&gt;
 &lt;p&gt;If you put these into a script/environmental file like below and source them, then you probably have the right idea.&lt;/p&gt;

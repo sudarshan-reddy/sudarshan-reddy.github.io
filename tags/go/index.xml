@@ -2,21 +2,21 @@
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
     <title>go on Sudarshan&#39;s Blog</title>
-    <link>https://geekandlatin.com/tags/go/</link>
+    <link>https://sudarsanreddy.com/tags/go/</link>
     <description>Sudarshan&#39;s Blog (go)</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en-us</language>
     <lastBuildDate>Sat, 14 Mar 2020 00:00:00 +0000</lastBuildDate>
     
-    <atom:link href="https://geekandlatin.com/tags/go/index.xml" rel="self" type="application/rss+xml" />
+    <atom:link href="https://sudarsanreddy.com/tags/go/index.xml" rel="self" type="application/rss+xml" />
     
     
     <item>
       <title>A little code generation in Go in 2020.</title>
-      <link>https://geekandlatin.com/post/code-gen/</link>
+      <link>https://sudarsanreddy.com/post/code-gen/</link>
       <pubDate>Sat, 14 Mar 2020 00:00:00 +0000</pubDate>
       
-      <guid>https://geekandlatin.com/post/code-gen/</guid>
+      <guid>https://sudarsanreddy.com/post/code-gen/</guid>
       <description>&lt;p&gt;Perl gives me headaches. But I&amp;rsquo;m fond of one of Larry Wall&amp;rsquo;s &lt;a href=&#34;http://threevirtues.com/&#34;&gt;three virtues&lt;/a&gt;:
 &lt;code&gt;Laziness&lt;/code&gt;. This is a story of how sometimes laziness lets you do fun things.&lt;/p&gt;
 &lt;p&gt;Distributed systems and microservices are as ubiquitous as the coronavirus in 2020. This
@@ -389,10 +389,10 @@ root file.&lt;/p&gt;
     
     <item>
       <title>How I got a 100 Dollar toy drone to follow me around.</title>
-      <link>https://geekandlatin.com/post/drone-follow-face/</link>
+      <link>https://sudarsanreddy.com/post/drone-follow-face/</link>
       <pubDate>Mon, 10 Feb 2020 00:00:00 +0000</pubDate>
       
-      <guid>https://geekandlatin.com/post/drone-follow-face/</guid>
+      <guid>https://sudarsanreddy.com/post/drone-follow-face/</guid>
       <description>&lt;p&gt;It&amp;rsquo;s that time of the year again when I decide to add to my blog. It was my
 birthday last week and I decided to buy myself a small DJI drone to hack with.
 I wanted to get something lightweight, cheap and easily replaced. The DJI Tello
@@ -531,10 +531,10 @@ is an improvement I will be working on.&lt;/p&gt;
     
     <item>
       <title>Why types are elegant</title>
-      <link>https://geekandlatin.com/post/static-typing-is-beautiful/</link>
+      <link>https://sudarsanreddy.com/post/static-typing-is-beautiful/</link>
       <pubDate>Mon, 07 Jan 2019 00:00:00 +0000</pubDate>
       
-      <guid>https://geekandlatin.com/post/static-typing-is-beautiful/</guid>
+      <guid>https://sudarsanreddy.com/post/static-typing-is-beautiful/</guid>
       <description>&lt;p&gt;I&amp;rsquo;ve been working with Go(for work) and Rust(for fun) lately. I got pulled into
 the two languages for different reasons (easy concurrency and memory safety respectively) and
 ended up staying for a totally different reason altogether. Their type systems.&lt;/p&gt;
@@ -667,10 +667,10 @@ made me feel very happy about type systems coming out.&lt;/p&gt;
     
     <item>
       <title>Training a simple gender classifier with Python and Predicting with Go</title>
-      <link>https://geekandlatin.com/post/keras-to-go/</link>
+      <link>https://sudarsanreddy.com/post/keras-to-go/</link>
       <pubDate>Wed, 08 Aug 2018 00:00:00 +0000</pubDate>
       
-      <guid>https://geekandlatin.com/post/keras-to-go/</guid>
+      <guid>https://sudarsanreddy.com/post/keras-to-go/</guid>
       <description>&lt;p&gt;Ever since Tensorflow released Bindings for Go, I&amp;rsquo;ve been itching to give it a go.
 The ease of deployability with Go and microservice friendliness and even simple
 http performance improvements make it really handly to build a working

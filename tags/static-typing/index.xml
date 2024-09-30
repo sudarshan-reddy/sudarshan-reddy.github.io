@@ -2,21 +2,21 @@
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
     <title>static typing on Sudarshan&#39;s Blog</title>
-    <link>https://geekandlatin.com/tags/static-typing/</link>
+    <link>https://sudarsanreddy.com/tags/static-typing/</link>
     <description>Sudarshan&#39;s Blog (static typing)</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en-us</language>
     <lastBuildDate>Mon, 07 Jan 2019 00:00:00 +0000</lastBuildDate>
     
-    <atom:link href="https://geekandlatin.com/tags/static-typing/index.xml" rel="self" type="application/rss+xml" />
+    <atom:link href="https://sudarsanreddy.com/tags/static-typing/index.xml" rel="self" type="application/rss+xml" />
     
     
     <item>
       <title>Why types are elegant</title>
-      <link>https://geekandlatin.com/post/static-typing-is-beautiful/</link>
+      <link>https://sudarsanreddy.com/post/static-typing-is-beautiful/</link>
       <pubDate>Mon, 07 Jan 2019 00:00:00 +0000</pubDate>
       
-      <guid>https://geekandlatin.com/post/static-typing-is-beautiful/</guid>
+      <guid>https://sudarsanreddy.com/post/static-typing-is-beautiful/</guid>
       <description>&lt;p&gt;I&amp;rsquo;ve been working with Go(for work) and Rust(for fun) lately. I got pulled into
 the two languages for different reasons (easy concurrency and memory safety respectively) and
 ended up staying for a totally different reason altogether. Their type systems.&lt;/p&gt;

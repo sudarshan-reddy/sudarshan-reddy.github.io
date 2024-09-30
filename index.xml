@@ -2,21 +2,21 @@
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
     <title>Sudarshan&#39;s Blog</title>
-    <link>https://geekandlatin.com/</link>
+    <link>https://sudarsanreddy.com/</link>
     <description>Sudarshan&#39;s Blog</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en-us</language>
     <lastBuildDate>Sat, 06 Jun 2020 00:00:00 +0000</lastBuildDate>
     
-    <atom:link href="https://geekandlatin.com/index.xml" rel="self" type="application/rss+xml" />
+    <atom:link href="https://sudarsanreddy.com/index.xml" rel="self" type="application/rss+xml" />
     
     
     <item>
       <title>About Me</title>
-      <link>https://geekandlatin.com/about/</link>
+      <link>https://sudarsanreddy.com/about/</link>
       <pubDate>Sat, 06 Jun 2020 00:00:00 +0000</pubDate>
       
-      <guid>https://geekandlatin.com/about/</guid>
+      <guid>https://sudarsanreddy.com/about/</guid>
       <description>&lt;p&gt;&lt;img src=&#34;https://sudarshan-reddy.github.io/images/avatar.jpg&#34; alt=&#34;avatar&#34;&gt;&lt;/p&gt;
 &lt;p&gt;I&amp;rsquo;m a passionate Software Engineer who likes to talk about random
 computer science problems I encounter. My interests currently are systems programming,
@@ -29,10 +29,10 @@ reading &lt;a href=&#34;https://www.amazon.sg/Good-Economics-Times-Abhijit-Baner
     
     <item>
       <title>Cloning boxed traits in Rust</title>
-      <link>https://geekandlatin.com/post/rust-box-traits-clone/</link>
+      <link>https://sudarsanreddy.com/post/rust-box-traits-clone/</link>
       <pubDate>Sat, 06 Jun 2020 00:00:00 +0000</pubDate>
       
-      <guid>https://geekandlatin.com/post/rust-box-traits-clone/</guid>
+      <guid>https://sudarsanreddy.com/post/rust-box-traits-clone/</guid>
       <description>&lt;p&gt;I enjoy coding with Rust&amp;rsquo;s composition system. It&amp;rsquo;s nice to also have  generics. It makes
 adding and incorporating changes rather nice. I recently ran into
 a problem when I wanted to copy a group of boxed traits.&lt;/p&gt;
@@ -333,19 +333,19 @@ is because only built in traits can be used as closure or object bounds.&lt;/p&g
     
     <item>
       <title>Resume</title>
-      <link>https://geekandlatin.com/resume/</link>
+      <link>https://sudarsanreddy.com/resume/</link>
       <pubDate>Sat, 06 Jun 2020 00:00:00 +0000</pubDate>
       
-      <guid>https://geekandlatin.com/resume/</guid>
+      <guid>https://sudarsanreddy.com/resume/</guid>
       <description></description>
     </item>
     
     <item>
       <title>A little code generation in Go in 2020.</title>
-      <link>https://geekandlatin.com/post/code-gen/</link>
+      <link>https://sudarsanreddy.com/post/code-gen/</link>
       <pubDate>Sat, 14 Mar 2020 00:00:00 +0000</pubDate>
       
-      <guid>https://geekandlatin.com/post/code-gen/</guid>
+      <guid>https://sudarsanreddy.com/post/code-gen/</guid>
       <description>&lt;p&gt;Perl gives me headaches. But I&amp;rsquo;m fond of one of Larry Wall&amp;rsquo;s &lt;a href=&#34;http://threevirtues.com/&#34;&gt;three virtues&lt;/a&gt;:
 &lt;code&gt;Laziness&lt;/code&gt;. This is a story of how sometimes laziness lets you do fun things.&lt;/p&gt;
 &lt;p&gt;Distributed systems and microservices are as ubiquitous as the coronavirus in 2020. This
@@ -718,10 +718,10 @@ root file.&lt;/p&gt;
     
     <item>
       <title>How I got a 100 Dollar toy drone to follow me around.</title>
-      <link>https://geekandlatin.com/post/drone-follow-face/</link>
+      <link>https://sudarsanreddy.com/post/drone-follow-face/</link>
       <pubDate>Mon, 10 Feb 2020 00:00:00 +0000</pubDate>
       
-      <guid>https://geekandlatin.com/post/drone-follow-face/</guid>
+      <guid>https://sudarsanreddy.com/post/drone-follow-face/</guid>
       <description>&lt;p&gt;It&amp;rsquo;s that time of the year again when I decide to add to my blog. It was my
 birthday last week and I decided to buy myself a small DJI drone to hack with.
 I wanted to get something lightweight, cheap and easily replaced. The DJI Tello
@@ -860,10 +860,10 @@ is an improvement I will be working on.&lt;/p&gt;
     
     <item>
       <title>Why types are elegant</title>
-      <link>https://geekandlatin.com/post/static-typing-is-beautiful/</link>
+      <link>https://sudarsanreddy.com/post/static-typing-is-beautiful/</link>
       <pubDate>Mon, 07 Jan 2019 00:00:00 +0000</pubDate>
       
-      <guid>https://geekandlatin.com/post/static-typing-is-beautiful/</guid>
+      <guid>https://sudarsanreddy.com/post/static-typing-is-beautiful/</guid>
       <description>&lt;p&gt;I&amp;rsquo;ve been working with Go(for work) and Rust(for fun) lately. I got pulled into
 the two languages for different reasons (easy concurrency and memory safety respectively) and
 ended up staying for a totally different reason altogether. Their type systems.&lt;/p&gt;
@@ -996,10 +996,10 @@ made me feel very happy about type systems coming out.&lt;/p&gt;
     
     <item>
       <title>Training a simple gender classifier with Python and Predicting with Go</title>
-      <link>https://geekandlatin.com/post/keras-to-go/</link>
+      <link>https://sudarsanreddy.com/post/keras-to-go/</link>
       <pubDate>Wed, 08 Aug 2018 00:00:00 +0000</pubDate>
       
-      <guid>https://geekandlatin.com/post/keras-to-go/</guid>
+      <guid>https://sudarsanreddy.com/post/keras-to-go/</guid>
       <description>&lt;p&gt;Ever since Tensorflow released Bindings for Go, I&amp;rsquo;ve been itching to give it a go.
 The ease of deployability with Go and microservice friendliness and even simple
 http performance improvements make it really handly to build a working
@@ -1173,10 +1173,10 @@ because its not too large.&lt;/p&gt;
     
     <item>
       <title>Env variables</title>
-      <link>https://geekandlatin.com/post/env-variables/</link>
+      <link>https://sudarsanreddy.com/post/env-variables/</link>
       <pubDate>Mon, 04 Dec 2017 00:00:00 +0000</pubDate>
       
-      <guid>https://geekandlatin.com/post/env-variables/</guid>
+      <guid>https://sudarsanreddy.com/post/env-variables/</guid>
       <description>&lt;p&gt;Ever wake up on the symmetrical side of the bed? Like at the middle? Yep. That’s when you decide that you are never going to (ever) code in constants in your application. So how do you get them? Configuration files? JSONs? Yamls? Environment variables are more elegant and easier with a docker-compose no?&lt;/p&gt;
 &lt;p&gt;12 factor apps are what cool kids are doing these days (read three years ago). And it makes sense that you put your configurable variables into the environment and do a getenv. But what happens when you have twelve twelve factor apps with twelve different sets of environment configurations?&lt;/p&gt;
 &lt;p&gt;If you put these into a script/environmental file like below and source them, then you probably have the right idea.&lt;/p&gt;
