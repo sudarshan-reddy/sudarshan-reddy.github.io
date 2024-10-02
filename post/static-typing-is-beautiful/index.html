@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 <html lang="en-us">
-<head>
+<head><script src="/livereload.js?mindelay=10&amp;v=2&amp;port=1313&amp;path=livereload" data-no-instant defer></script>
     
         
 <meta charset="utf-8">
@@ -8,30 +8,37 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta name="referrer" content="no-referrer-when-downgrade">
 
-<title>Why types are elegant - Sudarshan&#39;s Blog</title>
+<title>Why types are elegant - Sudarsan&#39;s Blog</title>
 <meta name="description" content="">
 
-<link rel="icon" type="image/x-icon" href="https://sudarsanreddy.com/favicon.ico">
-<link rel="apple-touch-icon-precomposed" href="https://sudarsanreddy.com/favicon.png">
+<link rel="icon" type="image/x-icon" href="http://localhost:1313/favicon.ico">
+<link rel="apple-touch-icon-precomposed" href="http://localhost:1313/favicon.png">
 
-<link rel="stylesheet" href="https://sudarsanreddy.com/css/style.css?rnd=1591527816" />
+<link rel="stylesheet" href="http://localhost:1313/css/style.css?rnd=1727867061" />
 
 
 
-<meta property="og:title" content="Why types are elegant" />
-<meta property="og:description" content="I&rsquo;ve been working with Go(for work) and Rust(for fun) lately. I got pulled into the two languages for different reasons (easy concurrency and memory safety respectively) and ended up staying for a totally different reason altogether. Their type systems.
-Composition instead of inheritance feels elegant, right and very readable. I&rsquo;m going to talk about something that happened today when I was very thankful for composition and typing itself.
-A colleague and I ran into a problem that quickly devolved into an argument and as it is with professional software engineers, wanton namecalling." />
-<meta property="og:type" content="article" />
-<meta property="og:url" content="https://sudarsanreddy.com/post/static-typing-is-beautiful/" />
-<meta property="article:published_time" content="2019-01-07T00:00:00+00:00" />
-<meta property="article:modified_time" content="2019-01-07T00:00:00+00:00" />
+<meta property="og:url" content="http://localhost:1313/post/static-typing-is-beautiful/">
+  <meta property="og:site_name" content="Sudarsan&#39;s Blog">
+  <meta property="og:title" content="Why types are elegant">
+  <meta property="og:description" content="I’ve been working with Go(for work) and Rust(for fun) lately. I got pulled into the two languages for different reasons (easy concurrency and memory safety respectively) and ended up staying for a totally different reason altogether. Their type systems.
+Composition instead of inheritance feels elegant, right and very readable. I’m going to talk about something that happened today when I was very thankful for composition and typing itself.
+A colleague and I ran into a problem that quickly devolved into an argument and as it is with professional software engineers, wanton namecalling. For work, I’d written a common request making library. It wasn’t anything special. It would branch off of a http.Client and make requests and responses and parse them to specific interfaced outputs that we used for our internal client sdks.">
+  <meta property="og:locale" content="en_us">
+  <meta property="og:type" content="article">
+    <meta property="article:section" content="post">
+    <meta property="article:published_time" content="2019-01-07T00:00:00+00:00">
+    <meta property="article:modified_time" content="2019-01-07T00:00:00+00:00">
+    <meta property="article:tag" content="Go">
+    <meta property="article:tag" content="Static Typing">
+    <meta property="article:tag" content="Clean Code">
 
-<meta name="twitter:card" content="summary"/>
-<meta name="twitter:title" content="Why types are elegant"/>
-<meta name="twitter:description" content="I&rsquo;ve been working with Go(for work) and Rust(for fun) lately. I got pulled into the two languages for different reasons (easy concurrency and memory safety respectively) and ended up staying for a totally different reason altogether. Their type systems.
-Composition instead of inheritance feels elegant, right and very readable. I&rsquo;m going to talk about something that happened today when I was very thankful for composition and typing itself.
-A colleague and I ran into a problem that quickly devolved into an argument and as it is with professional software engineers, wanton namecalling."/>
+
+  <meta name="twitter:card" content="summary">
+  <meta name="twitter:title" content="Why types are elegant">
+  <meta name="twitter:description" content="I’ve been working with Go(for work) and Rust(for fun) lately. I got pulled into the two languages for different reasons (easy concurrency and memory safety respectively) and ended up staying for a totally different reason altogether. Their type systems.
+Composition instead of inheritance feels elegant, right and very readable. I’m going to talk about something that happened today when I was very thankful for composition and typing itself.
+A colleague and I ran into a problem that quickly devolved into an argument and as it is with professional software engineers, wanton namecalling. For work, I’d written a common request making library. It wasn’t anything special. It would branch off of a http.Client and make requests and responses and parse them to specific interfaced outputs that we used for our internal client sdks.">
 
 
 
@@ -47,14 +54,14 @@ A colleague and I ran into a problem that quickly devolved into an argument and 
         <header> 
             
                 <h1 class="site-header">
-    <a href="/">Sudarshan&#39;s Blog</a>
+    <a href="/">Sudarsan&#39;s Blog</a>
 </h1>
 <nav>
     
     
-    <a class="" href="https://sudarsanreddy.com/about/" title="">About</a>
+    <a class="" href="http://localhost:1313/about/" title="">About</a>
     
-    <a class="" href="https://sudarsanreddy.com/tags/" title="">Tags</a>
+    <a class="" href="http://localhost:1313/tags/" title="">Tags</a>
     
     <a class="" href="https://github.com/sudarshan-reddy/" title="">Github</a>
     
@@ -84,10 +91,10 @@ interfaced outputs that we used for our internal <code>client sdks</code>.</p>
 <p>This library took a logger interface. One that could potentially log debug messages.
 To keep it simple, we initially implemented it as with a single <code>Printf</code>
 method like so.</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go">    <span style="color:#66d9ef">type</span> <span style="color:#a6e22e">Logger</span> <span style="color:#66d9ef">interface</span> {
-    	<span style="color:#a6e22e">Printf</span>(<span style="color:#a6e22e">format</span> <span style="color:#66d9ef">string</span>, <span style="color:#a6e22e">args</span> <span style="color:#f92672">...</span><span style="color:#66d9ef">interface</span>{})
-    }
-</code></pre></div><p>The logger was hardly used. The errors were all propagated back from
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-go" data-lang="go"><span style="display:flex;"><span>    <span style="color:#66d9ef">type</span> <span style="color:#a6e22e">Logger</span> <span style="color:#66d9ef">interface</span> {
+</span></span><span style="display:flex;"><span>    	<span style="color:#a6e22e">Printf</span>(<span style="color:#a6e22e">format</span> <span style="color:#66d9ef">string</span>, <span style="color:#a6e22e">args</span> <span style="color:#f92672">...</span><span style="color:#66d9ef">interface</span>{})
+</span></span><span style="display:flex;"><span>    }
+</span></span></code></pre></div><p>The logger was hardly used. The errors were all propagated back from
 the library and didn&rsquo;t need to be logged at all. The logger was primary used to
 run <a href="https://golang.org/src/net/http/httputil/dump.go?s=5638:5700#L181">httputil.DumpRequest</a>
 in a debug like functionality.</p>
@@ -97,69 +104,66 @@ All in all, it isn&rsquo;t something you want to be logging in production level
 request making code.</p>
 <p>Our solution was simple. We&rsquo;d make passing the logger interface optional. If the
 logger interface wasn&rsquo;t <code>nil</code>, we&rsquo;d call Print.</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go">
-<span style="color:#66d9ef">func</span> (<span style="color:#a6e22e">cl</span> <span style="color:#f92672">*</span><span style="color:#a6e22e">CustomClient</span>) <span style="color:#a6e22e">Send</span>(){
-    <span style="color:#f92672">...</span>
-    <span style="color:#a6e22e">httpReq</span>, <span style="color:#a6e22e">err</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">http</span>.<span style="color:#a6e22e">NewRequest</span>(<span style="color:#a6e22e">http</span>.<span style="color:#a6e22e">MethodGet</span>, <span style="color:#e6db74">&#34;https://something.com&#34;</span>, <span style="color:#a6e22e">populateBody</span>())
-    <span style="color:#f92672">...</span>
-    
-    <span style="color:#66d9ef">if</span> <span style="color:#a6e22e">cl</span>.<span style="color:#a6e22e">Logger</span> <span style="color:#f92672">!=</span> <span style="color:#66d9ef">nil</span>{
-        <span style="color:#a6e22e">reqDump</span>, <span style="color:#a6e22e">err</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">httputil</span>.<span style="color:#a6e22e">DumpRequest</span>(<span style="color:#a6e22e">r</span>.<span style="color:#a6e22e">req</span>, <span style="color:#a6e22e">r</span>.<span style="color:#a6e22e">body</span>)
-        <span style="color:#f92672">...</span>
-        <span style="color:#a6e22e">cl</span>.<span style="color:#a6e22e">Logger</span>.<span style="color:#a6e22e">Printf</span>(<span style="color:#e6db74">&#34;%s&#34;</span>, string(<span style="color:#a6e22e">reqDump</span>))
-    }
-
-}
-
-</code></pre></div><p>This solved our problem. We could use the expensive logging in a debug setting
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-go" data-lang="go"><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">func</span> (<span style="color:#a6e22e">cl</span> <span style="color:#f92672">*</span><span style="color:#a6e22e">CustomClient</span>) <span style="color:#a6e22e">Send</span>(){
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">...</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#a6e22e">httpReq</span>, <span style="color:#a6e22e">err</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">http</span>.<span style="color:#a6e22e">NewRequest</span>(<span style="color:#a6e22e">http</span>.<span style="color:#a6e22e">MethodGet</span>, <span style="color:#e6db74">&#34;https://something.com&#34;</span>, <span style="color:#a6e22e">populateBody</span>())
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">...</span>
+</span></span><span style="display:flex;"><span>    
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">if</span> <span style="color:#a6e22e">cl</span>.<span style="color:#a6e22e">Logger</span> <span style="color:#f92672">!=</span> <span style="color:#66d9ef">nil</span>{
+</span></span><span style="display:flex;"><span>        <span style="color:#a6e22e">reqDump</span>, <span style="color:#a6e22e">err</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">httputil</span>.<span style="color:#a6e22e">DumpRequest</span>(<span style="color:#a6e22e">r</span>.<span style="color:#a6e22e">req</span>, <span style="color:#a6e22e">r</span>.<span style="color:#a6e22e">body</span>)
+</span></span><span style="display:flex;"><span>        <span style="color:#f92672">...</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#a6e22e">cl</span>.<span style="color:#a6e22e">Logger</span>.<span style="color:#a6e22e">Printf</span>(<span style="color:#e6db74">&#34;%s&#34;</span>, string(<span style="color:#a6e22e">reqDump</span>))
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></div><p>This solved our problem. We could use the expensive logging in a debug setting
 but essentially disable it in production by simply passing the logger as <code>nil</code>.</p>
 <p>However&hellip;</p>
 <p>Assume we wanted to, in the future, add a token bucket based request rate
 limiter. This rate limiter would come with the added feature of logging a
 warning every time it began throttling requests.</p>
 <p>The interface above could change to something that looked like this.</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#66d9ef">type</span> <span style="color:#a6e22e">LevelLogger</span> <span style="color:#66d9ef">interface</span> {
-	<span style="color:#a6e22e">Info</span>(<span style="color:#a6e22e">args</span> <span style="color:#f92672">...</span><span style="color:#66d9ef">interface</span>{})
-	<span style="color:#a6e22e">Warn</span>(<span style="color:#a6e22e">args</span> <span style="color:#f92672">...</span><span style="color:#66d9ef">interface</span>{})
-	<span style="color:#a6e22e">Debug</span>(<span style="color:#a6e22e">args</span> <span style="color:#f92672">...</span><span style="color:#66d9ef">interface</span>{})
-	<span style="color:#a6e22e">Infof</span>(<span style="color:#a6e22e">format</span> <span style="color:#66d9ef">string</span>, <span style="color:#a6e22e">args</span> <span style="color:#f92672">...</span><span style="color:#66d9ef">interface</span>{})
-	<span style="color:#a6e22e">Warnf</span>(<span style="color:#a6e22e">format</span> <span style="color:#66d9ef">string</span>, <span style="color:#a6e22e">args</span> <span style="color:#f92672">...</span><span style="color:#66d9ef">interface</span>{})
-	<span style="color:#a6e22e">Debugf</span>(<span style="color:#a6e22e">format</span> <span style="color:#66d9ef">string</span>, <span style="color:#a6e22e">args</span> <span style="color:#f92672">...</span><span style="color:#66d9ef">interface</span>{})
-}
-</code></pre></div><p>We could have the client implement multiple levels and even set the loglevel.
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-go" data-lang="go"><span style="display:flex;"><span><span style="color:#66d9ef">type</span> <span style="color:#a6e22e">LevelLogger</span> <span style="color:#66d9ef">interface</span> {
+</span></span><span style="display:flex;"><span>	<span style="color:#a6e22e">Info</span>(<span style="color:#a6e22e">args</span> <span style="color:#f92672">...</span><span style="color:#66d9ef">interface</span>{})
+</span></span><span style="display:flex;"><span>	<span style="color:#a6e22e">Warn</span>(<span style="color:#a6e22e">args</span> <span style="color:#f92672">...</span><span style="color:#66d9ef">interface</span>{})
+</span></span><span style="display:flex;"><span>	<span style="color:#a6e22e">Debug</span>(<span style="color:#a6e22e">args</span> <span style="color:#f92672">...</span><span style="color:#66d9ef">interface</span>{})
+</span></span><span style="display:flex;"><span>	<span style="color:#a6e22e">Infof</span>(<span style="color:#a6e22e">format</span> <span style="color:#66d9ef">string</span>, <span style="color:#a6e22e">args</span> <span style="color:#f92672">...</span><span style="color:#66d9ef">interface</span>{})
+</span></span><span style="display:flex;"><span>	<span style="color:#a6e22e">Warnf</span>(<span style="color:#a6e22e">format</span> <span style="color:#66d9ef">string</span>, <span style="color:#a6e22e">args</span> <span style="color:#f92672">...</span><span style="color:#66d9ef">interface</span>{})
+</span></span><span style="display:flex;"><span>	<span style="color:#a6e22e">Debugf</span>(<span style="color:#a6e22e">format</span> <span style="color:#66d9ef">string</span>, <span style="color:#a6e22e">args</span> <span style="color:#f92672">...</span><span style="color:#66d9ef">interface</span>{})
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></div><p>We could have the client implement multiple levels and even set the loglevel.
 (this example logger follows github.com/sirupsen/logrus &rsquo;s intuitive structure for
 illustration purposes)</p>
 <p>This however puts us in a bit of a bother because our earlier implementation
 doesn&rsquo;t account for this. True, the client could stop calling the debug log itself
 by a simple implementation that could look like this.</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#66d9ef">type</span> <span style="color:#a6e22e">structuredLogger</span> <span style="color:#66d9ef">struct</span>{
-    <span style="color:#a6e22e">level</span> <span style="color:#66d9ef">int</span>
-}
-
-<span style="color:#66d9ef">func</span> (<span style="color:#a6e22e">s</span> <span style="color:#f92672">*</span><span style="color:#a6e22e">structuredLogger</span>) <span style="color:#a6e22e">Debug</span>(<span style="color:#a6e22e">args</span> <span style="color:#f92672">...</span><span style="color:#66d9ef">interface</span>{}){
-    <span style="color:#66d9ef">if</span> <span style="color:#a6e22e">s</span>.<span style="color:#a6e22e">level</span> &gt; <span style="color:#ae81ff">1</span> {
-        <span style="color:#66d9ef">return</span>
-    }
-}
-
-</code></pre></div><p>The printf code earlier I showed you would now look like this.</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go">
-<span style="color:#66d9ef">func</span> (<span style="color:#a6e22e">cl</span> <span style="color:#f92672">*</span><span style="color:#a6e22e">CustomClient</span>) <span style="color:#a6e22e">Send</span>(){
-    <span style="color:#f92672">...</span>
-    <span style="color:#a6e22e">httpReq</span>, <span style="color:#a6e22e">err</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">http</span>.<span style="color:#a6e22e">NewRequest</span>(<span style="color:#a6e22e">http</span>.<span style="color:#a6e22e">MethodGet</span>, <span style="color:#e6db74">&#34;https://something.com&#34;</span>, <span style="color:#a6e22e">populateBody</span>())
-    <span style="color:#f92672">...</span>
-
-    <span style="color:#66d9ef">if</span> <span style="color:#a6e22e">cl</span>.<span style="color:#a6e22e">Logger</span> <span style="color:#f92672">!=</span> <span style="color:#66d9ef">nil</span>{
-        <span style="color:#a6e22e">reqDump</span>, <span style="color:#a6e22e">err</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">httputil</span>.<span style="color:#a6e22e">DumpRequest</span>(<span style="color:#a6e22e">r</span>.<span style="color:#a6e22e">req</span>, <span style="color:#a6e22e">r</span>.<span style="color:#a6e22e">body</span>)
-        <span style="color:#f92672">...</span>
-
-        <span style="color:#75715e">// The structuredLogger implementation could stop calling this
-</span><span style="color:#75715e"></span>        <span style="color:#a6e22e">cl</span>.<span style="color:#a6e22e">Logger</span>.<span style="color:#a6e22e">Debugf</span>(<span style="color:#e6db74">&#34;%s&#34;</span>, string(<span style="color:#a6e22e">reqDump</span>))
-    }
-
-}
-
-</code></pre></div><p>The obvious issue we ran into here was while the debug log wouldn&rsquo;t get printed,
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-go" data-lang="go"><span style="display:flex;"><span><span style="color:#66d9ef">type</span> <span style="color:#a6e22e">structuredLogger</span> <span style="color:#66d9ef">struct</span>{
+</span></span><span style="display:flex;"><span>    <span style="color:#a6e22e">level</span> <span style="color:#66d9ef">int</span>
+</span></span><span style="display:flex;"><span>}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">func</span> (<span style="color:#a6e22e">s</span> <span style="color:#f92672">*</span><span style="color:#a6e22e">structuredLogger</span>) <span style="color:#a6e22e">Debug</span>(<span style="color:#a6e22e">args</span> <span style="color:#f92672">...</span><span style="color:#66d9ef">interface</span>{}){
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">if</span> <span style="color:#a6e22e">s</span>.<span style="color:#a6e22e">level</span> &gt; <span style="color:#ae81ff">1</span> {
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">return</span>
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></div><p>The printf code earlier I showed you would now look like this.</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-go" data-lang="go"><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">func</span> (<span style="color:#a6e22e">cl</span> <span style="color:#f92672">*</span><span style="color:#a6e22e">CustomClient</span>) <span style="color:#a6e22e">Send</span>(){
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">...</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#a6e22e">httpReq</span>, <span style="color:#a6e22e">err</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">http</span>.<span style="color:#a6e22e">NewRequest</span>(<span style="color:#a6e22e">http</span>.<span style="color:#a6e22e">MethodGet</span>, <span style="color:#e6db74">&#34;https://something.com&#34;</span>, <span style="color:#a6e22e">populateBody</span>())
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">...</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">if</span> <span style="color:#a6e22e">cl</span>.<span style="color:#a6e22e">Logger</span> <span style="color:#f92672">!=</span> <span style="color:#66d9ef">nil</span>{
+</span></span><span style="display:flex;"><span>        <span style="color:#a6e22e">reqDump</span>, <span style="color:#a6e22e">err</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">httputil</span>.<span style="color:#a6e22e">DumpRequest</span>(<span style="color:#a6e22e">r</span>.<span style="color:#a6e22e">req</span>, <span style="color:#a6e22e">r</span>.<span style="color:#a6e22e">body</span>)
+</span></span><span style="display:flex;"><span>        <span style="color:#f92672">...</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>        <span style="color:#75715e">// The structuredLogger implementation could stop calling this
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>        <span style="color:#a6e22e">cl</span>.<span style="color:#a6e22e">Logger</span>.<span style="color:#a6e22e">Debugf</span>(<span style="color:#e6db74">&#34;%s&#34;</span>, string(<span style="color:#a6e22e">reqDump</span>))
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></div><p>The obvious issue we ran into here was while the debug log wouldn&rsquo;t get printed,
 the DumpRequest function would still be called. We debated a bit and screamed at
 each other angrily in German and Tamil.</p>
 <p>And finally it dawned to me, as all things do, when I was in the bathroom.
@@ -169,28 +173,27 @@ practise definitely helped.</p>
 <p>The solution was still to use the logger, but make the dumped Request a type
 that would compute only if called inside <code>log.Debugf</code> taking advantage of Go&rsquo;s
 <code>fmt.Stringer</code>.</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#66d9ef">type</span> <span style="color:#a6e22e">requestDump</span> <span style="color:#66d9ef">struct</span> {
-    <span style="color:#a6e22e">req</span>  <span style="color:#f92672">*</span><span style="color:#a6e22e">http</span>.<span style="color:#a6e22e">Request</span>
-    <span style="color:#a6e22e">body</span> <span style="color:#66d9ef">bool</span>
-}
-
-<span style="color:#66d9ef">func</span> (<span style="color:#a6e22e">r</span> <span style="color:#f92672">*</span><span style="color:#a6e22e">requestDump</span>) <span style="color:#a6e22e">String</span>() <span style="color:#66d9ef">string</span> {
-    <span style="color:#66d9ef">if</span> <span style="color:#a6e22e">reqDump</span>, <span style="color:#a6e22e">err</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">httputil</span>.<span style="color:#a6e22e">DumpRequest</span>(<span style="color:#a6e22e">r</span>.<span style="color:#a6e22e">req</span>, <span style="color:#a6e22e">r</span>.<span style="color:#a6e22e">body</span>); <span style="color:#a6e22e">err</span> <span style="color:#f92672">==</span> <span style="color:#66d9ef">nil</span> {
-        <span style="color:#66d9ef">return</span> string(<span style="color:#a6e22e">reqDump</span>)
-    }
-    <span style="color:#66d9ef">return</span> <span style="color:#e6db74">&#34;&#34;</span>
-}
-
-
-<span style="color:#f92672">...</span>
-
-<span style="color:#66d9ef">func</span> (<span style="color:#a6e22e">r</span> <span style="color:#f92672">*</span><span style="color:#a6e22e">Request</span>) <span style="color:#a6e22e">Send</span>() <span style="color:#66d9ef">error</span>{
-        <span style="color:#66d9ef">if</span> <span style="color:#a6e22e">r</span>.<span style="color:#a6e22e">Logger</span> <span style="color:#f92672">!=</span> <span style="color:#66d9ef">nil</span> {
-            <span style="color:#a6e22e">r</span>.<span style="color:#a6e22e">Logger</span>.<span style="color:#a6e22e">Debugf</span>(<span style="color:#e6db74">&#34;%s \n&#34;</span>, <span style="color:#f92672">&amp;</span><span style="color:#a6e22e">requestDump</span>{<span style="color:#a6e22e">req</span>: <span style="color:#a6e22e">r</span>.<span style="color:#a6e22e">HTTPRequest</span>, <span style="color:#a6e22e">body</span>: <span style="color:#66d9ef">true</span>})
-        }
-}
-
-</code></pre></div><p>This works perfectly for our usecase. Not only does the allocation heavy
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-go" data-lang="go"><span style="display:flex;"><span><span style="color:#66d9ef">type</span> <span style="color:#a6e22e">requestDump</span> <span style="color:#66d9ef">struct</span> {
+</span></span><span style="display:flex;"><span>    <span style="color:#a6e22e">req</span>  <span style="color:#f92672">*</span><span style="color:#a6e22e">http</span>.<span style="color:#a6e22e">Request</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#a6e22e">body</span> <span style="color:#66d9ef">bool</span>
+</span></span><span style="display:flex;"><span>}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">func</span> (<span style="color:#a6e22e">r</span> <span style="color:#f92672">*</span><span style="color:#a6e22e">requestDump</span>) <span style="color:#a6e22e">String</span>() <span style="color:#66d9ef">string</span> {
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">if</span> <span style="color:#a6e22e">reqDump</span>, <span style="color:#a6e22e">err</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">httputil</span>.<span style="color:#a6e22e">DumpRequest</span>(<span style="color:#a6e22e">r</span>.<span style="color:#a6e22e">req</span>, <span style="color:#a6e22e">r</span>.<span style="color:#a6e22e">body</span>); <span style="color:#a6e22e">err</span> <span style="color:#f92672">==</span> <span style="color:#66d9ef">nil</span> {
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">return</span> string(<span style="color:#a6e22e">reqDump</span>)
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">return</span> <span style="color:#e6db74">&#34;&#34;</span>
+</span></span><span style="display:flex;"><span>}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">...</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">func</span> (<span style="color:#a6e22e">r</span> <span style="color:#f92672">*</span><span style="color:#a6e22e">Request</span>) <span style="color:#a6e22e">Send</span>() <span style="color:#66d9ef">error</span>{
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">if</span> <span style="color:#a6e22e">r</span>.<span style="color:#a6e22e">Logger</span> <span style="color:#f92672">!=</span> <span style="color:#66d9ef">nil</span> {
+</span></span><span style="display:flex;"><span>            <span style="color:#a6e22e">r</span>.<span style="color:#a6e22e">Logger</span>.<span style="color:#a6e22e">Debugf</span>(<span style="color:#e6db74">&#34;%s \n&#34;</span>, <span style="color:#f92672">&amp;</span><span style="color:#a6e22e">requestDump</span>{<span style="color:#a6e22e">req</span>: <span style="color:#a6e22e">r</span>.<span style="color:#a6e22e">HTTPRequest</span>, <span style="color:#a6e22e">body</span>: <span style="color:#66d9ef">true</span>})
+</span></span><span style="display:flex;"><span>        }
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></div><p>This works perfectly for our usecase. Not only does the allocation heavy
 dumpRequest only take place during debug loglevel, it&rsquo;s isolated to this
 specific call of debug and only computes if it definitely is going get
 printed by the client&rsquo;s implementation fo the Debugf itself.</p>
@@ -211,11 +214,11 @@ made me feel very happy about type systems coming out.</p>
             
                 <ul class="post-tags">
                     
-                        <li><a href="https://sudarsanreddy.com/tags/go">#go</a></li>
+                        <li><a href="http://localhost:1313/tags/go">#go</a></li>
                     
-                        <li><a href="https://sudarsanreddy.com/tags/static-typing">#static typing</a></li>
+                        <li><a href="http://localhost:1313/tags/static-typing">#static typing</a></li>
                     
-                        <li><a href="https://sudarsanreddy.com/tags/clean-code">#clean code</a></li>
+                        <li><a href="http://localhost:1313/tags/clean-code">#clean code</a></li>
                     
                 </ul>
         
@@ -223,28 +226,6 @@ made me feel very happy about type systems coming out.</p>
 </div>
 
     </article>
-    
-        <div id="disqus_thread"></div>
-<script type="application/javascript">
-    var disqus_config = function () {
-    
-    
-    
-    };
-    (function() {
-        if (["localhost", "127.0.0.1"].indexOf(window.location.hostname) != -1) {
-            document.getElementById('disqus_thread').innerHTML = 'Disqus comments not available by default when the website is previewed locally.';
-            return;
-        }
-        var d = document, s = d.createElement('script'); s.async = true;
-        s.src = '//' + "sudarshan-reddy-github-io" + '.disqus.com/embed.js';
-        s.setAttribute('data-timestamp', +new Date());
-        (d.head || d.body).appendChild(s);
-    })();
-</script>
-<noscript>Please enable JavaScript to view the <a href="https://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
-<a href="https://disqus.com" class="dsq-brlink">comments powered by <span class="logo-disqus">Disqus</span></a>
-    
 
 
         </main>
@@ -253,7 +234,7 @@ made me feel very happy about type systems coming out.</p>
                 
                 
 
-                <p>© Sudarshan Reddy, 2020<br>
+                <p>© Sudarsan Reddy, 2024<br>
 Powered by <a target="_blank" href="https://gohugo.io/">Hugo</a>, theme <a target="_blank" href="https://github.com/sudarshan-reddy/hugo-theme-osiris">Osiris</a>.
 </p>
 

@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 <html lang="en-us">
-<head>
+<head><script src="/livereload.js?mindelay=10&amp;v=2&amp;port=1313&amp;path=livereload" data-no-instant defer></script>
     
         
 <meta charset="utf-8">
@@ -8,30 +8,40 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta name="referrer" content="no-referrer-when-downgrade">
 
-<title>How I got a 100 Dollar toy drone to follow me around. - Sudarshan&#39;s Blog</title>
+<title>How I got a 100 Dollar toy drone to follow me around. - Sudarsan&#39;s Blog</title>
 <meta name="description" content="">
 
-<link rel="icon" type="image/x-icon" href="https://sudarsanreddy.com/favicon.ico">
-<link rel="apple-touch-icon-precomposed" href="https://sudarsanreddy.com/favicon.png">
+<link rel="icon" type="image/x-icon" href="http://localhost:1313/favicon.ico">
+<link rel="apple-touch-icon-precomposed" href="http://localhost:1313/favicon.png">
 
-<link rel="stylesheet" href="https://sudarsanreddy.com/css/style.css?rnd=1591527816" />
+<link rel="stylesheet" href="http://localhost:1313/css/style.css?rnd=1727867061" />
 
 
 
-<meta property="og:title" content="How I got a 100 Dollar toy drone to follow me around." />
-<meta property="og:description" content="It&rsquo;s that time of the year again when I decide to add to my blog. It was my birthday last week and I decided to buy myself a small DJI drone to hack with. I wanted to get something lightweight, cheap and easily replaced. The DJI Tello so far has turned out to be delightfully sufficient for my criteria.
+<meta property="og:url" content="http://localhost:1313/post/drone-follow-face/">
+  <meta property="og:site_name" content="Sudarsan&#39;s Blog">
+  <meta property="og:title" content="How I got a 100 Dollar toy drone to follow me around.">
+  <meta property="og:description" content="It’s that time of the year again when I decide to add to my blog. It was my birthday last week and I decided to buy myself a small DJI drone to hack with. I wanted to get something lightweight, cheap and easily replaced. The DJI Tello so far has turned out to be delightfully sufficient for my criteria.
 The video is here.
-The experiment I set out to do is to have the Tello latch on to a face and follow it." />
-<meta property="og:type" content="article" />
-<meta property="og:url" content="https://sudarsanreddy.com/post/drone-follow-face/" />
-<meta property="article:published_time" content="2020-02-10T00:00:00+00:00" />
-<meta property="article:modified_time" content="2020-02-10T00:00:00+00:00" />
+The experiment I set out to do is to have the Tello latch on to a face and follow it. To do this, I needed to be able to:">
+  <meta property="og:locale" content="en_us">
+  <meta property="og:type" content="article">
+    <meta property="article:section" content="post">
+    <meta property="article:published_time" content="2020-02-10T00:00:00+00:00">
+    <meta property="article:modified_time" content="2020-02-10T00:00:00+00:00">
+    <meta property="article:tag" content="Go">
+    <meta property="article:tag" content="Opencv">
+    <meta property="article:tag" content="Caffe">
+    <meta property="article:tag" content="Computer Vision">
+    <meta property="article:tag" content="Drone">
+    <meta property="article:tag" content="Udp">
 
-<meta name="twitter:card" content="summary"/>
-<meta name="twitter:title" content="How I got a 100 Dollar toy drone to follow me around."/>
-<meta name="twitter:description" content="It&rsquo;s that time of the year again when I decide to add to my blog. It was my birthday last week and I decided to buy myself a small DJI drone to hack with. I wanted to get something lightweight, cheap and easily replaced. The DJI Tello so far has turned out to be delightfully sufficient for my criteria.
+
+  <meta name="twitter:card" content="summary">
+  <meta name="twitter:title" content="How I got a 100 Dollar toy drone to follow me around.">
+  <meta name="twitter:description" content="It’s that time of the year again when I decide to add to my blog. It was my birthday last week and I decided to buy myself a small DJI drone to hack with. I wanted to get something lightweight, cheap and easily replaced. The DJI Tello so far has turned out to be delightfully sufficient for my criteria.
 The video is here.
-The experiment I set out to do is to have the Tello latch on to a face and follow it."/>
+The experiment I set out to do is to have the Tello latch on to a face and follow it. To do this, I needed to be able to:">
 
 
 
@@ -47,14 +57,14 @@ The experiment I set out to do is to have the Tello latch on to a face and follo
         <header> 
             
                 <h1 class="site-header">
-    <a href="/">Sudarshan&#39;s Blog</a>
+    <a href="/">Sudarsan&#39;s Blog</a>
 </h1>
 <nav>
     
     
-    <a class="" href="https://sudarsanreddy.com/about/" title="">About</a>
+    <a class="" href="http://localhost:1313/about/" title="">About</a>
     
-    <a class="" href="https://sudarsanreddy.com/tags/" title="">Tags</a>
+    <a class="" href="http://localhost:1313/tags/" title="">Tags</a>
     
     <a class="" href="https://github.com/sudarshan-reddy/" title="">Github</a>
     
@@ -98,106 +108,106 @@ work of implementing this protocol as an SDK <a href="https://github.com/hybridg
 Their documentation listed examples of starting and controlling the drone and
 the much cooler one of displaying the drone output on mplayer.</p>
 <p>The code below (taken from gobot) would have your tello take off and land.</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#f92672">package</span> <span style="color:#a6e22e">main</span>
-
-<span style="color:#f92672">import</span> (
-	<span style="color:#e6db74">&#34;fmt&#34;</span>
-	<span style="color:#e6db74">&#34;time&#34;</span>
-
-	<span style="color:#e6db74">&#34;gobot.io/x/gobot&#34;</span>
-	<span style="color:#e6db74">&#34;gobot.io/x/gobot/platforms/dji/tello&#34;</span>
-)
-
-<span style="color:#66d9ef">func</span> <span style="color:#a6e22e">main</span>() {
-	<span style="color:#a6e22e">drone</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">tello</span>.<span style="color:#a6e22e">NewDriver</span>(<span style="color:#e6db74">&#34;8888&#34;</span>)
-
-	<span style="color:#a6e22e">work</span> <span style="color:#f92672">:=</span> <span style="color:#66d9ef">func</span>() {
-		<span style="color:#a6e22e">drone</span>.<span style="color:#a6e22e">TakeOff</span>()
-
-		<span style="color:#a6e22e">gobot</span>.<span style="color:#a6e22e">After</span>(<span style="color:#ae81ff">5</span><span style="color:#f92672">*</span><span style="color:#a6e22e">time</span>.<span style="color:#a6e22e">Second</span>, <span style="color:#66d9ef">func</span>() {
-			<span style="color:#a6e22e">drone</span>.<span style="color:#a6e22e">Land</span>()
-		})
-	}
-
-	<span style="color:#a6e22e">robot</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">gobot</span>.<span style="color:#a6e22e">NewRobot</span>(<span style="color:#e6db74">&#34;tello&#34;</span>,
-		[]<span style="color:#a6e22e">gobot</span>.<span style="color:#a6e22e">Connection</span>{},
-		[]<span style="color:#a6e22e">gobot</span>.<span style="color:#a6e22e">Device</span>{<span style="color:#a6e22e">drone</span>},
-		<span style="color:#a6e22e">work</span>,
-	)
-
-	<span style="color:#a6e22e">robot</span>.<span style="color:#a6e22e">Start</span>()
-}
-</code></pre></div><h2 id="getting-the-flight-visual">Getting the flight visual:</h2>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-go" data-lang="go"><span style="display:flex;"><span><span style="color:#f92672">package</span> <span style="color:#a6e22e">main</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">import</span> (
+</span></span><span style="display:flex;"><span>	<span style="color:#e6db74">&#34;fmt&#34;</span>
+</span></span><span style="display:flex;"><span>	<span style="color:#e6db74">&#34;time&#34;</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>	<span style="color:#e6db74">&#34;gobot.io/x/gobot&#34;</span>
+</span></span><span style="display:flex;"><span>	<span style="color:#e6db74">&#34;gobot.io/x/gobot/platforms/dji/tello&#34;</span>
+</span></span><span style="display:flex;"><span>)
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">func</span> <span style="color:#a6e22e">main</span>() {
+</span></span><span style="display:flex;"><span>	<span style="color:#a6e22e">drone</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">tello</span>.<span style="color:#a6e22e">NewDriver</span>(<span style="color:#e6db74">&#34;8888&#34;</span>)
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>	<span style="color:#a6e22e">work</span> <span style="color:#f92672">:=</span> <span style="color:#66d9ef">func</span>() {
+</span></span><span style="display:flex;"><span>		<span style="color:#a6e22e">drone</span>.<span style="color:#a6e22e">TakeOff</span>()
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>		<span style="color:#a6e22e">gobot</span>.<span style="color:#a6e22e">After</span>(<span style="color:#ae81ff">5</span><span style="color:#f92672">*</span><span style="color:#a6e22e">time</span>.<span style="color:#a6e22e">Second</span>, <span style="color:#66d9ef">func</span>() {
+</span></span><span style="display:flex;"><span>			<span style="color:#a6e22e">drone</span>.<span style="color:#a6e22e">Land</span>()
+</span></span><span style="display:flex;"><span>		})
+</span></span><span style="display:flex;"><span>	}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>	<span style="color:#a6e22e">robot</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">gobot</span>.<span style="color:#a6e22e">NewRobot</span>(<span style="color:#e6db74">&#34;tello&#34;</span>,
+</span></span><span style="display:flex;"><span>		[]<span style="color:#a6e22e">gobot</span>.<span style="color:#a6e22e">Connection</span>{},
+</span></span><span style="display:flex;"><span>		[]<span style="color:#a6e22e">gobot</span>.<span style="color:#a6e22e">Device</span>{<span style="color:#a6e22e">drone</span>},
+</span></span><span style="display:flex;"><span>		<span style="color:#a6e22e">work</span>,
+</span></span><span style="display:flex;"><span>	)
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>	<span style="color:#a6e22e">robot</span>.<span style="color:#a6e22e">Start</span>()
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></div><h2 id="getting-the-flight-visual">Getting the flight visual:</h2>
 <p>My second problem was also easily solved. Gobot sufficiently lets you
 <a href="https://gobot.io/documentation/examples/tello_video/">stream</a>
 the drone camera UDP output to mplayer (or as we will in the future, ffmpeg pipes).</p>
 <p>For my experiment, I used the ffmpeg encoder to a stdoutpipe.</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go">	<span style="color:#a6e22e">ffmpeg</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">exec</span>.<span style="color:#a6e22e">Command</span>(<span style="color:#e6db74">&#34;ffmpeg&#34;</span>, <span style="color:#e6db74">&#34;-hwaccel&#34;</span>, <span style="color:#e6db74">&#34;auto&#34;</span>, <span style="color:#e6db74">&#34;-hwaccel_device&#34;</span>, <span style="color:#e6db74">&#34;opencl&#34;</span>, <span style="color:#e6db74">&#34;-i&#34;</span>, <span style="color:#e6db74">&#34;pipe:0&#34;</span>,
-		<span style="color:#e6db74">&#34;-pix_fmt&#34;</span>, <span style="color:#e6db74">&#34;bgr24&#34;</span>, <span style="color:#e6db74">&#34;-s&#34;</span>, <span style="color:#a6e22e">strconv</span>.<span style="color:#a6e22e">Itoa</span>(<span style="color:#a6e22e">frameX</span>)<span style="color:#f92672">+</span><span style="color:#e6db74">&#34;x&#34;</span><span style="color:#f92672">+</span><span style="color:#a6e22e">strconv</span>.<span style="color:#a6e22e">Itoa</span>(<span style="color:#a6e22e">frameY</span>), <span style="color:#e6db74">&#34;-f&#34;</span>, <span style="color:#e6db74">&#34;rawvideo&#34;</span>, <span style="color:#e6db74">&#34;pipe:1&#34;</span>)
-	<span style="color:#a6e22e">ffmpegIn</span>, <span style="color:#a6e22e">err</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">ffmpeg</span>.<span style="color:#a6e22e">StdinPipe</span>()
-	<span style="color:#66d9ef">if</span> <span style="color:#a6e22e">err</span> <span style="color:#f92672">!=</span> <span style="color:#66d9ef">nil</span> {
-		<span style="color:#66d9ef">return</span> <span style="color:#66d9ef">nil</span>, <span style="color:#a6e22e">err</span>
-	}
-	<span style="color:#a6e22e">ffmpegOut</span>, <span style="color:#a6e22e">err</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">ffmpeg</span>.<span style="color:#a6e22e">StdoutPipe</span>()
-	<span style="color:#66d9ef">if</span> <span style="color:#a6e22e">err</span> <span style="color:#f92672">!=</span> <span style="color:#66d9ef">nil</span> {
-		<span style="color:#66d9ef">return</span> <span style="color:#66d9ef">nil</span>, <span style="color:#a6e22e">err</span>
-	}
-</code></pre></div><p>I then read this repeatedly</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#66d9ef">for</span> {
-		<span style="color:#a6e22e">outData</span> <span style="color:#f92672">:=</span> make([]<span style="color:#66d9ef">byte</span>, <span style="color:#a6e22e">frameSize</span>)
-		<span style="color:#66d9ef">if</span> <span style="color:#a6e22e">_</span>, <span style="color:#a6e22e">err</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">io</span>.<span style="color:#a6e22e">ReadFull</span>(<span style="color:#a6e22e">f</span>.<span style="color:#a6e22e">ffmpegOut</span>, <span style="color:#a6e22e">outData</span>); <span style="color:#a6e22e">err</span> <span style="color:#f92672">!=</span> <span style="color:#66d9ef">nil</span> {
-			<span style="color:#66d9ef">return</span> <span style="color:#a6e22e">err</span>
-	}
-<span style="color:#f92672">...</span>
-</code></pre></div><h2 id="have-the-drone-recognize-a-face">Have the drone recognize a face:</h2>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-go" data-lang="go"><span style="display:flex;"><span>	<span style="color:#a6e22e">ffmpeg</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">exec</span>.<span style="color:#a6e22e">Command</span>(<span style="color:#e6db74">&#34;ffmpeg&#34;</span>, <span style="color:#e6db74">&#34;-hwaccel&#34;</span>, <span style="color:#e6db74">&#34;auto&#34;</span>, <span style="color:#e6db74">&#34;-hwaccel_device&#34;</span>, <span style="color:#e6db74">&#34;opencl&#34;</span>, <span style="color:#e6db74">&#34;-i&#34;</span>, <span style="color:#e6db74">&#34;pipe:0&#34;</span>,
+</span></span><span style="display:flex;"><span>		<span style="color:#e6db74">&#34;-pix_fmt&#34;</span>, <span style="color:#e6db74">&#34;bgr24&#34;</span>, <span style="color:#e6db74">&#34;-s&#34;</span>, <span style="color:#a6e22e">strconv</span>.<span style="color:#a6e22e">Itoa</span>(<span style="color:#a6e22e">frameX</span>)<span style="color:#f92672">+</span><span style="color:#e6db74">&#34;x&#34;</span><span style="color:#f92672">+</span><span style="color:#a6e22e">strconv</span>.<span style="color:#a6e22e">Itoa</span>(<span style="color:#a6e22e">frameY</span>), <span style="color:#e6db74">&#34;-f&#34;</span>, <span style="color:#e6db74">&#34;rawvideo&#34;</span>, <span style="color:#e6db74">&#34;pipe:1&#34;</span>)
+</span></span><span style="display:flex;"><span>	<span style="color:#a6e22e">ffmpegIn</span>, <span style="color:#a6e22e">err</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">ffmpeg</span>.<span style="color:#a6e22e">StdinPipe</span>()
+</span></span><span style="display:flex;"><span>	<span style="color:#66d9ef">if</span> <span style="color:#a6e22e">err</span> <span style="color:#f92672">!=</span> <span style="color:#66d9ef">nil</span> {
+</span></span><span style="display:flex;"><span>		<span style="color:#66d9ef">return</span> <span style="color:#66d9ef">nil</span>, <span style="color:#a6e22e">err</span>
+</span></span><span style="display:flex;"><span>	}
+</span></span><span style="display:flex;"><span>	<span style="color:#a6e22e">ffmpegOut</span>, <span style="color:#a6e22e">err</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">ffmpeg</span>.<span style="color:#a6e22e">StdoutPipe</span>()
+</span></span><span style="display:flex;"><span>	<span style="color:#66d9ef">if</span> <span style="color:#a6e22e">err</span> <span style="color:#f92672">!=</span> <span style="color:#66d9ef">nil</span> {
+</span></span><span style="display:flex;"><span>		<span style="color:#66d9ef">return</span> <span style="color:#66d9ef">nil</span>, <span style="color:#a6e22e">err</span>
+</span></span><span style="display:flex;"><span>	}
+</span></span></code></pre></div><p>I then read this repeatedly</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-go" data-lang="go"><span style="display:flex;"><span><span style="color:#66d9ef">for</span> {
+</span></span><span style="display:flex;"><span>		<span style="color:#a6e22e">outData</span> <span style="color:#f92672">:=</span> make([]<span style="color:#66d9ef">byte</span>, <span style="color:#a6e22e">frameSize</span>)
+</span></span><span style="display:flex;"><span>		<span style="color:#66d9ef">if</span> <span style="color:#a6e22e">_</span>, <span style="color:#a6e22e">err</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">io</span>.<span style="color:#a6e22e">ReadFull</span>(<span style="color:#a6e22e">f</span>.<span style="color:#a6e22e">ffmpegOut</span>, <span style="color:#a6e22e">outData</span>); <span style="color:#a6e22e">err</span> <span style="color:#f92672">!=</span> <span style="color:#66d9ef">nil</span> {
+</span></span><span style="display:flex;"><span>			<span style="color:#66d9ef">return</span> <span style="color:#a6e22e">err</span>
+</span></span><span style="display:flex;"><span>	}
+</span></span><span style="display:flex;"><span><span style="color:#f92672">...</span>
+</span></span></code></pre></div><h2 id="have-the-drone-recognize-a-face">Have the drone recognize a face:</h2>
 <p>I did a little bit of caffe work to train a CNN to recognize faces. The GoCV
 bindings to opencv comes with an <a href="https://github.com/hybridgroup/gocv/blob/master/data/haarcascade_frontalface_default.xml">xml cascade file</a> that does this sufficiently
 well but I liked my model better. Plugging it into GoCV is as simple as</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go">	<span style="color:#a6e22e">net</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">gocv</span>.<span style="color:#a6e22e">ReadNetFromCaffe</span>(<span style="color:#a6e22e">f</span>.<span style="color:#a6e22e">protoPath</span>, <span style="color:#a6e22e">f</span>.<span style="color:#a6e22e">modelPath</span>)
-</code></pre></div><p>The neural network can then run inferences here:</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go">		<span style="color:#a6e22e">detBlob</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">net</span>.<span style="color:#a6e22e">Forward</span>(<span style="color:#e6db74">&#34;detection_out&#34;</span>)
-
-<span style="color:#f92672">...</span>
-        <span style="color:#a6e22e">confidence</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">detections</span>.<span style="color:#a6e22e">GetFloatAt</span>(<span style="color:#a6e22e">r</span>, <span style="color:#ae81ff">2</span>)
-		<span style="color:#66d9ef">if</span> <span style="color:#a6e22e">confidence</span> &lt; <span style="color:#ae81ff">0.5</span> {
-			<span style="color:#66d9ef">continue</span>
-		}
-</code></pre></div><h2 id="tell-the-drone-to-follow-the-face">Tell the drone to follow the face:</h2>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-go" data-lang="go"><span style="display:flex;"><span>	<span style="color:#a6e22e">net</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">gocv</span>.<span style="color:#a6e22e">ReadNetFromCaffe</span>(<span style="color:#a6e22e">f</span>.<span style="color:#a6e22e">protoPath</span>, <span style="color:#a6e22e">f</span>.<span style="color:#a6e22e">modelPath</span>)
+</span></span></code></pre></div><p>The neural network can then run inferences here:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-go" data-lang="go"><span style="display:flex;"><span>		<span style="color:#a6e22e">detBlob</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">net</span>.<span style="color:#a6e22e">Forward</span>(<span style="color:#e6db74">&#34;detection_out&#34;</span>)
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">...</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#a6e22e">confidence</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">detections</span>.<span style="color:#a6e22e">GetFloatAt</span>(<span style="color:#a6e22e">r</span>, <span style="color:#ae81ff">2</span>)
+</span></span><span style="display:flex;"><span>		<span style="color:#66d9ef">if</span> <span style="color:#a6e22e">confidence</span> &lt; <span style="color:#ae81ff">0.5</span> {
+</span></span><span style="display:flex;"><span>			<span style="color:#66d9ef">continue</span>
+</span></span><span style="display:flex;"><span>		}
+</span></span></code></pre></div><h2 id="tell-the-drone-to-follow-the-face">Tell the drone to follow the face:</h2>
 <p>This was the most fun part. My logic was simple. I created bounds for the drone
 camera. My idea was to have the drone turn in the direction of the human face
 bounding box every time it left it&rsquo;s line of sight. I also added in a distance
 vector to have the drone maintain a safe distance from the human face.</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#66d9ef">if</span> <span style="color:#a6e22e">f</span>.<span style="color:#a6e22e">detectSize</span> {
-			<span style="color:#a6e22e">f</span>.<span style="color:#a6e22e">detectSize</span> = <span style="color:#66d9ef">false</span>
-			<span style="color:#a6e22e">refDistance</span> = <span style="color:#a6e22e">dist</span>(<span style="color:#a6e22e">left</span>, <span style="color:#a6e22e">top</span>, <span style="color:#a6e22e">right</span>, <span style="color:#a6e22e">bottom</span>)
-		}
-
-		<span style="color:#a6e22e">distance</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">dist</span>(<span style="color:#a6e22e">left</span>, <span style="color:#a6e22e">top</span>, <span style="color:#a6e22e">right</span>, <span style="color:#a6e22e">bottom</span>)
-
-		<span style="color:#66d9ef">if</span> <span style="color:#a6e22e">right</span> &lt; <span style="color:#a6e22e">W</span><span style="color:#f92672">/</span><span style="color:#ae81ff">2</span> {
-			<span style="color:#a6e22e">f</span>.<span style="color:#a6e22e">drone</span>.<span style="color:#a6e22e">CounterClockwise</span>(<span style="color:#ae81ff">50</span>)
-		} <span style="color:#66d9ef">else</span> <span style="color:#66d9ef">if</span> <span style="color:#a6e22e">left</span> &gt; <span style="color:#a6e22e">W</span><span style="color:#f92672">/</span><span style="color:#ae81ff">2</span> {
-			<span style="color:#a6e22e">f</span>.<span style="color:#a6e22e">drone</span>.<span style="color:#a6e22e">Clockwise</span>(<span style="color:#ae81ff">50</span>)
-		} <span style="color:#66d9ef">else</span> {
-			<span style="color:#a6e22e">f</span>.<span style="color:#a6e22e">drone</span>.<span style="color:#a6e22e">Clockwise</span>(<span style="color:#ae81ff">0</span>)
-		}
-
-		<span style="color:#66d9ef">if</span> <span style="color:#a6e22e">top</span> &lt; <span style="color:#a6e22e">H</span><span style="color:#f92672">/</span><span style="color:#ae81ff">10</span> {
-			<span style="color:#a6e22e">f</span>.<span style="color:#a6e22e">drone</span>.<span style="color:#a6e22e">Up</span>(<span style="color:#ae81ff">25</span>)
-		} <span style="color:#66d9ef">else</span> <span style="color:#66d9ef">if</span> <span style="color:#a6e22e">bottom</span> &gt; <span style="color:#a6e22e">H</span><span style="color:#f92672">-</span><span style="color:#a6e22e">H</span><span style="color:#f92672">/</span><span style="color:#ae81ff">10</span> {
-			<span style="color:#a6e22e">f</span>.<span style="color:#a6e22e">drone</span>.<span style="color:#a6e22e">Down</span>(<span style="color:#ae81ff">25</span>)
-		} <span style="color:#66d9ef">else</span> {
-			<span style="color:#a6e22e">f</span>.<span style="color:#a6e22e">drone</span>.<span style="color:#a6e22e">Up</span>(<span style="color:#ae81ff">0</span>)
-		}
-
-		<span style="color:#66d9ef">if</span> <span style="color:#a6e22e">distance</span> &lt; <span style="color:#a6e22e">refDistance</span><span style="color:#f92672">-</span><span style="color:#a6e22e">distTolerance</span> {
-			<span style="color:#a6e22e">f</span>.<span style="color:#a6e22e">drone</span>.<span style="color:#a6e22e">Forward</span>(<span style="color:#ae81ff">20</span>)
-		} <span style="color:#66d9ef">else</span> <span style="color:#66d9ef">if</span> <span style="color:#a6e22e">distance</span> &gt; <span style="color:#a6e22e">refDistance</span><span style="color:#f92672">+</span><span style="color:#a6e22e">distTolerance</span> {
-			<span style="color:#a6e22e">f</span>.<span style="color:#a6e22e">drone</span>.<span style="color:#a6e22e">Backward</span>(<span style="color:#ae81ff">20</span>)
-		} <span style="color:#66d9ef">else</span> {
-			<span style="color:#a6e22e">f</span>.<span style="color:#a6e22e">drone</span>.<span style="color:#a6e22e">Forward</span>(<span style="color:#ae81ff">0</span>)
-		}
-</code></pre></div><h2 id="note">Note:</h2>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-go" data-lang="go"><span style="display:flex;"><span><span style="color:#66d9ef">if</span> <span style="color:#a6e22e">f</span>.<span style="color:#a6e22e">detectSize</span> {
+</span></span><span style="display:flex;"><span>			<span style="color:#a6e22e">f</span>.<span style="color:#a6e22e">detectSize</span> = <span style="color:#66d9ef">false</span>
+</span></span><span style="display:flex;"><span>			<span style="color:#a6e22e">refDistance</span> = <span style="color:#a6e22e">dist</span>(<span style="color:#a6e22e">left</span>, <span style="color:#a6e22e">top</span>, <span style="color:#a6e22e">right</span>, <span style="color:#a6e22e">bottom</span>)
+</span></span><span style="display:flex;"><span>		}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>		<span style="color:#a6e22e">distance</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">dist</span>(<span style="color:#a6e22e">left</span>, <span style="color:#a6e22e">top</span>, <span style="color:#a6e22e">right</span>, <span style="color:#a6e22e">bottom</span>)
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>		<span style="color:#66d9ef">if</span> <span style="color:#a6e22e">right</span> &lt; <span style="color:#a6e22e">W</span><span style="color:#f92672">/</span><span style="color:#ae81ff">2</span> {
+</span></span><span style="display:flex;"><span>			<span style="color:#a6e22e">f</span>.<span style="color:#a6e22e">drone</span>.<span style="color:#a6e22e">CounterClockwise</span>(<span style="color:#ae81ff">50</span>)
+</span></span><span style="display:flex;"><span>		} <span style="color:#66d9ef">else</span> <span style="color:#66d9ef">if</span> <span style="color:#a6e22e">left</span> &gt; <span style="color:#a6e22e">W</span><span style="color:#f92672">/</span><span style="color:#ae81ff">2</span> {
+</span></span><span style="display:flex;"><span>			<span style="color:#a6e22e">f</span>.<span style="color:#a6e22e">drone</span>.<span style="color:#a6e22e">Clockwise</span>(<span style="color:#ae81ff">50</span>)
+</span></span><span style="display:flex;"><span>		} <span style="color:#66d9ef">else</span> {
+</span></span><span style="display:flex;"><span>			<span style="color:#a6e22e">f</span>.<span style="color:#a6e22e">drone</span>.<span style="color:#a6e22e">Clockwise</span>(<span style="color:#ae81ff">0</span>)
+</span></span><span style="display:flex;"><span>		}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>		<span style="color:#66d9ef">if</span> <span style="color:#a6e22e">top</span> &lt; <span style="color:#a6e22e">H</span><span style="color:#f92672">/</span><span style="color:#ae81ff">10</span> {
+</span></span><span style="display:flex;"><span>			<span style="color:#a6e22e">f</span>.<span style="color:#a6e22e">drone</span>.<span style="color:#a6e22e">Up</span>(<span style="color:#ae81ff">25</span>)
+</span></span><span style="display:flex;"><span>		} <span style="color:#66d9ef">else</span> <span style="color:#66d9ef">if</span> <span style="color:#a6e22e">bottom</span> &gt; <span style="color:#a6e22e">H</span><span style="color:#f92672">-</span><span style="color:#a6e22e">H</span><span style="color:#f92672">/</span><span style="color:#ae81ff">10</span> {
+</span></span><span style="display:flex;"><span>			<span style="color:#a6e22e">f</span>.<span style="color:#a6e22e">drone</span>.<span style="color:#a6e22e">Down</span>(<span style="color:#ae81ff">25</span>)
+</span></span><span style="display:flex;"><span>		} <span style="color:#66d9ef">else</span> {
+</span></span><span style="display:flex;"><span>			<span style="color:#a6e22e">f</span>.<span style="color:#a6e22e">drone</span>.<span style="color:#a6e22e">Up</span>(<span style="color:#ae81ff">0</span>)
+</span></span><span style="display:flex;"><span>		}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>		<span style="color:#66d9ef">if</span> <span style="color:#a6e22e">distance</span> &lt; <span style="color:#a6e22e">refDistance</span><span style="color:#f92672">-</span><span style="color:#a6e22e">distTolerance</span> {
+</span></span><span style="display:flex;"><span>			<span style="color:#a6e22e">f</span>.<span style="color:#a6e22e">drone</span>.<span style="color:#a6e22e">Forward</span>(<span style="color:#ae81ff">20</span>)
+</span></span><span style="display:flex;"><span>		} <span style="color:#66d9ef">else</span> <span style="color:#66d9ef">if</span> <span style="color:#a6e22e">distance</span> &gt; <span style="color:#a6e22e">refDistance</span><span style="color:#f92672">+</span><span style="color:#a6e22e">distTolerance</span> {
+</span></span><span style="display:flex;"><span>			<span style="color:#a6e22e">f</span>.<span style="color:#a6e22e">drone</span>.<span style="color:#a6e22e">Backward</span>(<span style="color:#ae81ff">20</span>)
+</span></span><span style="display:flex;"><span>		} <span style="color:#66d9ef">else</span> {
+</span></span><span style="display:flex;"><span>			<span style="color:#a6e22e">f</span>.<span style="color:#a6e22e">drone</span>.<span style="color:#a6e22e">Forward</span>(<span style="color:#ae81ff">0</span>)
+</span></span><span style="display:flex;"><span>		}
+</span></span></code></pre></div><h2 id="note">Note:</h2>
 <p>If you watch the video closely, you&rsquo;ll notice that my <del>beard is very patchy</del><br>
 boundary values are so small that the drone sometimes &ldquo;loses&rdquo; my face. This
 is an improvement I will be working on.</p>
@@ -217,17 +227,17 @@ is an improvement I will be working on.</p>
             
                 <ul class="post-tags">
                     
-                        <li><a href="https://sudarsanreddy.com/tags/go">#go</a></li>
+                        <li><a href="http://localhost:1313/tags/go">#go</a></li>
                     
-                        <li><a href="https://sudarsanreddy.com/tags/opencv">#opencv</a></li>
+                        <li><a href="http://localhost:1313/tags/opencv">#opencv</a></li>
                     
-                        <li><a href="https://sudarsanreddy.com/tags/caffe">#caffe</a></li>
+                        <li><a href="http://localhost:1313/tags/caffe">#caffe</a></li>
                     
-                        <li><a href="https://sudarsanreddy.com/tags/computer-vision">#computer vision</a></li>
+                        <li><a href="http://localhost:1313/tags/computer-vision">#computer vision</a></li>
                     
-                        <li><a href="https://sudarsanreddy.com/tags/drone">#drone</a></li>
+                        <li><a href="http://localhost:1313/tags/drone">#drone</a></li>
                     
-                        <li><a href="https://sudarsanreddy.com/tags/udp">#udp</a></li>
+                        <li><a href="http://localhost:1313/tags/udp">#udp</a></li>
                     
                 </ul>
         
@@ -235,28 +245,6 @@ is an improvement I will be working on.</p>
 </div>
 
     </article>
-    
-        <div id="disqus_thread"></div>
-<script type="application/javascript">
-    var disqus_config = function () {
-    
-    
-    
-    };
-    (function() {
-        if (["localhost", "127.0.0.1"].indexOf(window.location.hostname) != -1) {
-            document.getElementById('disqus_thread').innerHTML = 'Disqus comments not available by default when the website is previewed locally.';
-            return;
-        }
-        var d = document, s = d.createElement('script'); s.async = true;
-        s.src = '//' + "sudarshan-reddy-github-io" + '.disqus.com/embed.js';
-        s.setAttribute('data-timestamp', +new Date());
-        (d.head || d.body).appendChild(s);
-    })();
-</script>
-<noscript>Please enable JavaScript to view the <a href="https://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
-<a href="https://disqus.com" class="dsq-brlink">comments powered by <span class="logo-disqus">Disqus</span></a>
-    
 
 
         </main>
@@ -265,7 +253,7 @@ is an improvement I will be working on.</p>
                 
                 
 
-                <p>© Sudarshan Reddy, 2020<br>
+                <p>© Sudarsan Reddy, 2024<br>
 Powered by <a target="_blank" href="https://gohugo.io/">Hugo</a>, theme <a target="_blank" href="https://github.com/sudarshan-reddy/hugo-theme-osiris">Osiris</a>.
 </p>
 

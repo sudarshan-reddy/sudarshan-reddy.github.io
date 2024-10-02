@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>Cloudflare on Sudarsan&#39;s Blog</title>
+    <link>http://localhost:1313/tags/cloudflare/</link>
+    <description>Sudarsan&#39;s Blog (Cloudflare)</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>en-us</language>
+    <lastBuildDate>Wed, 20 Oct 2021 00:00:00 +0000</lastBuildDate>
+    
+    <atom:link href="http://localhost:1313/tags/cloudflare/index.xml" rel="self" type="application/rss+xml" />
+    
+    
+    <item>
+      <title>Getting Cloudflare Tunnels to connect to the Cloudflare Edge with QUIC</title>
+      <link>http://localhost:1313/post/cloudflare-tunnel-quic/</link>
+      <pubDate>Wed, 20 Oct 2021 00:00:00 +0000</pubDate>
+      
+      <guid>http://localhost:1313/post/cloudflare-tunnel-quic/</guid>
+      <description>&lt;p&gt;This was a project I personally drove and delivered on whilst working on Cloudflare.
+During that time, I ran into a really interesting problem getting it to work on Cloudflare&amp;rsquo;s
+complex distributed edge. I try and walk through that debugging story here with some gentle
+introductions by usage to &lt;code&gt;tcpdump&lt;/code&gt; and &lt;code&gt;strace&lt;/code&gt;.&lt;/p&gt;
+&lt;p&gt;The full blog post written by me is &lt;a href=&#34;https://blog.cloudflare.com/getting-cloudflare-tunnels-to-connect-to-the-cloudflare-network-with-quic/&#34;&gt;here&lt;/a&gt;&lt;/p&gt;
+</description>
+    </item>
+    
+  </channel>
+</rss>

@@ -1,14 +1,14 @@
 <?xml version="1.0" encoding="utf-8" standalone="yes"?>
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
-    <title>Tags on Sudarshan&#39;s Blog</title>
-    <link>https://sudarsanreddy.com/tags/</link>
-    <description>Sudarshan&#39;s Blog (Tags)</description>
+    <title>Tags on Sudarsan&#39;s Blog</title>
+    <link>http://localhost:1313/tags/</link>
+    <description>Sudarsan&#39;s Blog (Tags)</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en-us</language>
-    <lastBuildDate>Sat, 06 Jun 2020 00:00:00 +0000</lastBuildDate>
+    <lastBuildDate>Wed, 20 Oct 2021 00:00:00 +0000</lastBuildDate>
     
-    <atom:link href="https://sudarsanreddy.com/tags/index.xml" rel="self" type="application/rss+xml" />
+    <atom:link href="http://localhost:1313/tags/index.xml" rel="self" type="application/rss+xml" />
     
     
   </channel>

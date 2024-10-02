@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 <html lang="en-us">
-<head>
+<head><script src="/livereload.js?mindelay=10&amp;v=2&amp;port=1313&amp;path=livereload" data-no-instant defer></script>
     
         
 <meta charset="utf-8">
@@ -8,28 +8,35 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta name="referrer" content="no-referrer-when-downgrade">
 
-<title>A little code generation in Go in 2020. - Sudarshan&#39;s Blog</title>
+<title>A little code generation in Go in 2020. - Sudarsan&#39;s Blog</title>
 <meta name="description" content="">
 
-<link rel="icon" type="image/x-icon" href="https://sudarsanreddy.com/favicon.ico">
-<link rel="apple-touch-icon-precomposed" href="https://sudarsanreddy.com/favicon.png">
+<link rel="icon" type="image/x-icon" href="http://localhost:1313/favicon.ico">
+<link rel="apple-touch-icon-precomposed" href="http://localhost:1313/favicon.png">
 
-<link rel="stylesheet" href="https://sudarsanreddy.com/css/style.css?rnd=1591527816" />
+<link rel="stylesheet" href="http://localhost:1313/css/style.css?rnd=1727867061" />
 
 
 
-<meta property="og:title" content="A little code generation in Go in 2020." />
-<meta property="og:description" content="Perl gives me headaches. But I&rsquo;m fond of one of Larry Wall&rsquo;s three virtues: Laziness. This is a story of how sometimes laziness lets you do fun things.
-Distributed systems and microservices are as ubiquitous as the coronavirus in 2020. This results in a requirement for a lot of integration. And a nice way to maintain the glue code is to use SDKs rather than have multiple services write the transport glue themselves." />
-<meta property="og:type" content="article" />
-<meta property="og:url" content="https://sudarsanreddy.com/post/code-gen/" />
-<meta property="article:published_time" content="2020-03-14T00:00:00+00:00" />
-<meta property="article:modified_time" content="2020-03-14T00:00:00+00:00" />
+<meta property="og:url" content="http://localhost:1313/post/code-gen/">
+  <meta property="og:site_name" content="Sudarsan&#39;s Blog">
+  <meta property="og:title" content="A little code generation in Go in 2020.">
+  <meta property="og:description" content="Perl gives me headaches. But I’m fond of one of Larry Wall’s three virtues: Laziness. This is a story of how sometimes laziness lets you do fun things.
+Distributed systems and microservices are as ubiquitous as the coronavirus in 2020. This results in a requirement for a lot of integration. And a nice way to maintain the glue code is to use SDKs rather than have multiple services write the transport glue themselves. Like so…">
+  <meta property="og:locale" content="en_us">
+  <meta property="og:type" content="article">
+    <meta property="article:section" content="post">
+    <meta property="article:published_time" content="2020-03-14T00:00:00+00:00">
+    <meta property="article:modified_time" content="2020-03-14T00:00:00+00:00">
+    <meta property="article:tag" content="Go">
+    <meta property="article:tag" content="Ast">
+    <meta property="article:tag" content="Code Generation">
 
-<meta name="twitter:card" content="summary"/>
-<meta name="twitter:title" content="A little code generation in Go in 2020."/>
-<meta name="twitter:description" content="Perl gives me headaches. But I&rsquo;m fond of one of Larry Wall&rsquo;s three virtues: Laziness. This is a story of how sometimes laziness lets you do fun things.
-Distributed systems and microservices are as ubiquitous as the coronavirus in 2020. This results in a requirement for a lot of integration. And a nice way to maintain the glue code is to use SDKs rather than have multiple services write the transport glue themselves."/>
+
+  <meta name="twitter:card" content="summary">
+  <meta name="twitter:title" content="A little code generation in Go in 2020.">
+  <meta name="twitter:description" content="Perl gives me headaches. But I’m fond of one of Larry Wall’s three virtues: Laziness. This is a story of how sometimes laziness lets you do fun things.
+Distributed systems and microservices are as ubiquitous as the coronavirus in 2020. This results in a requirement for a lot of integration. And a nice way to maintain the glue code is to use SDKs rather than have multiple services write the transport glue themselves. Like so…">
 
 
 
@@ -45,14 +52,14 @@ Distributed systems and microservices are as ubiquitous as the coronavirus in 20
         <header> 
             
                 <h1 class="site-header">
-    <a href="/">Sudarshan&#39;s Blog</a>
+    <a href="/">Sudarsan&#39;s Blog</a>
 </h1>
 <nav>
     
     
-    <a class="" href="https://sudarsanreddy.com/about/" title="">About</a>
+    <a class="" href="http://localhost:1313/about/" title="">About</a>
     
-    <a class="" href="https://sudarsanreddy.com/tags/" title="">Tags</a>
+    <a class="" href="http://localhost:1313/tags/" title="">Tags</a>
     
     <a class="" href="https://github.com/sudarshan-reddy/" title="">Github</a>
     
@@ -82,7 +89,7 @@ Like so&hellip;</p>
 homogenous and eliminate the occurence of manual errors.</p>
 <p>So the SDK has two components. The component that is manually built and the parts
 that can be generated. Here is a layout of the project.</p>
-<pre><code>---
+<pre tabindex="0"><code>---
  - client
  - api.go
  - methods.go
@@ -95,61 +102,61 @@ which is sort of like <code>client.Do()</code>.</p>
 <p>methods.go is what we want to generate. It will be a collection of implementations
 of helpers that call the api and parse and respond readable Go structures. Like so:</p>
 <p><code>https://awesomewebsite/v1/getdetails</code></p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#66d9ef">func</span> (<span style="color:#a6e22e">c</span> <span style="color:#f92672">*</span><span style="color:#a6e22e">client</span>) <span style="color:#a6e22e">GetDetails</span>() (<span style="color:#f92672">*</span><span style="color:#a6e22e">Details</span>, <span style="color:#66d9ef">error</span>) {
-	<span style="color:#a6e22e">op</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">client</span>.<span style="color:#a6e22e">Operation</span>{
-		<span style="color:#a6e22e">HTTPMethod</span>: <span style="color:#a6e22e">http</span>.<span style="color:#a6e22e">MethodGet</span>,
-		<span style="color:#a6e22e">HTTPPath</span>:   <span style="color:#a6e22e">endpoint</span> <span style="color:#f92672">+</span> <span style="color:#e6db74">&#34;/v1/getdetails&#34;</span>,
-	}
-
-	<span style="color:#66d9ef">var</span> <span style="color:#a6e22e">response</span> <span style="color:#f92672">*</span><span style="color:#a6e22e">Details</span>
-	<span style="color:#a6e22e">req</span>, <span style="color:#a6e22e">err</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">r</span>.<span style="color:#a6e22e">cl</span>.<span style="color:#a6e22e">NewRequest</span>(<span style="color:#a6e22e">op</span>, <span style="color:#f92672">&amp;</span><span style="color:#a6e22e">response</span>, <span style="color:#66d9ef">nil</span>)
-	<span style="color:#66d9ef">if</span> <span style="color:#a6e22e">err</span> <span style="color:#f92672">!=</span> <span style="color:#66d9ef">nil</span> {
-		<span style="color:#66d9ef">return</span> <span style="color:#a6e22e">response</span>, <span style="color:#66d9ef">nil</span>
-	}
-	<span style="color:#66d9ef">if</span> <span style="color:#a6e22e">err</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">req</span>.<span style="color:#a6e22e">Send</span>(); <span style="color:#a6e22e">err</span> <span style="color:#f92672">!=</span> <span style="color:#66d9ef">nil</span> {
-		<span style="color:#66d9ef">return</span> <span style="color:#a6e22e">response</span>, <span style="color:#66d9ef">nil</span>
-	}
-
-	<span style="color:#66d9ef">return</span> <span style="color:#a6e22e">response</span>, <span style="color:#66d9ef">nil</span>
-}
-</code></pre></div><p>If you notice, most of the code is tedious housekeeping that gets repeated. So getrandomstuff
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-go" data-lang="go"><span style="display:flex;"><span><span style="color:#66d9ef">func</span> (<span style="color:#a6e22e">c</span> <span style="color:#f92672">*</span><span style="color:#a6e22e">client</span>) <span style="color:#a6e22e">GetDetails</span>() (<span style="color:#f92672">*</span><span style="color:#a6e22e">Details</span>, <span style="color:#66d9ef">error</span>) {
+</span></span><span style="display:flex;"><span>	<span style="color:#a6e22e">op</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">client</span>.<span style="color:#a6e22e">Operation</span>{
+</span></span><span style="display:flex;"><span>		<span style="color:#a6e22e">HTTPMethod</span>: <span style="color:#a6e22e">http</span>.<span style="color:#a6e22e">MethodGet</span>,
+</span></span><span style="display:flex;"><span>		<span style="color:#a6e22e">HTTPPath</span>:   <span style="color:#a6e22e">endpoint</span> <span style="color:#f92672">+</span> <span style="color:#e6db74">&#34;/v1/getdetails&#34;</span>,
+</span></span><span style="display:flex;"><span>	}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>	<span style="color:#66d9ef">var</span> <span style="color:#a6e22e">response</span> <span style="color:#f92672">*</span><span style="color:#a6e22e">Details</span>
+</span></span><span style="display:flex;"><span>	<span style="color:#a6e22e">req</span>, <span style="color:#a6e22e">err</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">r</span>.<span style="color:#a6e22e">cl</span>.<span style="color:#a6e22e">NewRequest</span>(<span style="color:#a6e22e">op</span>, <span style="color:#f92672">&amp;</span><span style="color:#a6e22e">response</span>, <span style="color:#66d9ef">nil</span>)
+</span></span><span style="display:flex;"><span>	<span style="color:#66d9ef">if</span> <span style="color:#a6e22e">err</span> <span style="color:#f92672">!=</span> <span style="color:#66d9ef">nil</span> {
+</span></span><span style="display:flex;"><span>		<span style="color:#66d9ef">return</span> <span style="color:#a6e22e">response</span>, <span style="color:#66d9ef">nil</span>
+</span></span><span style="display:flex;"><span>	}
+</span></span><span style="display:flex;"><span>	<span style="color:#66d9ef">if</span> <span style="color:#a6e22e">err</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">req</span>.<span style="color:#a6e22e">Send</span>(); <span style="color:#a6e22e">err</span> <span style="color:#f92672">!=</span> <span style="color:#66d9ef">nil</span> {
+</span></span><span style="display:flex;"><span>		<span style="color:#66d9ef">return</span> <span style="color:#a6e22e">response</span>, <span style="color:#66d9ef">nil</span>
+</span></span><span style="display:flex;"><span>	}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>	<span style="color:#66d9ef">return</span> <span style="color:#a6e22e">response</span>, <span style="color:#66d9ef">nil</span>
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></div><p>If you notice, most of the code is tedious housekeeping that gets repeated. So getrandomstuff
 becomes</p>
 <p><code>https://awesomewebsite/v1/getrandomstuff</code></p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#66d9ef">func</span> (<span style="color:#a6e22e">c</span> <span style="color:#f92672">*</span><span style="color:#a6e22e">client</span>) <span style="color:#a6e22e">GetRandomStuff</span>() (<span style="color:#f92672">*</span><span style="color:#a6e22e">RandomStuff</span>, <span style="color:#66d9ef">error</span>) {
-	<span style="color:#a6e22e">op</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">client</span>.<span style="color:#a6e22e">Operation</span>{
-		<span style="color:#a6e22e">HTTPMethod</span>: <span style="color:#a6e22e">http</span>.<span style="color:#a6e22e">MethodGet</span>,
-		<span style="color:#a6e22e">HTTPPath</span>:   <span style="color:#a6e22e">endpoint</span> <span style="color:#f92672">+</span> <span style="color:#e6db74">&#34;/v1/getrandomstuff&#34;</span>,
-	}
-
-	<span style="color:#66d9ef">var</span> <span style="color:#a6e22e">response</span> <span style="color:#f92672">*</span><span style="color:#a6e22e">RandomStuff</span>
-	<span style="color:#a6e22e">req</span>, <span style="color:#a6e22e">err</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">r</span>.<span style="color:#a6e22e">cl</span>.<span style="color:#a6e22e">NewRequest</span>(<span style="color:#a6e22e">op</span>, <span style="color:#f92672">&amp;</span><span style="color:#a6e22e">response</span>, <span style="color:#66d9ef">nil</span>)
-	<span style="color:#66d9ef">if</span> <span style="color:#a6e22e">err</span> <span style="color:#f92672">!=</span> <span style="color:#66d9ef">nil</span> {
-		<span style="color:#66d9ef">return</span> <span style="color:#a6e22e">response</span>, <span style="color:#66d9ef">nil</span>
-	}
-	<span style="color:#66d9ef">if</span> <span style="color:#a6e22e">err</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">req</span>.<span style="color:#a6e22e">Send</span>(); <span style="color:#a6e22e">err</span> <span style="color:#f92672">!=</span> <span style="color:#66d9ef">nil</span> {
-		<span style="color:#66d9ef">return</span> <span style="color:#a6e22e">response</span>, <span style="color:#66d9ef">nil</span>
-	}
-
-	<span style="color:#66d9ef">return</span> <span style="color:#a6e22e">response</span>, <span style="color:#66d9ef">nil</span>
-}
-</code></pre></div><p>Step in code generation. Now what I wanted to do was to use a specification that
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-go" data-lang="go"><span style="display:flex;"><span><span style="color:#66d9ef">func</span> (<span style="color:#a6e22e">c</span> <span style="color:#f92672">*</span><span style="color:#a6e22e">client</span>) <span style="color:#a6e22e">GetRandomStuff</span>() (<span style="color:#f92672">*</span><span style="color:#a6e22e">RandomStuff</span>, <span style="color:#66d9ef">error</span>) {
+</span></span><span style="display:flex;"><span>	<span style="color:#a6e22e">op</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">client</span>.<span style="color:#a6e22e">Operation</span>{
+</span></span><span style="display:flex;"><span>		<span style="color:#a6e22e">HTTPMethod</span>: <span style="color:#a6e22e">http</span>.<span style="color:#a6e22e">MethodGet</span>,
+</span></span><span style="display:flex;"><span>		<span style="color:#a6e22e">HTTPPath</span>:   <span style="color:#a6e22e">endpoint</span> <span style="color:#f92672">+</span> <span style="color:#e6db74">&#34;/v1/getrandomstuff&#34;</span>,
+</span></span><span style="display:flex;"><span>	}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>	<span style="color:#66d9ef">var</span> <span style="color:#a6e22e">response</span> <span style="color:#f92672">*</span><span style="color:#a6e22e">RandomStuff</span>
+</span></span><span style="display:flex;"><span>	<span style="color:#a6e22e">req</span>, <span style="color:#a6e22e">err</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">r</span>.<span style="color:#a6e22e">cl</span>.<span style="color:#a6e22e">NewRequest</span>(<span style="color:#a6e22e">op</span>, <span style="color:#f92672">&amp;</span><span style="color:#a6e22e">response</span>, <span style="color:#66d9ef">nil</span>)
+</span></span><span style="display:flex;"><span>	<span style="color:#66d9ef">if</span> <span style="color:#a6e22e">err</span> <span style="color:#f92672">!=</span> <span style="color:#66d9ef">nil</span> {
+</span></span><span style="display:flex;"><span>		<span style="color:#66d9ef">return</span> <span style="color:#a6e22e">response</span>, <span style="color:#66d9ef">nil</span>
+</span></span><span style="display:flex;"><span>	}
+</span></span><span style="display:flex;"><span>	<span style="color:#66d9ef">if</span> <span style="color:#a6e22e">err</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">req</span>.<span style="color:#a6e22e">Send</span>(); <span style="color:#a6e22e">err</span> <span style="color:#f92672">!=</span> <span style="color:#66d9ef">nil</span> {
+</span></span><span style="display:flex;"><span>		<span style="color:#66d9ef">return</span> <span style="color:#a6e22e">response</span>, <span style="color:#66d9ef">nil</span>
+</span></span><span style="display:flex;"><span>	}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>	<span style="color:#66d9ef">return</span> <span style="color:#a6e22e">response</span>, <span style="color:#66d9ef">nil</span>
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></div><p>Step in code generation. Now what I wanted to do was to use a specification that
 the user is able to add a configuration that the generator captures and
 translates into something like the snippets about. Lets define a set of rules to outline this.</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#66d9ef">type</span> <span style="color:#a6e22e">Generator</span> <span style="color:#66d9ef">interface</span> {
-	<span style="color:#a6e22e">Generate</span>(<span style="color:#a6e22e">Reader</span>, <span style="color:#a6e22e">Writer</span>) <span style="color:#66d9ef">error</span>
-}
-
-<span style="color:#75715e">// Reader is a general wrapper on io.Reader to read an input to obtain
-</span><span style="color:#75715e">// the apis.
-</span><span style="color:#75715e"></span><span style="color:#66d9ef">type</span> <span style="color:#a6e22e">Reader</span> <span style="color:#66d9ef">interface</span> {
-	<span style="color:#a6e22e">ReadAPI</span>(<span style="color:#a6e22e">io</span>.<span style="color:#a6e22e">Reader</span>) ([]<span style="color:#a6e22e">API</span>, <span style="color:#66d9ef">error</span>)
-}
-
-<span style="color:#75715e">// Writer is a general wrapper on io.Writer to write the processed file.
-</span><span style="color:#75715e"></span><span style="color:#66d9ef">type</span> <span style="color:#a6e22e">Writer</span> <span style="color:#66d9ef">interface</span> {
-	<span style="color:#a6e22e">WriteAPI</span>(<span style="color:#a6e22e">io</span>.<span style="color:#a6e22e">Writer</span>, []<span style="color:#a6e22e">API</span>) <span style="color:#66d9ef">error</span>
-}
-</code></pre></div><p>So, we need something to Read from and somewhere to Write.</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-go" data-lang="go"><span style="display:flex;"><span><span style="color:#66d9ef">type</span> <span style="color:#a6e22e">Generator</span> <span style="color:#66d9ef">interface</span> {
+</span></span><span style="display:flex;"><span>	<span style="color:#a6e22e">Generate</span>(<span style="color:#a6e22e">Reader</span>, <span style="color:#a6e22e">Writer</span>) <span style="color:#66d9ef">error</span>
+</span></span><span style="display:flex;"><span>}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e">// Reader is a general wrapper on io.Reader to read an input to obtain
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e">// the apis.
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span><span style="color:#66d9ef">type</span> <span style="color:#a6e22e">Reader</span> <span style="color:#66d9ef">interface</span> {
+</span></span><span style="display:flex;"><span>	<span style="color:#a6e22e">ReadAPI</span>(<span style="color:#a6e22e">io</span>.<span style="color:#a6e22e">Reader</span>) ([]<span style="color:#a6e22e">API</span>, <span style="color:#66d9ef">error</span>)
+</span></span><span style="display:flex;"><span>}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e">// Writer is a general wrapper on io.Writer to write the processed file.
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span><span style="color:#66d9ef">type</span> <span style="color:#a6e22e">Writer</span> <span style="color:#66d9ef">interface</span> {
+</span></span><span style="display:flex;"><span>	<span style="color:#a6e22e">WriteAPI</span>(<span style="color:#a6e22e">io</span>.<span style="color:#a6e22e">Writer</span>, []<span style="color:#a6e22e">API</span>) <span style="color:#66d9ef">error</span>
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></div><p>So, we need something to Read from and somewhere to Write.</p>
 <h2 id="reader">Reader</h2>
 <p>Multiple options presented themselves.</p>
 <p><strong>It could be an API specification:</strong> But everyone hates swagger so much. It seemed to be punishment for
@@ -157,42 +164,42 @@ the developers to write the yaml with all of swagger&rsquo;s quirks.</p>
 <p>Writing Swagger yamls are painful and so there is no example.</p>
 <p><strong>It could be a JSON/XML based configuration system:</strong> Still needed the developer to work on a different
 &ldquo;language/syntax&rdquo; compared to what the rest of the codebase was.</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-json" data-lang="json">{
-    <span style="color:#f92672">&#34;methods&#34;</span>: [
-        {
-            <span style="color:#f92672">&#34;name&#34;</span>: <span style="color:#e6db74">&#34;GetDetails&#34;</span>,
-            <span style="color:#f92672">&#34;endpoint&#34;</span>: <span style="color:#e6db74">&#34;v1/getdetails&#34;</span>,
-            <span style="color:#f92672">&#34;verb&#34;</span>: <span style="color:#e6db74">&#34;Get&#34;</span>,
-            <span style="color:#f92672">&#34;inputParams&#34;</span>: [],
-            <span style="color:#f92672">&#34;outputParams&#34;</span>: [
-                {<span style="color:#f92672">&#34;Details&#34;</span>: {}}
-            ]
-        },
-        {
-            <span style="color:#f92672">&#34;name&#34;</span>: <span style="color:#e6db74">&#34;GetRandomStuff&#34;</span>,
-            <span style="color:#f92672">&#34;endpoint&#34;</span>: <span style="color:#e6db74">&#34;v1/getrandomstuff&#34;</span>,
-            <span style="color:#f92672">&#34;verb&#34;</span>: <span style="color:#e6db74">&#34;Get&#34;</span>,
-            <span style="color:#f92672">&#34;inputParams&#34;</span>: [],
-            <span style="color:#f92672">&#34;outputParams&#34;</span>: [
-                {<span style="color:#f92672">&#34;RandomStuff&#34;</span>: {}}
-            ]
-        }
-    ]
-}
-</code></pre></div><p><strong>It could be an interface also written in Go:</strong> The user will have to add a method to an interface
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-json" data-lang="json"><span style="display:flex;"><span>{
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">&#34;methods&#34;</span>: [
+</span></span><span style="display:flex;"><span>        {
+</span></span><span style="display:flex;"><span>            <span style="color:#f92672">&#34;name&#34;</span>: <span style="color:#e6db74">&#34;GetDetails&#34;</span>,
+</span></span><span style="display:flex;"><span>            <span style="color:#f92672">&#34;endpoint&#34;</span>: <span style="color:#e6db74">&#34;v1/getdetails&#34;</span>,
+</span></span><span style="display:flex;"><span>            <span style="color:#f92672">&#34;verb&#34;</span>: <span style="color:#e6db74">&#34;Get&#34;</span>,
+</span></span><span style="display:flex;"><span>            <span style="color:#f92672">&#34;inputParams&#34;</span>: [],
+</span></span><span style="display:flex;"><span>            <span style="color:#f92672">&#34;outputParams&#34;</span>: [
+</span></span><span style="display:flex;"><span>                {<span style="color:#f92672">&#34;Details&#34;</span>: {}}
+</span></span><span style="display:flex;"><span>            ]
+</span></span><span style="display:flex;"><span>        },
+</span></span><span style="display:flex;"><span>        {
+</span></span><span style="display:flex;"><span>            <span style="color:#f92672">&#34;name&#34;</span>: <span style="color:#e6db74">&#34;GetRandomStuff&#34;</span>,
+</span></span><span style="display:flex;"><span>            <span style="color:#f92672">&#34;endpoint&#34;</span>: <span style="color:#e6db74">&#34;v1/getrandomstuff&#34;</span>,
+</span></span><span style="display:flex;"><span>            <span style="color:#f92672">&#34;verb&#34;</span>: <span style="color:#e6db74">&#34;Get&#34;</span>,
+</span></span><span style="display:flex;"><span>            <span style="color:#f92672">&#34;inputParams&#34;</span>: [],
+</span></span><span style="display:flex;"><span>            <span style="color:#f92672">&#34;outputParams&#34;</span>: [
+</span></span><span style="display:flex;"><span>                {<span style="color:#f92672">&#34;RandomStuff&#34;</span>: {}}
+</span></span><span style="display:flex;"><span>            ]
+</span></span><span style="display:flex;"><span>        }
+</span></span><span style="display:flex;"><span>    ]
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></div><p><strong>It could be an interface also written in Go:</strong> The user will have to add a method to an interface
 and define the structures. The downside of this is the http endpoint and verb have to be annoted.</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#66d9ef">type</span> <span style="color:#a6e22e">Client</span> <span style="color:#66d9ef">interface</span>{
-    <span style="color:#75715e">// Get v1/getdetails
-</span><span style="color:#75715e"></span>    <span style="color:#a6e22e">GetDetails</span>() (<span style="color:#f92672">*</span><span style="color:#a6e22e">Details</span>, <span style="color:#66d9ef">error</span>) 
-
-    <span style="color:#75715e">// Get v1/getrandomstuff
-</span><span style="color:#75715e"></span>    <span style="color:#a6e22e">GetRandomStuff</span>() (<span style="color:#f92672">*</span><span style="color:#a6e22e">RandomStuff</span>, <span style="color:#66d9ef">error</span>) 
-}
-
-<span style="color:#66d9ef">type</span> <span style="color:#a6e22e">Details</span> <span style="color:#66d9ef">struct</span>{}
-
-<span style="color:#66d9ef">type</span> <span style="color:#a6e22e">RandomStuff</span> <span style="color:#66d9ef">struct</span>{}
-</code></pre></div><p>Out of these three options, the one I preferred was adding to the interface.
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-go" data-lang="go"><span style="display:flex;"><span><span style="color:#66d9ef">type</span> <span style="color:#a6e22e">Client</span> <span style="color:#66d9ef">interface</span>{
+</span></span><span style="display:flex;"><span>    <span style="color:#75715e">// Get v1/getdetails
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>    <span style="color:#a6e22e">GetDetails</span>() (<span style="color:#f92672">*</span><span style="color:#a6e22e">Details</span>, <span style="color:#66d9ef">error</span>) 
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#75715e">// Get v1/getrandomstuff
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>    <span style="color:#a6e22e">GetRandomStuff</span>() (<span style="color:#f92672">*</span><span style="color:#a6e22e">RandomStuff</span>, <span style="color:#66d9ef">error</span>) 
+</span></span><span style="display:flex;"><span>}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">type</span> <span style="color:#a6e22e">Details</span> <span style="color:#66d9ef">struct</span>{}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">type</span> <span style="color:#a6e22e">RandomStuff</span> <span style="color:#66d9ef">struct</span>{}
+</span></span></code></pre></div><p>Out of these three options, the one I preferred was adding to the interface.
 It seemed intuitive and granted control to a Go developer. It also presented the biggest challenge
 of the three. Reading an AST. We could obviously just read the file like a plaintext
 but that seems very hacky and tightly coupled to a pre-conceived notion of how we expect
@@ -219,35 +226,35 @@ seem to be the perfect candidate to put in here.</p>
 code.</p>
 <p>The parsing part of the AST was already done by Go. All I had to do was to
 call the already existing functions like so&hellip;</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go">    <span style="color:#a6e22e">fs</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">token</span>.<span style="color:#a6e22e">NewFileSet</span>()
-	<span style="color:#a6e22e">p</span>, <span style="color:#a6e22e">err</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">parser</span>.<span style="color:#a6e22e">ParseFile</span>(<span style="color:#a6e22e">fs</span>, <span style="color:#e6db74">&#34;&#34;</span>, <span style="color:#a6e22e">r</span>, <span style="color:#a6e22e">parser</span>.<span style="color:#a6e22e">ParseComments</span>)
-	<span style="color:#66d9ef">if</span> <span style="color:#a6e22e">err</span> <span style="color:#f92672">!=</span> <span style="color:#66d9ef">nil</span> {
-		<span style="color:#66d9ef">return</span> <span style="color:#66d9ef">nil</span>, <span style="color:#a6e22e">err</span>
-    }
-</code></pre></div><p><strong>Transformation:</strong> Transformation is manipulating the AST to make changes to it
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-go" data-lang="go"><span style="display:flex;"><span>    <span style="color:#a6e22e">fs</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">token</span>.<span style="color:#a6e22e">NewFileSet</span>()
+</span></span><span style="display:flex;"><span>	<span style="color:#a6e22e">p</span>, <span style="color:#a6e22e">err</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">parser</span>.<span style="color:#a6e22e">ParseFile</span>(<span style="color:#a6e22e">fs</span>, <span style="color:#e6db74">&#34;&#34;</span>, <span style="color:#a6e22e">r</span>, <span style="color:#a6e22e">parser</span>.<span style="color:#a6e22e">ParseComments</span>)
+</span></span><span style="display:flex;"><span>	<span style="color:#66d9ef">if</span> <span style="color:#a6e22e">err</span> <span style="color:#f92672">!=</span> <span style="color:#66d9ef">nil</span> {
+</span></span><span style="display:flex;"><span>		<span style="color:#66d9ef">return</span> <span style="color:#66d9ef">nil</span>, <span style="color:#a6e22e">err</span>
+</span></span><span style="display:flex;"><span>    }
+</span></span></code></pre></div><p><strong>Transformation:</strong> Transformation is manipulating the AST to make changes to it
 to enable the final process of&hellip;</p>
 <p>I wanted to transform the AST into a data model that would be easy for the code
 generation to happen. I laid out a structure like this because I was dealing with
 APIs and their methods.</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#75715e">// API is a set of indicatives that we will loop through
-</span><span style="color:#75715e">// to generate code.
-</span><span style="color:#75715e"></span><span style="color:#66d9ef">type</span> <span style="color:#a6e22e">API</span> <span style="color:#66d9ef">struct</span> {
-	<span style="color:#a6e22e">InterfaceName</span> <span style="color:#66d9ef">string</span>
-	<span style="color:#a6e22e">Methods</span>       []<span style="color:#a6e22e">Method</span>
-}
-
-<span style="color:#75715e">// Method represents a set of metadata levels details that belong
-</span><span style="color:#75715e">// to an api method.
-</span><span style="color:#75715e"></span><span style="color:#66d9ef">type</span> <span style="color:#a6e22e">Method</span> <span style="color:#66d9ef">struct</span> {
-	<span style="color:#a6e22e">Endpoint</span>     <span style="color:#66d9ef">string</span>
-	<span style="color:#a6e22e">MethodName</span>   <span style="color:#66d9ef">string</span>
-	<span style="color:#a6e22e">Path</span>         <span style="color:#66d9ef">string</span>
-	<span style="color:#a6e22e">Verb</span>         <span style="color:#66d9ef">string</span>
-	<span style="color:#a6e22e">Body</span>         <span style="color:#66d9ef">string</span>
-	<span style="color:#a6e22e">InputParams</span>  []<span style="color:#a6e22e">Parameter</span>
-	<span style="color:#a6e22e">OutputParams</span> []<span style="color:#a6e22e">Parameter</span>
-}
-</code></pre></div><p>Now that I had the AST parsed thanks to <code>ParseFile</code>, I had to loop through
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-go" data-lang="go"><span style="display:flex;"><span><span style="color:#75715e">// API is a set of indicatives that we will loop through
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e">// to generate code.
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span><span style="color:#66d9ef">type</span> <span style="color:#a6e22e">API</span> <span style="color:#66d9ef">struct</span> {
+</span></span><span style="display:flex;"><span>	<span style="color:#a6e22e">InterfaceName</span> <span style="color:#66d9ef">string</span>
+</span></span><span style="display:flex;"><span>	<span style="color:#a6e22e">Methods</span>       []<span style="color:#a6e22e">Method</span>
+</span></span><span style="display:flex;"><span>}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e">// Method represents a set of metadata levels details that belong
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e">// to an api method.
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span><span style="color:#66d9ef">type</span> <span style="color:#a6e22e">Method</span> <span style="color:#66d9ef">struct</span> {
+</span></span><span style="display:flex;"><span>	<span style="color:#a6e22e">Endpoint</span>     <span style="color:#66d9ef">string</span>
+</span></span><span style="display:flex;"><span>	<span style="color:#a6e22e">MethodName</span>   <span style="color:#66d9ef">string</span>
+</span></span><span style="display:flex;"><span>	<span style="color:#a6e22e">Path</span>         <span style="color:#66d9ef">string</span>
+</span></span><span style="display:flex;"><span>	<span style="color:#a6e22e">Verb</span>         <span style="color:#66d9ef">string</span>
+</span></span><span style="display:flex;"><span>	<span style="color:#a6e22e">Body</span>         <span style="color:#66d9ef">string</span>
+</span></span><span style="display:flex;"><span>	<span style="color:#a6e22e">InputParams</span>  []<span style="color:#a6e22e">Parameter</span>
+</span></span><span style="display:flex;"><span>	<span style="color:#a6e22e">OutputParams</span> []<span style="color:#a6e22e">Parameter</span>
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></div><p>Now that I had the AST parsed thanks to <code>ParseFile</code>, I had to loop through
 it to obtain:</p>
 <ul>
 <li>All the interface declarations.</li>
@@ -257,185 +264,184 @@ it to obtain:</p>
 </ul>
 <p><code>Decls</code> is all the declarations. We loop through that and assert for
 interfaces.</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#f92672">...</span>
-	<span style="color:#75715e">// loop through all the top level declarations of the AST.
-</span><span style="color:#75715e"></span>	<span style="color:#66d9ef">for</span> <span style="color:#a6e22e">_</span>, <span style="color:#a6e22e">decl</span> <span style="color:#f92672">:=</span> <span style="color:#66d9ef">range</span> <span style="color:#a6e22e">p</span>.<span style="color:#a6e22e">Decls</span> {
-		<span style="color:#75715e">// We don&#39;t care about functional declarations, so lets pick
-</span><span style="color:#75715e"></span>		<span style="color:#75715e">// only the generic ones.
-</span><span style="color:#75715e"></span>		<span style="color:#a6e22e">decl</span>, <span style="color:#a6e22e">ok</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">decl</span>.(<span style="color:#f92672">*</span><span style="color:#a6e22e">ast</span>.<span style="color:#a6e22e">GenDecl</span>)
-		<span style="color:#75715e">// We don&#39;t really need to process token.TYPE.
-</span><span style="color:#75715e"></span>		<span style="color:#66d9ef">if</span> !<span style="color:#a6e22e">ok</span> <span style="color:#f92672">||</span> <span style="color:#a6e22e">decl</span>.<span style="color:#a6e22e">Tok</span> <span style="color:#f92672">!=</span> <span style="color:#a6e22e">token</span>.<span style="color:#a6e22e">TYPE</span> {
-			<span style="color:#66d9ef">continue</span>
-		}
-
-		<span style="color:#66d9ef">var</span> <span style="color:#a6e22e">api</span> <span style="color:#a6e22e">API</span>
-		<span style="color:#66d9ef">for</span> <span style="color:#a6e22e">_</span>, <span style="color:#a6e22e">spec</span> <span style="color:#f92672">:=</span> <span style="color:#66d9ef">range</span> <span style="color:#a6e22e">decl</span>.<span style="color:#a6e22e">Specs</span> {
-			<span style="color:#75715e">//We only want to read through type declarations.
-</span><span style="color:#75715e"></span>			<span style="color:#a6e22e">typeSpec</span>, <span style="color:#a6e22e">ok</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">spec</span>.(<span style="color:#f92672">*</span><span style="color:#a6e22e">ast</span>.<span style="color:#a6e22e">TypeSpec</span>)
-			<span style="color:#66d9ef">if</span> !<span style="color:#a6e22e">ok</span> {
-				<span style="color:#66d9ef">continue</span>
-			}
-
-			<span style="color:#a6e22e">api</span>.<span style="color:#a6e22e">InterfaceName</span> = <span style="color:#a6e22e">typeSpec</span>.<span style="color:#a6e22e">Name</span>.<span style="color:#a6e22e">String</span>()
-
-			<span style="color:#75715e">// Again, we are only interested in Interface definitions.
-</span><span style="color:#75715e"></span>			<span style="color:#a6e22e">interfaceType</span>, <span style="color:#a6e22e">ok</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">typeSpec</span>.<span style="color:#a6e22e">Type</span>.(<span style="color:#f92672">*</span><span style="color:#a6e22e">ast</span>.<span style="color:#a6e22e">InterfaceType</span>)
-			<span style="color:#66d9ef">if</span> !<span style="color:#a6e22e">ok</span> {
-				<span style="color:#66d9ef">continue</span>
-			}
-<span style="color:#f92672">...</span>
-
-</code></pre></div><p>Now that we have the interfaces we extract the other stuff we mentioned above
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-go" data-lang="go"><span style="display:flex;"><span><span style="color:#f92672">...</span>
+</span></span><span style="display:flex;"><span>	<span style="color:#75715e">// loop through all the top level declarations of the AST.
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>	<span style="color:#66d9ef">for</span> <span style="color:#a6e22e">_</span>, <span style="color:#a6e22e">decl</span> <span style="color:#f92672">:=</span> <span style="color:#66d9ef">range</span> <span style="color:#a6e22e">p</span>.<span style="color:#a6e22e">Decls</span> {
+</span></span><span style="display:flex;"><span>		<span style="color:#75715e">// We don&#39;t care about functional declarations, so lets pick
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>		<span style="color:#75715e">// only the generic ones.
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>		<span style="color:#a6e22e">decl</span>, <span style="color:#a6e22e">ok</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">decl</span>.(<span style="color:#f92672">*</span><span style="color:#a6e22e">ast</span>.<span style="color:#a6e22e">GenDecl</span>)
+</span></span><span style="display:flex;"><span>		<span style="color:#75715e">// We don&#39;t really need to process token.TYPE.
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>		<span style="color:#66d9ef">if</span> !<span style="color:#a6e22e">ok</span> <span style="color:#f92672">||</span> <span style="color:#a6e22e">decl</span>.<span style="color:#a6e22e">Tok</span> <span style="color:#f92672">!=</span> <span style="color:#a6e22e">token</span>.<span style="color:#a6e22e">TYPE</span> {
+</span></span><span style="display:flex;"><span>			<span style="color:#66d9ef">continue</span>
+</span></span><span style="display:flex;"><span>		}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>		<span style="color:#66d9ef">var</span> <span style="color:#a6e22e">api</span> <span style="color:#a6e22e">API</span>
+</span></span><span style="display:flex;"><span>		<span style="color:#66d9ef">for</span> <span style="color:#a6e22e">_</span>, <span style="color:#a6e22e">spec</span> <span style="color:#f92672">:=</span> <span style="color:#66d9ef">range</span> <span style="color:#a6e22e">decl</span>.<span style="color:#a6e22e">Specs</span> {
+</span></span><span style="display:flex;"><span>			<span style="color:#75715e">//We only want to read through type declarations.
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>			<span style="color:#a6e22e">typeSpec</span>, <span style="color:#a6e22e">ok</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">spec</span>.(<span style="color:#f92672">*</span><span style="color:#a6e22e">ast</span>.<span style="color:#a6e22e">TypeSpec</span>)
+</span></span><span style="display:flex;"><span>			<span style="color:#66d9ef">if</span> !<span style="color:#a6e22e">ok</span> {
+</span></span><span style="display:flex;"><span>				<span style="color:#66d9ef">continue</span>
+</span></span><span style="display:flex;"><span>			}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>			<span style="color:#a6e22e">api</span>.<span style="color:#a6e22e">InterfaceName</span> = <span style="color:#a6e22e">typeSpec</span>.<span style="color:#a6e22e">Name</span>.<span style="color:#a6e22e">String</span>()
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>			<span style="color:#75715e">// Again, we are only interested in Interface definitions.
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>			<span style="color:#a6e22e">interfaceType</span>, <span style="color:#a6e22e">ok</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">typeSpec</span>.<span style="color:#a6e22e">Type</span>.(<span style="color:#f92672">*</span><span style="color:#a6e22e">ast</span>.<span style="color:#a6e22e">InterfaceType</span>)
+</span></span><span style="display:flex;"><span>			<span style="color:#66d9ef">if</span> !<span style="color:#a6e22e">ok</span> {
+</span></span><span style="display:flex;"><span>				<span style="color:#66d9ef">continue</span>
+</span></span><span style="display:flex;"><span>			}
+</span></span><span style="display:flex;"><span><span style="color:#f92672">...</span>
+</span></span></code></pre></div><p>Now that we have the interfaces we extract the other stuff we mentioned above
 from 2-4.</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go">    <span style="color:#66d9ef">func</span> <span style="color:#a6e22e">getMethods</span>(<span style="color:#a6e22e">fields</span> []<span style="color:#f92672">*</span><span style="color:#a6e22e">ast</span>.<span style="color:#a6e22e">Field</span>) []<span style="color:#a6e22e">Method</span> {
-    	<span style="color:#66d9ef">var</span> <span style="color:#a6e22e">methods</span> = make([]<span style="color:#a6e22e">Method</span>, <span style="color:#ae81ff">0</span>)
-    	<span style="color:#66d9ef">for</span> <span style="color:#a6e22e">_</span>, <span style="color:#a6e22e">method</span> <span style="color:#f92672">:=</span> <span style="color:#66d9ef">range</span> <span style="color:#a6e22e">fields</span> {
-    		<span style="color:#66d9ef">if</span> len(<span style="color:#a6e22e">method</span>.<span style="color:#a6e22e">Names</span>) <span style="color:#f92672">==</span> <span style="color:#ae81ff">0</span> {
-    			<span style="color:#66d9ef">continue</span>
-    		}
-    
-    		<span style="color:#66d9ef">var</span> <span style="color:#a6e22e">ignore</span> <span style="color:#66d9ef">bool</span>
-    		<span style="color:#66d9ef">var</span> <span style="color:#a6e22e">matches</span> [][]<span style="color:#66d9ef">string</span>
-    		<span style="color:#66d9ef">for</span> <span style="color:#a6e22e">_</span>, <span style="color:#a6e22e">d</span> <span style="color:#f92672">:=</span> <span style="color:#66d9ef">range</span> <span style="color:#a6e22e">method</span>.<span style="color:#a6e22e">Doc</span>.<span style="color:#a6e22e">List</span> {
-    			<span style="color:#a6e22e">comment</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">extractComment</span>(<span style="color:#a6e22e">d</span>.<span style="color:#a6e22e">Text</span>)
-    			<span style="color:#66d9ef">if</span> <span style="color:#a6e22e">comment</span> <span style="color:#f92672">==</span> <span style="color:#e6db74">&#34;Ignore&#34;</span> {
-    				<span style="color:#a6e22e">ignore</span> = <span style="color:#66d9ef">true</span>
-    			} <span style="color:#66d9ef">else</span> {
-    				<span style="color:#a6e22e">matches</span> = <span style="color:#a6e22e">verbEndpointRegex</span>.<span style="color:#a6e22e">FindAllStringSubmatch</span>(<span style="color:#a6e22e">comment</span>, <span style="color:#f92672">-</span><span style="color:#ae81ff">1</span>)
-    			}
-    		}
-    		<span style="color:#66d9ef">if</span> <span style="color:#a6e22e">ignore</span> {
-    			<span style="color:#66d9ef">continue</span>
-    		}
-    
-    		<span style="color:#a6e22e">fn</span>, <span style="color:#a6e22e">ok</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">method</span>.<span style="color:#a6e22e">Type</span>.(<span style="color:#f92672">*</span><span style="color:#a6e22e">ast</span>.<span style="color:#a6e22e">FuncType</span>)
-    		<span style="color:#66d9ef">if</span> !<span style="color:#a6e22e">ok</span> {
-    			<span style="color:#66d9ef">continue</span>
-    		}
-    
-    		<span style="color:#66d9ef">var</span> <span style="color:#a6e22e">methodData</span> <span style="color:#a6e22e">Method</span>
-    		<span style="color:#a6e22e">methodData</span>.<span style="color:#a6e22e">Verb</span> = <span style="color:#a6e22e">matches</span>[<span style="color:#ae81ff">0</span>][<span style="color:#ae81ff">0</span>]
-    		<span style="color:#a6e22e">methodData</span>.<span style="color:#a6e22e">Path</span> = <span style="color:#a6e22e">matches</span>[<span style="color:#ae81ff">1</span>][<span style="color:#ae81ff">0</span>]
-    		<span style="color:#a6e22e">methodData</span>.<span style="color:#a6e22e">MethodName</span> = <span style="color:#a6e22e">method</span>.<span style="color:#a6e22e">Names</span>[<span style="color:#ae81ff">0</span>].<span style="color:#a6e22e">String</span>()
-    		<span style="color:#a6e22e">methodData</span>.<span style="color:#a6e22e">InputParams</span> = <span style="color:#a6e22e">getFields</span>(<span style="color:#a6e22e">fn</span>.<span style="color:#a6e22e">Params</span>.<span style="color:#a6e22e">List</span>)
-    		<span style="color:#a6e22e">methodData</span>.<span style="color:#a6e22e">OutputParams</span> = <span style="color:#a6e22e">getFields</span>(<span style="color:#a6e22e">fn</span>.<span style="color:#a6e22e">Results</span>.<span style="color:#a6e22e">List</span>)
-    
-    		<span style="color:#a6e22e">methods</span> = append(<span style="color:#a6e22e">methods</span>, <span style="color:#a6e22e">methodData</span>)
-    	}
-    	<span style="color:#66d9ef">return</span> <span style="color:#a6e22e">methods</span>
-    }
-    
-    <span style="color:#66d9ef">func</span> <span style="color:#a6e22e">extractComment</span>(<span style="color:#a6e22e">comment</span> <span style="color:#66d9ef">string</span>) <span style="color:#66d9ef">string</span> {
-    	<span style="color:#a6e22e">slashRemoved</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">strings</span>.<span style="color:#a6e22e">Trim</span>(<span style="color:#a6e22e">comment</span>, <span style="color:#e6db74">&#34;//&#34;</span>)
-    	<span style="color:#66d9ef">return</span> <span style="color:#a6e22e">strings</span>.<span style="color:#a6e22e">Trim</span>(<span style="color:#a6e22e">slashRemoved</span>, <span style="color:#e6db74">&#34; &#34;</span>)
-    }
-    
-    <span style="color:#66d9ef">func</span> <span style="color:#a6e22e">getFields</span>(<span style="color:#a6e22e">fields</span> []<span style="color:#f92672">*</span><span style="color:#a6e22e">ast</span>.<span style="color:#a6e22e">Field</span>) []<span style="color:#a6e22e">Parameter</span> {
-    	<span style="color:#a6e22e">params</span> <span style="color:#f92672">:=</span> make([]<span style="color:#a6e22e">Parameter</span>, <span style="color:#ae81ff">0</span>)
-    	<span style="color:#66d9ef">for</span> <span style="color:#a6e22e">_</span>, <span style="color:#a6e22e">field</span> <span style="color:#f92672">:=</span> <span style="color:#66d9ef">range</span> <span style="color:#a6e22e">fields</span> {
-    		<span style="color:#66d9ef">var</span> <span style="color:#a6e22e">name</span> <span style="color:#66d9ef">string</span>
-    		<span style="color:#66d9ef">if</span> len(<span style="color:#a6e22e">field</span>.<span style="color:#a6e22e">Names</span>) &gt; <span style="color:#ae81ff">0</span> {
-    			<span style="color:#a6e22e">name</span> = <span style="color:#a6e22e">field</span>.<span style="color:#a6e22e">Names</span>[<span style="color:#ae81ff">0</span>].<span style="color:#a6e22e">Name</span>
-    		}
-    		<span style="color:#66d9ef">switch</span> <span style="color:#a6e22e">t</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">field</span>.<span style="color:#a6e22e">Type</span>.(<span style="color:#66d9ef">type</span>) {
-    		<span style="color:#66d9ef">case</span> <span style="color:#f92672">*</span><span style="color:#a6e22e">ast</span>.<span style="color:#a6e22e">SelectorExpr</span>:
-    			<span style="color:#a6e22e">p</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">Parameter</span>{
-    				<span style="color:#a6e22e">Name</span>: <span style="color:#a6e22e">name</span>,
-    				<span style="color:#a6e22e">Type</span>: <span style="color:#a6e22e">selectorToString</span>(<span style="color:#a6e22e">t</span>),
-    			}
-    			<span style="color:#a6e22e">params</span> = append(<span style="color:#a6e22e">params</span>, <span style="color:#a6e22e">p</span>)
-    		<span style="color:#66d9ef">case</span> <span style="color:#f92672">*</span><span style="color:#a6e22e">ast</span>.<span style="color:#a6e22e">StarExpr</span>:
-    			<span style="color:#a6e22e">p</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">Parameter</span>{
-    				<span style="color:#a6e22e">Name</span>: <span style="color:#a6e22e">name</span>,
-    				<span style="color:#a6e22e">Type</span>: <span style="color:#a6e22e">starToString</span>(<span style="color:#a6e22e">t</span>),
-    			}
-    			<span style="color:#a6e22e">params</span> = append(<span style="color:#a6e22e">params</span>, <span style="color:#a6e22e">p</span>)
-    		<span style="color:#66d9ef">case</span> <span style="color:#f92672">*</span><span style="color:#a6e22e">ast</span>.<span style="color:#a6e22e">Ident</span>:
-    			<span style="color:#a6e22e">p</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">Parameter</span>{
-    				<span style="color:#a6e22e">Name</span>: <span style="color:#a6e22e">name</span>,
-    				<span style="color:#a6e22e">Type</span>: <span style="color:#a6e22e">t</span>.<span style="color:#a6e22e">Name</span>,
-    			}
-    			<span style="color:#a6e22e">params</span> = append(<span style="color:#a6e22e">params</span>, <span style="color:#a6e22e">p</span>)
-    		}
-    
-    	}
-    	<span style="color:#66d9ef">return</span> <span style="color:#a6e22e">params</span>
-    }
-    
-    <span style="color:#66d9ef">func</span> <span style="color:#a6e22e">selectorToString</span>(<span style="color:#a6e22e">t</span> <span style="color:#f92672">*</span><span style="color:#a6e22e">ast</span>.<span style="color:#a6e22e">SelectorExpr</span>) <span style="color:#66d9ef">string</span> {
-    	<span style="color:#66d9ef">var</span> <span style="color:#a6e22e">param</span> <span style="color:#a6e22e">bytes</span>.<span style="color:#a6e22e">Buffer</span>
-    	<span style="color:#66d9ef">if</span> <span style="color:#a6e22e">ident</span>, <span style="color:#a6e22e">ok</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">t</span>.<span style="color:#a6e22e">X</span>.(<span style="color:#f92672">*</span><span style="color:#a6e22e">ast</span>.<span style="color:#a6e22e">Ident</span>); <span style="color:#a6e22e">ok</span> {
-    		<span style="color:#a6e22e">param</span>.<span style="color:#a6e22e">WriteString</span>(<span style="color:#a6e22e">ident</span>.<span style="color:#a6e22e">Name</span>)
-    	}
-    	<span style="color:#a6e22e">param</span>.<span style="color:#a6e22e">WriteString</span>(<span style="color:#e6db74">&#34;.&#34;</span>)
-    	<span style="color:#a6e22e">param</span>.<span style="color:#a6e22e">WriteString</span>(<span style="color:#a6e22e">t</span>.<span style="color:#a6e22e">Sel</span>.<span style="color:#a6e22e">Name</span>)
-    	<span style="color:#66d9ef">return</span> <span style="color:#a6e22e">param</span>.<span style="color:#a6e22e">String</span>()
-    }
-    
-    <span style="color:#66d9ef">func</span> <span style="color:#a6e22e">starToString</span>(<span style="color:#a6e22e">t</span> <span style="color:#f92672">*</span><span style="color:#a6e22e">ast</span>.<span style="color:#a6e22e">StarExpr</span>) <span style="color:#66d9ef">string</span> {
-    	<span style="color:#66d9ef">var</span> <span style="color:#a6e22e">param</span> <span style="color:#a6e22e">bytes</span>.<span style="color:#a6e22e">Buffer</span>
-    	<span style="color:#a6e22e">param</span>.<span style="color:#a6e22e">WriteString</span>(<span style="color:#e6db74">&#34;*&#34;</span>)
-    	<span style="color:#66d9ef">if</span> <span style="color:#a6e22e">ident</span>, <span style="color:#a6e22e">ok</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">t</span>.<span style="color:#a6e22e">X</span>.(<span style="color:#f92672">*</span><span style="color:#a6e22e">ast</span>.<span style="color:#a6e22e">Ident</span>); <span style="color:#a6e22e">ok</span> {
-    		<span style="color:#a6e22e">param</span>.<span style="color:#a6e22e">WriteString</span>(<span style="color:#a6e22e">ident</span>.<span style="color:#a6e22e">Name</span>)
-    	}
-    	<span style="color:#66d9ef">return</span> <span style="color:#a6e22e">param</span>.<span style="color:#a6e22e">String</span>()
-    }
-</code></pre></div><p><strong>Code Generation:</strong> Is basically generating runnable, optimized code in the format
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-go" data-lang="go"><span style="display:flex;"><span>    <span style="color:#66d9ef">func</span> <span style="color:#a6e22e">getMethods</span>(<span style="color:#a6e22e">fields</span> []<span style="color:#f92672">*</span><span style="color:#a6e22e">ast</span>.<span style="color:#a6e22e">Field</span>) []<span style="color:#a6e22e">Method</span> {
+</span></span><span style="display:flex;"><span>    	<span style="color:#66d9ef">var</span> <span style="color:#a6e22e">methods</span> = make([]<span style="color:#a6e22e">Method</span>, <span style="color:#ae81ff">0</span>)
+</span></span><span style="display:flex;"><span>    	<span style="color:#66d9ef">for</span> <span style="color:#a6e22e">_</span>, <span style="color:#a6e22e">method</span> <span style="color:#f92672">:=</span> <span style="color:#66d9ef">range</span> <span style="color:#a6e22e">fields</span> {
+</span></span><span style="display:flex;"><span>    		<span style="color:#66d9ef">if</span> len(<span style="color:#a6e22e">method</span>.<span style="color:#a6e22e">Names</span>) <span style="color:#f92672">==</span> <span style="color:#ae81ff">0</span> {
+</span></span><span style="display:flex;"><span>    			<span style="color:#66d9ef">continue</span>
+</span></span><span style="display:flex;"><span>    		}
+</span></span><span style="display:flex;"><span>    
+</span></span><span style="display:flex;"><span>    		<span style="color:#66d9ef">var</span> <span style="color:#a6e22e">ignore</span> <span style="color:#66d9ef">bool</span>
+</span></span><span style="display:flex;"><span>    		<span style="color:#66d9ef">var</span> <span style="color:#a6e22e">matches</span> [][]<span style="color:#66d9ef">string</span>
+</span></span><span style="display:flex;"><span>    		<span style="color:#66d9ef">for</span> <span style="color:#a6e22e">_</span>, <span style="color:#a6e22e">d</span> <span style="color:#f92672">:=</span> <span style="color:#66d9ef">range</span> <span style="color:#a6e22e">method</span>.<span style="color:#a6e22e">Doc</span>.<span style="color:#a6e22e">List</span> {
+</span></span><span style="display:flex;"><span>    			<span style="color:#a6e22e">comment</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">extractComment</span>(<span style="color:#a6e22e">d</span>.<span style="color:#a6e22e">Text</span>)
+</span></span><span style="display:flex;"><span>    			<span style="color:#66d9ef">if</span> <span style="color:#a6e22e">comment</span> <span style="color:#f92672">==</span> <span style="color:#e6db74">&#34;Ignore&#34;</span> {
+</span></span><span style="display:flex;"><span>    				<span style="color:#a6e22e">ignore</span> = <span style="color:#66d9ef">true</span>
+</span></span><span style="display:flex;"><span>    			} <span style="color:#66d9ef">else</span> {
+</span></span><span style="display:flex;"><span>    				<span style="color:#a6e22e">matches</span> = <span style="color:#a6e22e">verbEndpointRegex</span>.<span style="color:#a6e22e">FindAllStringSubmatch</span>(<span style="color:#a6e22e">comment</span>, <span style="color:#f92672">-</span><span style="color:#ae81ff">1</span>)
+</span></span><span style="display:flex;"><span>    			}
+</span></span><span style="display:flex;"><span>    		}
+</span></span><span style="display:flex;"><span>    		<span style="color:#66d9ef">if</span> <span style="color:#a6e22e">ignore</span> {
+</span></span><span style="display:flex;"><span>    			<span style="color:#66d9ef">continue</span>
+</span></span><span style="display:flex;"><span>    		}
+</span></span><span style="display:flex;"><span>    
+</span></span><span style="display:flex;"><span>    		<span style="color:#a6e22e">fn</span>, <span style="color:#a6e22e">ok</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">method</span>.<span style="color:#a6e22e">Type</span>.(<span style="color:#f92672">*</span><span style="color:#a6e22e">ast</span>.<span style="color:#a6e22e">FuncType</span>)
+</span></span><span style="display:flex;"><span>    		<span style="color:#66d9ef">if</span> !<span style="color:#a6e22e">ok</span> {
+</span></span><span style="display:flex;"><span>    			<span style="color:#66d9ef">continue</span>
+</span></span><span style="display:flex;"><span>    		}
+</span></span><span style="display:flex;"><span>    
+</span></span><span style="display:flex;"><span>    		<span style="color:#66d9ef">var</span> <span style="color:#a6e22e">methodData</span> <span style="color:#a6e22e">Method</span>
+</span></span><span style="display:flex;"><span>    		<span style="color:#a6e22e">methodData</span>.<span style="color:#a6e22e">Verb</span> = <span style="color:#a6e22e">matches</span>[<span style="color:#ae81ff">0</span>][<span style="color:#ae81ff">0</span>]
+</span></span><span style="display:flex;"><span>    		<span style="color:#a6e22e">methodData</span>.<span style="color:#a6e22e">Path</span> = <span style="color:#a6e22e">matches</span>[<span style="color:#ae81ff">1</span>][<span style="color:#ae81ff">0</span>]
+</span></span><span style="display:flex;"><span>    		<span style="color:#a6e22e">methodData</span>.<span style="color:#a6e22e">MethodName</span> = <span style="color:#a6e22e">method</span>.<span style="color:#a6e22e">Names</span>[<span style="color:#ae81ff">0</span>].<span style="color:#a6e22e">String</span>()
+</span></span><span style="display:flex;"><span>    		<span style="color:#a6e22e">methodData</span>.<span style="color:#a6e22e">InputParams</span> = <span style="color:#a6e22e">getFields</span>(<span style="color:#a6e22e">fn</span>.<span style="color:#a6e22e">Params</span>.<span style="color:#a6e22e">List</span>)
+</span></span><span style="display:flex;"><span>    		<span style="color:#a6e22e">methodData</span>.<span style="color:#a6e22e">OutputParams</span> = <span style="color:#a6e22e">getFields</span>(<span style="color:#a6e22e">fn</span>.<span style="color:#a6e22e">Results</span>.<span style="color:#a6e22e">List</span>)
+</span></span><span style="display:flex;"><span>    
+</span></span><span style="display:flex;"><span>    		<span style="color:#a6e22e">methods</span> = append(<span style="color:#a6e22e">methods</span>, <span style="color:#a6e22e">methodData</span>)
+</span></span><span style="display:flex;"><span>    	}
+</span></span><span style="display:flex;"><span>    	<span style="color:#66d9ef">return</span> <span style="color:#a6e22e">methods</span>
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>    
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">func</span> <span style="color:#a6e22e">extractComment</span>(<span style="color:#a6e22e">comment</span> <span style="color:#66d9ef">string</span>) <span style="color:#66d9ef">string</span> {
+</span></span><span style="display:flex;"><span>    	<span style="color:#a6e22e">slashRemoved</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">strings</span>.<span style="color:#a6e22e">Trim</span>(<span style="color:#a6e22e">comment</span>, <span style="color:#e6db74">&#34;//&#34;</span>)
+</span></span><span style="display:flex;"><span>    	<span style="color:#66d9ef">return</span> <span style="color:#a6e22e">strings</span>.<span style="color:#a6e22e">Trim</span>(<span style="color:#a6e22e">slashRemoved</span>, <span style="color:#e6db74">&#34; &#34;</span>)
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>    
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">func</span> <span style="color:#a6e22e">getFields</span>(<span style="color:#a6e22e">fields</span> []<span style="color:#f92672">*</span><span style="color:#a6e22e">ast</span>.<span style="color:#a6e22e">Field</span>) []<span style="color:#a6e22e">Parameter</span> {
+</span></span><span style="display:flex;"><span>    	<span style="color:#a6e22e">params</span> <span style="color:#f92672">:=</span> make([]<span style="color:#a6e22e">Parameter</span>, <span style="color:#ae81ff">0</span>)
+</span></span><span style="display:flex;"><span>    	<span style="color:#66d9ef">for</span> <span style="color:#a6e22e">_</span>, <span style="color:#a6e22e">field</span> <span style="color:#f92672">:=</span> <span style="color:#66d9ef">range</span> <span style="color:#a6e22e">fields</span> {
+</span></span><span style="display:flex;"><span>    		<span style="color:#66d9ef">var</span> <span style="color:#a6e22e">name</span> <span style="color:#66d9ef">string</span>
+</span></span><span style="display:flex;"><span>    		<span style="color:#66d9ef">if</span> len(<span style="color:#a6e22e">field</span>.<span style="color:#a6e22e">Names</span>) &gt; <span style="color:#ae81ff">0</span> {
+</span></span><span style="display:flex;"><span>    			<span style="color:#a6e22e">name</span> = <span style="color:#a6e22e">field</span>.<span style="color:#a6e22e">Names</span>[<span style="color:#ae81ff">0</span>].<span style="color:#a6e22e">Name</span>
+</span></span><span style="display:flex;"><span>    		}
+</span></span><span style="display:flex;"><span>    		<span style="color:#66d9ef">switch</span> <span style="color:#a6e22e">t</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">field</span>.<span style="color:#a6e22e">Type</span>.(<span style="color:#66d9ef">type</span>) {
+</span></span><span style="display:flex;"><span>    		<span style="color:#66d9ef">case</span> <span style="color:#f92672">*</span><span style="color:#a6e22e">ast</span>.<span style="color:#a6e22e">SelectorExpr</span>:
+</span></span><span style="display:flex;"><span>    			<span style="color:#a6e22e">p</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">Parameter</span>{
+</span></span><span style="display:flex;"><span>    				<span style="color:#a6e22e">Name</span>: <span style="color:#a6e22e">name</span>,
+</span></span><span style="display:flex;"><span>    				<span style="color:#a6e22e">Type</span>: <span style="color:#a6e22e">selectorToString</span>(<span style="color:#a6e22e">t</span>),
+</span></span><span style="display:flex;"><span>    			}
+</span></span><span style="display:flex;"><span>    			<span style="color:#a6e22e">params</span> = append(<span style="color:#a6e22e">params</span>, <span style="color:#a6e22e">p</span>)
+</span></span><span style="display:flex;"><span>    		<span style="color:#66d9ef">case</span> <span style="color:#f92672">*</span><span style="color:#a6e22e">ast</span>.<span style="color:#a6e22e">StarExpr</span>:
+</span></span><span style="display:flex;"><span>    			<span style="color:#a6e22e">p</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">Parameter</span>{
+</span></span><span style="display:flex;"><span>    				<span style="color:#a6e22e">Name</span>: <span style="color:#a6e22e">name</span>,
+</span></span><span style="display:flex;"><span>    				<span style="color:#a6e22e">Type</span>: <span style="color:#a6e22e">starToString</span>(<span style="color:#a6e22e">t</span>),
+</span></span><span style="display:flex;"><span>    			}
+</span></span><span style="display:flex;"><span>    			<span style="color:#a6e22e">params</span> = append(<span style="color:#a6e22e">params</span>, <span style="color:#a6e22e">p</span>)
+</span></span><span style="display:flex;"><span>    		<span style="color:#66d9ef">case</span> <span style="color:#f92672">*</span><span style="color:#a6e22e">ast</span>.<span style="color:#a6e22e">Ident</span>:
+</span></span><span style="display:flex;"><span>    			<span style="color:#a6e22e">p</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">Parameter</span>{
+</span></span><span style="display:flex;"><span>    				<span style="color:#a6e22e">Name</span>: <span style="color:#a6e22e">name</span>,
+</span></span><span style="display:flex;"><span>    				<span style="color:#a6e22e">Type</span>: <span style="color:#a6e22e">t</span>.<span style="color:#a6e22e">Name</span>,
+</span></span><span style="display:flex;"><span>    			}
+</span></span><span style="display:flex;"><span>    			<span style="color:#a6e22e">params</span> = append(<span style="color:#a6e22e">params</span>, <span style="color:#a6e22e">p</span>)
+</span></span><span style="display:flex;"><span>    		}
+</span></span><span style="display:flex;"><span>    
+</span></span><span style="display:flex;"><span>    	}
+</span></span><span style="display:flex;"><span>    	<span style="color:#66d9ef">return</span> <span style="color:#a6e22e">params</span>
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>    
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">func</span> <span style="color:#a6e22e">selectorToString</span>(<span style="color:#a6e22e">t</span> <span style="color:#f92672">*</span><span style="color:#a6e22e">ast</span>.<span style="color:#a6e22e">SelectorExpr</span>) <span style="color:#66d9ef">string</span> {
+</span></span><span style="display:flex;"><span>    	<span style="color:#66d9ef">var</span> <span style="color:#a6e22e">param</span> <span style="color:#a6e22e">bytes</span>.<span style="color:#a6e22e">Buffer</span>
+</span></span><span style="display:flex;"><span>    	<span style="color:#66d9ef">if</span> <span style="color:#a6e22e">ident</span>, <span style="color:#a6e22e">ok</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">t</span>.<span style="color:#a6e22e">X</span>.(<span style="color:#f92672">*</span><span style="color:#a6e22e">ast</span>.<span style="color:#a6e22e">Ident</span>); <span style="color:#a6e22e">ok</span> {
+</span></span><span style="display:flex;"><span>    		<span style="color:#a6e22e">param</span>.<span style="color:#a6e22e">WriteString</span>(<span style="color:#a6e22e">ident</span>.<span style="color:#a6e22e">Name</span>)
+</span></span><span style="display:flex;"><span>    	}
+</span></span><span style="display:flex;"><span>    	<span style="color:#a6e22e">param</span>.<span style="color:#a6e22e">WriteString</span>(<span style="color:#e6db74">&#34;.&#34;</span>)
+</span></span><span style="display:flex;"><span>    	<span style="color:#a6e22e">param</span>.<span style="color:#a6e22e">WriteString</span>(<span style="color:#a6e22e">t</span>.<span style="color:#a6e22e">Sel</span>.<span style="color:#a6e22e">Name</span>)
+</span></span><span style="display:flex;"><span>    	<span style="color:#66d9ef">return</span> <span style="color:#a6e22e">param</span>.<span style="color:#a6e22e">String</span>()
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>    
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">func</span> <span style="color:#a6e22e">starToString</span>(<span style="color:#a6e22e">t</span> <span style="color:#f92672">*</span><span style="color:#a6e22e">ast</span>.<span style="color:#a6e22e">StarExpr</span>) <span style="color:#66d9ef">string</span> {
+</span></span><span style="display:flex;"><span>    	<span style="color:#66d9ef">var</span> <span style="color:#a6e22e">param</span> <span style="color:#a6e22e">bytes</span>.<span style="color:#a6e22e">Buffer</span>
+</span></span><span style="display:flex;"><span>    	<span style="color:#a6e22e">param</span>.<span style="color:#a6e22e">WriteString</span>(<span style="color:#e6db74">&#34;*&#34;</span>)
+</span></span><span style="display:flex;"><span>    	<span style="color:#66d9ef">if</span> <span style="color:#a6e22e">ident</span>, <span style="color:#a6e22e">ok</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">t</span>.<span style="color:#a6e22e">X</span>.(<span style="color:#f92672">*</span><span style="color:#a6e22e">ast</span>.<span style="color:#a6e22e">Ident</span>); <span style="color:#a6e22e">ok</span> {
+</span></span><span style="display:flex;"><span>    		<span style="color:#a6e22e">param</span>.<span style="color:#a6e22e">WriteString</span>(<span style="color:#a6e22e">ident</span>.<span style="color:#a6e22e">Name</span>)
+</span></span><span style="display:flex;"><span>    	}
+</span></span><span style="display:flex;"><span>    	<span style="color:#66d9ef">return</span> <span style="color:#a6e22e">param</span>.<span style="color:#a6e22e">String</span>()
+</span></span><span style="display:flex;"><span>    }
+</span></span></code></pre></div><p><strong>Code Generation:</strong> Is basically generating runnable, optimized code in the format
 the compiler wants and for that we have the &hellip;</p>
 <h2 id="writer">Writer</h2>
 <p>The writer reads the transformation we applied (The API struct) and uses go&rsquo;s
 interesting template library to inject the values.</p>
 <p>The template library to achieve our example looks like so</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#66d9ef">const</span> <span style="color:#a6e22e">fnTmpl</span> = <span style="color:#e6db74">`
-</span><span style="color:#e6db74">		</span><span style="color:#75715e">{{</span><span style="color:#a6e22e">$i</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">separator</span> <span style="color:#e6db74">&#34;, &#34;</span><span style="color:#75715e">}}</span><span style="color:#e6db74">
-</span><span style="color:#e6db74">		</span><span style="color:#75715e">{{</span><span style="color:#a6e22e">$o</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">separator</span> <span style="color:#e6db74">&#34;, &#34;</span><span style="color:#75715e">}}</span><span style="color:#e6db74">
-</span><span style="color:#e6db74">		</span><span style="color:#75715e">{{</span><span style="color:#a6e22e">$length</span> <span style="color:#f92672">:=</span> <span style="color:#66d9ef">len</span> <span style="color:#a6e22e">.OutputParams</span><span style="color:#75715e">}}</span><span style="color:#e6db74">
-</span><span style="color:#e6db74">		func (c *client) </span><span style="color:#75715e">{{</span><span style="color:#a6e22e">.MethodName</span><span style="color:#75715e">}}</span><span style="color:#e6db74"> (</span><span style="color:#75715e">{{</span><span style="color:#66d9ef">range</span> <span style="color:#a6e22e">.InputParams</span><span style="color:#75715e">}}{{</span><span style="color:#66d9ef">call</span> <span style="color:#a6e22e">$i</span><span style="color:#75715e">}}{{</span><span style="color:#a6e22e">.Name</span><span style="color:#75715e">}}</span><span style="color:#e6db74"> </span><span style="color:#75715e">{{</span><span style="color:#a6e22e">.Type</span><span style="color:#75715e">}}{{</span><span style="color:#66d9ef">end</span><span style="color:#75715e">}}</span><span style="color:#e6db74">) ( 
-</span><span style="color:#e6db74">		</span><span style="color:#75715e">{{</span><span style="color:#66d9ef">range</span> <span style="color:#a6e22e">.OutputParams</span><span style="color:#75715e">}}</span><span style="color:#e6db74"> </span><span style="color:#75715e">{{</span><span style="color:#66d9ef">call</span> <span style="color:#a6e22e">$o</span><span style="color:#75715e">}}</span><span style="color:#e6db74"> </span><span style="color:#75715e">{{</span><span style="color:#a6e22e">.Name</span><span style="color:#75715e">}}</span><span style="color:#e6db74"> </span><span style="color:#75715e">{{</span><span style="color:#a6e22e">.Type</span><span style="color:#75715e">}}</span><span style="color:#e6db74"> </span><span style="color:#75715e">{{</span><span style="color:#66d9ef">end</span><span style="color:#75715e">}}</span><span style="color:#e6db74">){
-</span><span style="color:#e6db74">			op := client.Operation{
-</span><span style="color:#e6db74">				HTTPMethod: http.Method</span><span style="color:#75715e">{{</span><span style="color:#a6e22e">.Verb</span><span style="color:#75715e">}}</span><span style="color:#e6db74">,
-</span><span style="color:#e6db74">				HTTPPath:   endpoint + &#34;/</span><span style="color:#75715e">{{</span><span style="color:#a6e22e">.Path</span><span style="color:#75715e">}}</span><span style="color:#e6db74">&#34;,
-</span><span style="color:#e6db74">			}
-</span><span style="color:#e6db74">
-</span><span style="color:#e6db74">			</span><span style="color:#75715e">{{</span><span style="color:#a6e22e">.Body</span><span style="color:#75715e">}}</span><span style="color:#e6db74">
-</span><span style="color:#e6db74">
-</span><span style="color:#e6db74">			var response </span><span style="color:#75715e">{{</span><span style="color:#f92672">(</span><span style="color:#66d9ef">index</span> <span style="color:#a6e22e">.OutputParams</span> <span style="color:#a6e22e">0</span><span style="color:#f92672">)</span><span style="color:#a6e22e">.Type</span><span style="color:#75715e">}}</span><span style="color:#e6db74">
-</span><span style="color:#e6db74">			req, err := c.cl.NewRequest(op, &amp;response, nil)
-</span><span style="color:#e6db74">			if err != nil {
-</span><span style="color:#e6db74">				</span><span style="color:#75715e">{{</span><span style="color:#66d9ef">if</span> <span style="color:#66d9ef">eq</span> <span style="color:#a6e22e">$length</span> <span style="color:#a6e22e">1</span><span style="color:#75715e">}}</span><span style="color:#e6db74"> return nil </span><span style="color:#75715e">{{</span> <span style="color:#66d9ef">else</span> <span style="color:#75715e">}}</span><span style="color:#e6db74"> return response, nil </span><span style="color:#75715e">{{</span> <span style="color:#66d9ef">end</span> <span style="color:#75715e">}}</span><span style="color:#e6db74"> 
-</span><span style="color:#e6db74">			}
-</span><span style="color:#e6db74">			if err := req.Send(); err != nil {
-</span><span style="color:#e6db74">				</span><span style="color:#75715e">{{</span><span style="color:#66d9ef">if</span> <span style="color:#66d9ef">eq</span> <span style="color:#a6e22e">$length</span> <span style="color:#a6e22e">1</span><span style="color:#75715e">}}</span><span style="color:#e6db74"> return nil </span><span style="color:#75715e">{{</span> <span style="color:#66d9ef">else</span> <span style="color:#75715e">}}</span><span style="color:#e6db74"> return response, nil </span><span style="color:#75715e">{{</span> <span style="color:#66d9ef">end</span> <span style="color:#75715e">}}</span><span style="color:#e6db74"> 
-</span><span style="color:#e6db74">			}
-</span><span style="color:#e6db74">
-</span><span style="color:#e6db74">			</span><span style="color:#75715e">{{</span><span style="color:#66d9ef">if</span> <span style="color:#66d9ef">eq</span> <span style="color:#a6e22e">$length</span> <span style="color:#a6e22e">1</span><span style="color:#75715e">}}</span><span style="color:#e6db74"> return nil </span><span style="color:#75715e">{{</span> <span style="color:#66d9ef">else</span> <span style="color:#75715e">}}</span><span style="color:#e6db74"> return response, nil </span><span style="color:#75715e">{{</span> <span style="color:#66d9ef">end</span> <span style="color:#75715e">}}</span><span style="color:#e6db74"> 
-</span><span style="color:#e6db74">		}
-</span><span style="color:#e6db74">`</span>
-
-<span style="color:#66d9ef">func</span> <span style="color:#a6e22e">separator</span>(<span style="color:#a6e22e">s</span> <span style="color:#66d9ef">string</span>) <span style="color:#66d9ef">func</span>() <span style="color:#66d9ef">string</span> {
-	<span style="color:#a6e22e">i</span> <span style="color:#f92672">:=</span> <span style="color:#f92672">-</span><span style="color:#ae81ff">1</span>
-	<span style="color:#66d9ef">return</span> <span style="color:#66d9ef">func</span>() <span style="color:#66d9ef">string</span> {
-		<span style="color:#a6e22e">i</span><span style="color:#f92672">++</span>
-		<span style="color:#66d9ef">if</span> <span style="color:#a6e22e">i</span> <span style="color:#f92672">==</span> <span style="color:#ae81ff">0</span> {
-			<span style="color:#66d9ef">return</span> <span style="color:#e6db74">&#34;&#34;</span>
-		}
-		<span style="color:#66d9ef">return</span> <span style="color:#a6e22e">s</span>
-	}
-}
-</code></pre></div><p>The injection looks like this.</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#66d9ef">for</span> <span style="color:#a6e22e">_</span>, <span style="color:#a6e22e">api</span> <span style="color:#f92672">:=</span> <span style="color:#66d9ef">range</span> <span style="color:#a6e22e">apis</span> {
-	<span style="color:#66d9ef">for</span> <span style="color:#a6e22e">_</span>, <span style="color:#a6e22e">method</span> <span style="color:#f92672">:=</span> <span style="color:#66d9ef">range</span> <span style="color:#a6e22e">api</span>.<span style="color:#a6e22e">Methods</span> {
-		<span style="color:#a6e22e">t</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">template</span>.<span style="color:#a6e22e">Must</span>(<span style="color:#a6e22e">template</span>.<span style="color:#a6e22e">New</span>(<span style="color:#e6db74">&#34;func&#34;</span>).
-			<span style="color:#a6e22e">Funcs</span>(<span style="color:#a6e22e">template</span>.<span style="color:#a6e22e">FuncMap</span>{<span style="color:#e6db74">&#34;separator&#34;</span>: <span style="color:#a6e22e">separator</span>}).
-			<span style="color:#a6e22e">Parse</span>(<span style="color:#a6e22e">fnTmpl</span>))
-		<span style="color:#a6e22e">t</span>.<span style="color:#a6e22e">Execute</span>(<span style="color:#f92672">&amp;</span><span style="color:#a6e22e">buf</span>, <span style="color:#a6e22e">method</span>)
-	}
-}
-</code></pre></div><p>And there you have it. The generation parts.
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-go" data-lang="go"><span style="display:flex;"><span><span style="color:#66d9ef">const</span> <span style="color:#a6e22e">fnTmpl</span> = <span style="color:#e6db74">`
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">		</span><span style="color:#75715e">{{</span><span style="color:#a6e22e">$i</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">separator</span> <span style="color:#e6db74">&#34;, &#34;</span><span style="color:#75715e">}}</span><span style="color:#e6db74">
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">		</span><span style="color:#75715e">{{</span><span style="color:#a6e22e">$o</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">separator</span> <span style="color:#e6db74">&#34;, &#34;</span><span style="color:#75715e">}}</span><span style="color:#e6db74">
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">		</span><span style="color:#75715e">{{</span><span style="color:#a6e22e">$length</span> <span style="color:#f92672">:=</span> <span style="color:#66d9ef">len</span> <span style="color:#a6e22e">.OutputParams</span><span style="color:#75715e">}}</span><span style="color:#e6db74">
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">		func (c *client) </span><span style="color:#75715e">{{</span><span style="color:#a6e22e">.MethodName</span><span style="color:#75715e">}}</span><span style="color:#e6db74"> (</span><span style="color:#75715e">{{</span><span style="color:#66d9ef">range</span> <span style="color:#a6e22e">.InputParams</span><span style="color:#75715e">}}{{</span><span style="color:#66d9ef">call</span> <span style="color:#a6e22e">$i</span><span style="color:#75715e">}}{{</span><span style="color:#a6e22e">.Name</span><span style="color:#75715e">}}</span><span style="color:#e6db74"> </span><span style="color:#75715e">{{</span><span style="color:#a6e22e">.Type</span><span style="color:#75715e">}}{{</span><span style="color:#66d9ef">end</span><span style="color:#75715e">}}</span><span style="color:#e6db74">) ( 
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">		</span><span style="color:#75715e">{{</span><span style="color:#66d9ef">range</span> <span style="color:#a6e22e">.OutputParams</span><span style="color:#75715e">}}</span><span style="color:#e6db74"> </span><span style="color:#75715e">{{</span><span style="color:#66d9ef">call</span> <span style="color:#a6e22e">$o</span><span style="color:#75715e">}}</span><span style="color:#e6db74"> </span><span style="color:#75715e">{{</span><span style="color:#a6e22e">.Name</span><span style="color:#75715e">}}</span><span style="color:#e6db74"> </span><span style="color:#75715e">{{</span><span style="color:#a6e22e">.Type</span><span style="color:#75715e">}}</span><span style="color:#e6db74"> </span><span style="color:#75715e">{{</span><span style="color:#66d9ef">end</span><span style="color:#75715e">}}</span><span style="color:#e6db74">){
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">			op := client.Operation{
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">				HTTPMethod: http.Method</span><span style="color:#75715e">{{</span><span style="color:#a6e22e">.Verb</span><span style="color:#75715e">}}</span><span style="color:#e6db74">,
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">				HTTPPath:   endpoint + &#34;/</span><span style="color:#75715e">{{</span><span style="color:#a6e22e">.Path</span><span style="color:#75715e">}}</span><span style="color:#e6db74">&#34;,
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">			}
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">			</span><span style="color:#75715e">{{</span><span style="color:#a6e22e">.Body</span><span style="color:#75715e">}}</span><span style="color:#e6db74">
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">			var response </span><span style="color:#75715e">{{</span><span style="color:#f92672">(</span><span style="color:#66d9ef">index</span> <span style="color:#a6e22e">.OutputParams</span> <span style="color:#a6e22e">0</span><span style="color:#f92672">)</span><span style="color:#a6e22e">.Type</span><span style="color:#75715e">}}</span><span style="color:#e6db74">
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">			req, err := c.cl.NewRequest(op, &amp;response, nil)
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">			if err != nil {
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">				</span><span style="color:#75715e">{{</span><span style="color:#66d9ef">if</span> <span style="color:#66d9ef">eq</span> <span style="color:#a6e22e">$length</span> <span style="color:#a6e22e">1</span><span style="color:#75715e">}}</span><span style="color:#e6db74"> return nil </span><span style="color:#75715e">{{</span> <span style="color:#66d9ef">else</span> <span style="color:#75715e">}}</span><span style="color:#e6db74"> return response, nil </span><span style="color:#75715e">{{</span> <span style="color:#66d9ef">end</span> <span style="color:#75715e">}}</span><span style="color:#e6db74"> 
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">			}
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">			if err := req.Send(); err != nil {
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">				</span><span style="color:#75715e">{{</span><span style="color:#66d9ef">if</span> <span style="color:#66d9ef">eq</span> <span style="color:#a6e22e">$length</span> <span style="color:#a6e22e">1</span><span style="color:#75715e">}}</span><span style="color:#e6db74"> return nil </span><span style="color:#75715e">{{</span> <span style="color:#66d9ef">else</span> <span style="color:#75715e">}}</span><span style="color:#e6db74"> return response, nil </span><span style="color:#75715e">{{</span> <span style="color:#66d9ef">end</span> <span style="color:#75715e">}}</span><span style="color:#e6db74"> 
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">			}
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">			</span><span style="color:#75715e">{{</span><span style="color:#66d9ef">if</span> <span style="color:#66d9ef">eq</span> <span style="color:#a6e22e">$length</span> <span style="color:#a6e22e">1</span><span style="color:#75715e">}}</span><span style="color:#e6db74"> return nil </span><span style="color:#75715e">{{</span> <span style="color:#66d9ef">else</span> <span style="color:#75715e">}}</span><span style="color:#e6db74"> return response, nil </span><span style="color:#75715e">{{</span> <span style="color:#66d9ef">end</span> <span style="color:#75715e">}}</span><span style="color:#e6db74"> 
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">		}
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">`</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">func</span> <span style="color:#a6e22e">separator</span>(<span style="color:#a6e22e">s</span> <span style="color:#66d9ef">string</span>) <span style="color:#66d9ef">func</span>() <span style="color:#66d9ef">string</span> {
+</span></span><span style="display:flex;"><span>	<span style="color:#a6e22e">i</span> <span style="color:#f92672">:=</span> <span style="color:#f92672">-</span><span style="color:#ae81ff">1</span>
+</span></span><span style="display:flex;"><span>	<span style="color:#66d9ef">return</span> <span style="color:#66d9ef">func</span>() <span style="color:#66d9ef">string</span> {
+</span></span><span style="display:flex;"><span>		<span style="color:#a6e22e">i</span><span style="color:#f92672">++</span>
+</span></span><span style="display:flex;"><span>		<span style="color:#66d9ef">if</span> <span style="color:#a6e22e">i</span> <span style="color:#f92672">==</span> <span style="color:#ae81ff">0</span> {
+</span></span><span style="display:flex;"><span>			<span style="color:#66d9ef">return</span> <span style="color:#e6db74">&#34;&#34;</span>
+</span></span><span style="display:flex;"><span>		}
+</span></span><span style="display:flex;"><span>		<span style="color:#66d9ef">return</span> <span style="color:#a6e22e">s</span>
+</span></span><span style="display:flex;"><span>	}
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></div><p>The injection looks like this.</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-go" data-lang="go"><span style="display:flex;"><span><span style="color:#66d9ef">for</span> <span style="color:#a6e22e">_</span>, <span style="color:#a6e22e">api</span> <span style="color:#f92672">:=</span> <span style="color:#66d9ef">range</span> <span style="color:#a6e22e">apis</span> {
+</span></span><span style="display:flex;"><span>	<span style="color:#66d9ef">for</span> <span style="color:#a6e22e">_</span>, <span style="color:#a6e22e">method</span> <span style="color:#f92672">:=</span> <span style="color:#66d9ef">range</span> <span style="color:#a6e22e">api</span>.<span style="color:#a6e22e">Methods</span> {
+</span></span><span style="display:flex;"><span>		<span style="color:#a6e22e">t</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">template</span>.<span style="color:#a6e22e">Must</span>(<span style="color:#a6e22e">template</span>.<span style="color:#a6e22e">New</span>(<span style="color:#e6db74">&#34;func&#34;</span>).
+</span></span><span style="display:flex;"><span>			<span style="color:#a6e22e">Funcs</span>(<span style="color:#a6e22e">template</span>.<span style="color:#a6e22e">FuncMap</span>{<span style="color:#e6db74">&#34;separator&#34;</span>: <span style="color:#a6e22e">separator</span>}).
+</span></span><span style="display:flex;"><span>			<span style="color:#a6e22e">Parse</span>(<span style="color:#a6e22e">fnTmpl</span>))
+</span></span><span style="display:flex;"><span>		<span style="color:#a6e22e">t</span>.<span style="color:#a6e22e">Execute</span>(<span style="color:#f92672">&amp;</span><span style="color:#a6e22e">buf</span>, <span style="color:#a6e22e">method</span>)
+</span></span><span style="display:flex;"><span>	}
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></div><p>And there you have it. The generation parts.
 To get this to work with <code>go generate</code> all you have to do is add this to the
 root file.</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#75715e">//go:generate go run internal/cmd/genmethods/generator.go
-</span></code></pre></div>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-go" data-lang="go"><span style="display:flex;"><span><span style="color:#75715e">//go:generate go run internal/cmd/genmethods/generator.go
+</span></span></span></code></pre></div>
         </div>
         
 
@@ -449,11 +455,11 @@ root file.</p>
             
                 <ul class="post-tags">
                     
-                        <li><a href="https://sudarsanreddy.com/tags/go">#go</a></li>
+                        <li><a href="http://localhost:1313/tags/go">#go</a></li>
                     
-                        <li><a href="https://sudarsanreddy.com/tags/ast">#ast</a></li>
+                        <li><a href="http://localhost:1313/tags/ast">#ast</a></li>
                     
-                        <li><a href="https://sudarsanreddy.com/tags/code-generation">#code generation</a></li>
+                        <li><a href="http://localhost:1313/tags/code-generation">#code generation</a></li>
                     
                 </ul>
         
@@ -461,28 +467,6 @@ root file.</p>
 </div>
 
     </article>
-    
-        <div id="disqus_thread"></div>
-<script type="application/javascript">
-    var disqus_config = function () {
-    
-    
-    
-    };
-    (function() {
-        if (["localhost", "127.0.0.1"].indexOf(window.location.hostname) != -1) {
-            document.getElementById('disqus_thread').innerHTML = 'Disqus comments not available by default when the website is previewed locally.';
-            return;
-        }
-        var d = document, s = d.createElement('script'); s.async = true;
-        s.src = '//' + "sudarshan-reddy-github-io" + '.disqus.com/embed.js';
-        s.setAttribute('data-timestamp', +new Date());
-        (d.head || d.body).appendChild(s);
-    })();
-</script>
-<noscript>Please enable JavaScript to view the <a href="https://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
-<a href="https://disqus.com" class="dsq-brlink">comments powered by <span class="logo-disqus">Disqus</span></a>
-    
 
 
         </main>
@@ -491,7 +475,7 @@ root file.</p>
                 
                 
 
-                <p>© Sudarshan Reddy, 2020<br>
+                <p>© Sudarsan Reddy, 2024<br>
 Powered by <a target="_blank" href="https://gohugo.io/">Hugo</a>, theme <a target="_blank" href="https://github.com/sudarshan-reddy/hugo-theme-osiris">Osiris</a>.
 </p>
 

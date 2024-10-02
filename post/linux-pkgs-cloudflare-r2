@@ -1,0 +1,13 @@
+---
+title:
+tags: ["cloudflare", "r2", "debian", "rhel", "packaging", "pkgs", "linux", "repos"]
+date: "2022-09-15"
+---
+
+Hosting your own apt/yum repositories is a very user friendly way of distributing linux binaries.
+Owing to the nature of how they are packaged, it's as easy to just use any object storage to simply act
+as an apt or yum repository. With Cloudflare's amazing R2 object storage service that offers 0 egress fees,
+this becomes trivial and near free to set up.
+
+See here for my detailed blog when I did this work as a side project during my time in Cloudflare:
+https://blog.cloudflare.com/using-cloudflare-r2-as-an-apt-yum-repository/

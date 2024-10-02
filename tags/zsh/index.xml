@@ -1,30 +1,30 @@
 <?xml version="1.0" encoding="utf-8" standalone="yes"?>
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
-    <title>zsh on Sudarshan&#39;s Blog</title>
-    <link>https://sudarsanreddy.com/tags/zsh/</link>
-    <description>Sudarshan&#39;s Blog (zsh)</description>
+    <title>Zsh on Sudarsan&#39;s Blog</title>
+    <link>http://localhost:1313/tags/zsh/</link>
+    <description>Sudarsan&#39;s Blog (Zsh)</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en-us</language>
     <lastBuildDate>Mon, 04 Dec 2017 00:00:00 +0000</lastBuildDate>
     
-    <atom:link href="https://sudarsanreddy.com/tags/zsh/index.xml" rel="self" type="application/rss+xml" />
+    <atom:link href="http://localhost:1313/tags/zsh/index.xml" rel="self" type="application/rss+xml" />
     
     
     <item>
       <title>Env variables</title>
-      <link>https://sudarsanreddy.com/post/env-variables/</link>
+      <link>http://localhost:1313/post/env-variables/</link>
       <pubDate>Mon, 04 Dec 2017 00:00:00 +0000</pubDate>
       
-      <guid>https://sudarsanreddy.com/post/env-variables/</guid>
+      <guid>http://localhost:1313/post/env-variables/</guid>
       <description>&lt;p&gt;Ever wake up on the symmetrical side of the bed? Like at the middle? Yep. That’s when you decide that you are never going to (ever) code in constants in your application. So how do you get them? Configuration files? JSONs? Yamls? Environment variables are more elegant and easier with a docker-compose no?&lt;/p&gt;
 &lt;p&gt;12 factor apps are what cool kids are doing these days (read three years ago). And it makes sense that you put your configurable variables into the environment and do a getenv. But what happens when you have twelve twelve factor apps with twelve different sets of environment configurations?&lt;/p&gt;
 &lt;p&gt;If you put these into a script/environmental file like below and source them, then you probably have the right idea.&lt;/p&gt;
-&lt;pre&gt;&lt;code&gt;    export CONSTANT_1 = stuff
+&lt;pre tabindex=&#34;0&#34;&gt;&lt;code&gt;    export CONSTANT_1 = stuff
     export CONSTANT_2 = morestuff
     export CONSTANT_3 = youguesseditmorestuff
 &lt;/code&gt;&lt;/pre&gt;&lt;p&gt;But why not harness the incredible power of zsh and chpwd? The gist is, chpwd is a hook that fires everytime your (yep) pwd changes. Just make sure your constant settings (like above) go into a variable.env file and source it at chpwd. Just put this in your .zshrc.&lt;/p&gt;
-&lt;pre&gt;&lt;code&gt;function chpwd(){
+&lt;pre tabindex=&#34;0&#34;&gt;&lt;code&gt;function chpwd(){
     if [ -r $PWD/&amp;lt;environmentvariablefilename.env&amp;gt; ] ; then
         source $PWD/&amp;lt;environmentvariablefilename.env&amp;gt;
     fi
